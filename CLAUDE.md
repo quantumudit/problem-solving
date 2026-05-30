@@ -1,0 +1,203 @@
+# problem-solving
+
+Personal archive of coding problem solutions across multiple platforms.
+Each problem lives on its own branch and squash-merges into `main` when solved.
+
+> All files in this repo must use plain ASCII only. See `.claude/rules/ascii-only.md`.
+
+**Full docs (source of truth):**
+- `docs/conventions.md` -- naming rules, frontmatter fields, branch/commit format, topics, encoding
+- `docs/structure.md` -- folder layout, per-platform patterns, file templates, workflow
+
+---
+
+## Repo Layout
+
+```
+problem_solving/
+├── CLAUDE.md
+├── README.md
+├── .gitignore
+├── docs/
+│   ├── conventions.md
+│   ├── structure.md
+│   ├── index.md        # auto-generated problem index (do not edit manually)
+│   └── index.csv       # auto-generated problem index (do not edit manually)
+└── problems/
+    ├── leetcode/{difficulty}/{id}_{slug}/
+    ├── stratascratch/{difficulty}/{id}_{slug}/
+    ├── excelbi/{year}/{MM_DD_slug}/
+    ├── edna/{year}/{w##_slug}/
+    └── challenges/{source}/{challenge}/{q##_slug}/
+```
+
+`docs/index.md` and `docs/index.csv` are rebuilt automatically after every `git commit` on `main` via a `PostToolUse` hook. Run `python .claude/hooks/build_index.py` manually to force a rebuild at any time.
+
+---
+
+## Platform Quick Reference
+
+| Platform | Difficulty | ID | Folder pattern |
+|---|---|---|---|
+| leetcode | easy/medium/hard | 4-digit padded | `problems/leetcode/{difficulty}/{id}_{slug}/` |
+| stratascratch | easy/medium/hard | 4-digit padded | `problems/stratascratch/{difficulty}/{id}_{slug}/` |
+| excelbi | null | none | `problems/excelbi/{year}/{MM_DD_slug}/` |
+| edna | null | none | `problems/edna/{year}/{w##_slug}/` |
+| challenges | null | none | `problems/challenges/{source}/{challenge}/{q##_slug}/` |
+
+---
+
+## Naming Rules
+
+- Everything is **snake_case, lowercase** (except `README.md`, `notes.md`)
+- Problem IDs always zero-padded to 4 digits: `0001` not `1`
+- Solution files: `solution.py` / `solution.sql` / `solution.pq`
+- Revised versions: `solution_v2.py`, `solution_v3.py`
+- Variations subfolder: `variations/v1_slug.py`, `variations/v2_slug.py`
+
+---
+
+## Branch Naming
+
+> For full rules and lifecycle, use the `branching-strategy` skill.
+
+```
+leetcode/easy/0001_two_sum
+stratascratch/medium/1234_top_earning_sales
+excelbi/2025_04_01_sales_by_region
+edna/2025_w01_customer_churn
+challenges/data_with_danny/murder_mystery
+```
+
+---
+
+## Commit Message Format
+
+> For the full format, WIP commit rules, and examples, see `.claude/rules/commit-messages.md`.
+
+> CRITICAL: Never add a "Co-Authored-By" trailer or any AI attribution to commit messages in this repo.
+
+```
+solve: {platform} {id} {slug} [{language}]
+```
+
+Examples:
+```
+solve: leetcode 0001 two_sum [python]
+solve: stratascratch 1234 top_earning_sales [sql, python]
+solve: excelbi 2025_04_01 sales_by_region [pq]
+solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]
+```
+
+---
+
+## Merge Strategy
+
+> For the full pre-merge checklist, use the `committing-changes` skill.
+> To run the squash merge interactively, use `/solve`.
+
+Full sequence -- one clean commit per problem on `main`:
+```bash
+git push origin {branch_name}          # push before merging
+git checkout main
+git merge --squash {branch_name}
+git commit -m "solve: ..."
+git branch -D {branch_name}            # -D required after squash merge
+git push origin --delete {branch_name}
+```
+
+---
+
+## README.md Frontmatter (per problem)
+
+```yaml
+---
+platform:         # leetcode | stratascratch | excelbi | edna | challenges
+problem_id:       # quoted string e.g. "0001" -- omit for challenges
+slug:             # snake_case e.g. two_sum
+difficulty:       # easy | medium | hard | null
+link:             # direct url to the problem
+dataset:          # none | provided | mutable | mutable_extracted | mutable_committed
+---
+```
+
+## notes.md Frontmatter (per problem)
+
+```yaml
+---
+platform:         # leetcode | stratascratch | excelbi | edna | challenges
+problem_id:       # quoted string e.g. "0001" -- omit for challenges
+slug:             # snake_case
+difficulty:       # easy | medium | hard | null
+language:         # always a list e.g. [sql] or [python, sql]
+topics:           # always a list e.g. [window_functions, cte]
+date_solved:      # YYYY-MM-DD
+revisit:          # true | false
+---
+```
+
+## Challenge README Frontmatter (challenge-level only)
+
+```yaml
+---
+platform:         # challenges
+source:           # data_with_danny | linkedin_learning | etc.
+challenge:        # snake_case challenge name
+link:             # url to the challenge or course
+dataset:          # filename or description
+date_started:     # YYYY-MM-DD
+date_completed:   # YYYY-MM-DD | null
+---
+```
+
+---
+
+## Topics Taxonomy
+
+**SQL:** `window_functions, cte, joins, aggregations, subqueries, string_manipulation, date_functions, case_when, set_operations, self_joins, having, update, delete, insert`
+
+**Python:** `pandas_groupby, pandas_reshaping, pandas_merge, pandas_filter, list_comprehensions, datetime, string_ops, lambda_functions`
+
+**PowerQuery:** `table_ops, custom_functions, m_language, data_type_handling, merge_queries, append_queries`
+
+---
+
+## Mutable Dataset Workflow
+
+For problems with UPDATE / DELETE / INSERT solutions:
+```bash
+sqlite3 data/challenge.db < data/seed.sql   # reset to clean state
+sqlite3 data/challenge.db < solution.sql    # run solution
+```
+
+Only `seed.sql` is committed. Add `*.db` and `*.sqlite` to `data/.gitignore`.
+
+---
+
+## Skills
+
+### User-invoked (`/skill-name`)
+
+| Skill | When to use |
+|---|---|
+| `/queue-problem` | Found a problem to solve later -- creates a GitHub issue with full details and solve checklist |
+| `/new-problem` | Starting a new problem -- scaffolds branch, folder, README.md, notes.md, solution file |
+| `/write-readme` | Problem statement is ready -- generates or fills in the per-problem README.md |
+| `/evaluate-solution` | Solution is written -- runs examples, generates edge cases, checks correctness and complexity |
+| `/solve` | Problem is finished and correct -- runs the squash merge with correctly formatted commit message |
+
+### Always-loaded rules (`.claude/rules/`)
+
+| Rule | Scope |
+|---|---|
+| `ascii-only` | All files -- plain ASCII characters only |
+| `commit-messages` | All commits -- `solve:` and `wip:` format |
+| `python-code-style` | Python files only (path-scoped to `**/*.py`) |
+
+### Auto-applied by Claude
+
+| Skill | When Claude applies it |
+|---|---|
+| `branching-strategy` | Creating or naming a branch |
+| `committing-changes` | Staging and committing files |
+| `use-virtual-environment` | Running a Python solution that needs external packages |
