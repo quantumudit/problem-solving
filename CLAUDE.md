@@ -23,6 +23,7 @@ problem_solving/
 │   ├── structure.md
 │   ├── index.md        # auto-generated problem index (do not edit manually)
 │   └── index.csv       # auto-generated problem index (do not edit manually)
+├── utils/              # shared display helpers (display.py)
 └── problems/
     ├── leetcode/{difficulty}/{id}_{slug}/
     ├── stratascratch/{difficulty}/{id}_{slug}/
@@ -52,7 +53,8 @@ problem_solving/
 - Everything is **snake_case, lowercase** (except `README.md`, `notes.md`)
 - Problem IDs always zero-padded to 4 digits: `0001` not `1`
 - Solution files: `solution.py` / `solution.sql` / `solution.pq`
-- Revised versions: `solution_v2.py`, `solution_v3.py`
+- Multi-library Python: `solution_{library}.py` e.g. `solution_pandas.py`, `solution_polars.py`
+- Revised versions: `solution_v2.py`, `solution_{library}_v2.py`
 - Variations subfolder: `variations/v1_slug.py`, `variations/v2_slug.py`
 
 ---
@@ -84,10 +86,15 @@ solve: {platform} {id} {slug} [{language}]
 Examples:
 ```
 solve: leetcode 0001 two_sum [python]
-solve: stratascratch 1234 top_earning_sales [sql, python]
+solve: stratascratch 1234 top_earning_sales [pandas]
+solve: stratascratch 1234 top_earning_sales [sql, pandas]
 solve: excelbi 2025_04_01 sales_by_region [pq]
+solve: excelbi 2025_04_01 sales_by_region [pandas, polars]
 solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]
 ```
+
+> For Python solutions: use the library name (`pandas`, `polars`, `duckdb`, `pyspark`)
+> instead of `python`. Use `[python]` only for pure DSA with no external library.
 
 ---
 
@@ -129,7 +136,7 @@ platform:         # leetcode | stratascratch | excelbi | edna | challenges
 problem_id:       # quoted string e.g. "0001" -- omit for challenges
 slug:             # snake_case
 difficulty:       # easy | medium | hard | null
-language:         # always a list e.g. [sql] or [python, sql]
+language:         # always a list e.g. [pandas] or [sql, pandas]; [python] only for pure DSA
 topics:           # always a list e.g. [window_functions, cte]
 date_solved:      # YYYY-MM-DD
 revisit:          # true | false

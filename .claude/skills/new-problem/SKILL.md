@@ -16,7 +16,10 @@ Scaffold a new problem. If $ARGUMENTS was provided, parse platform and slug from
 2. **Difficulty**: `easy` | `medium` | `hard` — leetcode and stratascratch only; use `null` for others
 3. **Problem ID**: numeric, zero-padded to 4 digits (e.g. `"0001"`) — leetcode and stratascratch only; omit for others
 4. **Slug**: snake_case (e.g. `two_sum`)
-5. **Language(s)**: `python` | `sql` | `pq` — can be multiple
+5. **Language(s)**: `python` | `sql` | `pq` — can be multiple.
+   For Python, also ask: **which library?** `none` | `pandas` | `polars` | `duckdb` | `pyspark` | other.
+   Use `none` for pure DSA (no external library). This determines the solution filename and
+   the `language` field in `notes.md`.
 6. **Date solved**: defaults to today's date injected above
 
 For `challenges`, also collect:
@@ -172,13 +175,26 @@ revisit: false
 
 ### Step 6 — Create empty solution file
 
-| Language | File |
-|---|---|
-| python | `solution.py` |
-| sql | `solution.sql` |
-| pq | `solution.pq` |
+| Language | Library | File |
+|---|---|---|
+| python | none (pure DSA) | `solution.py` |
+| python | pandas | `solution_pandas.py` |
+| python | polars | `solution_polars.py` |
+| python | duckdb | `solution_duckdb.py` |
+| python | pyspark | `solution_pyspark.py` |
+| python | other | `solution_{library}.py` |
+| sql | -- | `solution.sql` |
+| pq | -- | `solution.pq` |
 
-For challenges, place the solution file inside the question folder (`q##_slug/`). For multiple languages, create one file per language.
+For challenges, place the solution file inside the question folder (`q##_slug/`).
+For multiple languages or libraries, create one file per language/library combination.
+
+**`notes.md` language field** -- use the library name, not `python`, when a library is used:
+```yaml
+language: [pandas]          # not [python]
+language: [pandas, polars]  # multiple library solutions
+language: [python]          # pure DSA only
+```
 
 ---
 

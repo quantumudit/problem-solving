@@ -16,9 +16,11 @@ solve: {platform} {id} {slug} [{language}]
 | Platform | Example |
 |---|---|
 | leetcode | `solve: leetcode 0001 two_sum [python]` |
-| stratascratch | `solve: stratascratch 1234 top_earning_sales [sql, python]` |
+| stratascratch | `solve: stratascratch 1234 top_earning_sales [pandas]` |
+| stratascratch (sql + pandas) | `solve: stratascratch 1234 top_earning_sales [sql, pandas]` |
 | excelbi | `solve: excelbi 2025_04_01 sales_by_region [pq]` |
-| edna | `solve: edna 2025_w01 customer_churn [python]` |
+| excelbi (multi-library) | `solve: excelbi 2025_04_01 sales_by_region [pandas, polars]` |
+| edna | `solve: edna 2025_w01 customer_churn [pandas]` |
 | challenges | `solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]` |
 
 **With variations:**
@@ -26,15 +28,17 @@ solve: {platform} {id} {slug} [{language}]
 solve: leetcode 0001 two_sum + 3 variations [python]
 ```
 
-**Multi-language:**
+**Multi-library Python:**
 ```
-solve: stratascratch 1234 top_earning_sales [sql, python]
+solve: excelbi 2025_04_01 sales_by_region [pandas, polars]
 ```
 
 ### Rules for `solve:`
 - `{id}` always zero-padded to 4 digits: `0001`, not `1`
 - `{slug}` always snake_case
-- `[{language}]` always a bracketed list, lowercase: `[python]`, `[sql]`, `[pq]`, `[python, sql]`
+- `[{language}]` always a bracketed list, lowercase: `[pandas]`, `[sql]`, `[pq]`, `[sql, pandas]`
+- For Python, use the library name: `[pandas]`, `[polars]`, `[duckdb]`, `[pyspark]`
+- Use `[python]` only for pure DSA solutions with no external library (e.g. LeetCode)
 - Never add a period, emoji, or body -- the subject line is the entire commit
 
 ---

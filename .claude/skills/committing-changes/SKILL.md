@@ -45,7 +45,7 @@ git diff main                   # full diff vs main
 ```
 
 Make sure all intended files are present:
-- `solution.py` / `solution.sql` / `solution.pq`
+- Solution file(s): `solution.py`, `solution_{library}.py`, `solution.sql`, or `solution.pq`
 - `README.md` (problem statement and frontmatter filled in)
 - `notes.md` (approach, complexity, topics filled in)
 - `data/` folder if the problem has a dataset
@@ -79,10 +79,16 @@ git commit -m "solve: {platform} {id} {slug} [{language}]"
 Examples:
 ```bash
 git commit -m "solve: leetcode 0001 two_sum [python]"
-git commit -m "solve: stratascratch 1234 top_earning_sales [sql, python]"
+git commit -m "solve: stratascratch 1234 top_earning_sales [pandas]"
+git commit -m "solve: stratascratch 1234 top_earning_sales [sql, pandas]"
 git commit -m "solve: excelbi 2025_04_01 sales_by_region [pq]"
+git commit -m "solve: excelbi 2025_04_01 sales_by_region [pandas, polars]"
 git commit -m "solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]"
 ```
+
+Use the library name (`pandas`, `polars`, `duckdb`, `pyspark`) instead of `python` in the
+language bracket whenever an external library is the primary tool. Use `[python]` only for
+pure DSA solutions (LeetCode / StrataScatch) that import nothing beyond the standard library.
 
 ### Step 5 -- Verify
 

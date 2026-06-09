@@ -59,6 +59,13 @@ Use Glob to list all files in the problem folder.
   signatures hint at input/output types, which helps parse the problem statement correctly.
   Do not use solution content to infer the problem statement itself.
 
+**Inventory files for the `## Files` section.** Note which of the following are present:
+- Solution files: `solution.py`, `solution.sql`, `solution.pq`, `solution_v2.py`, etc.
+- Data files: anything under `data/` (CSV, Excel, SQL seed files, etc.)
+- `notes.md` (may not exist yet -- only link if present)
+
+Only link files that actually exist. Do not create placeholder links.
+
 **Challenge branches only:** README.md lives at the challenge root
 (`problems/challenges/{source}/{challenge}/README.md`), not inside question folders.
 Individual question folders (`q01_slug/`, `q02_slug/`) do not have README.md files.
@@ -78,13 +85,15 @@ Once you have the problem statement, extract:
 |---|---|
 | Title | Usually the first line or heading |
 | Statement body | Main description paragraph(s) |
+| Output columns | Named output fields the problem asks you to compute (e.g. CurrentStage, Status) |
+| Input schema | Column names and types if described; otherwise infer from data file if present |
 | Constraints | Usually a bullet list under "Constraints" or "Notes" |
 | Examples | Input/output pairs, often labelled "Example 1", "Example 2", etc. |
 | Link | URL in the pasted text, or ask the user: "What is the link to this problem?" |
 | Dataset | For excelbi/edna: note the data file referenced. For others: `none` unless a file was attached. |
 
-If constraints or examples are missing from the pasted text, leave those sections as
-empty stubs -- do not invent them.
+If a section has no content (e.g. no constraints listed), omit that section entirely --
+do not leave blank stubs.
 
 ---
 
@@ -106,21 +115,66 @@ dataset: {dataset}
 [{Platform} - {Title}]({link})
 
 ## Problem Statement
-{statement body}
+{one or two sentences of prose giving context -- what the dataset represents and what
+needs to be computed. Then, if the problem defines multiple named output columns, present
+them as a table:}
+
+| Output Column | Description |
+|---|---|
+| ColumnName | Full description including edge-case values (e.g. "Not Started" if none cleared) |
+
+## Input Schema
+{include this section only when dataset != none}
+{column-level table derived from the problem statement or the data file:}
+
+| Column | Type | Description |
+|---|---|---|
+| ColName | type | description |
+
+{add a plain-text note for any structural quirks, e.g. "Not all cases have all stages
+in the dataset." or "One row per employee per month."}
 
 ## Constraints
-{constraints as bullet list, or leave blank if not provided}
+{bullet list only if constraints are explicitly stated in the problem -- omit this section entirely if none}
 
-## Examples
-{for each example:}
-**Example {n}:**
-Input: {input}
-Output: {output}
-{explanation if present}
+## Example
+{use markdown tables for tabular input/output -- bold-label each block:}
+
+**Input{qualifier if needed, e.g. "(selected rows)"}:**
+
+| Col1 | Col2 | ... |
+|---|---|---|
+| val | val | ... |
+
+**Expected output{qualifier if needed}:**
+
+| Col1 | Col2 | ... |
+|---|---|---|
+| val | val | ... |
+
+{follow the tables with one sentence explaining any non-obvious case shown in the example,
+especially edge cases like out-of-order completions, nulls, or boundary values}
+
+## Files
+{relative links to all files that exist -- solution file(s) first, then data/, then notes.md}
+- [solution.py](solution.py)
+- [data/filename.csv](data/filename.csv)
+- [notes.md](notes.md)
+
+## Source
+{excelbi / edna only -- omit for leetcode / stratascratch which have no external post}
+- [{Source or Author} - {Post or Challenge Name}]({full_url}) -- {context e.g. "PQ_Challenge_398, posted YYYY-MM-DD"}
 ```
 
-Omit `problem_id` from the frontmatter for `challenges` platform.
-Set `difficulty: null` for excelbi, edna, and challenges.
+- Omit `problem_id` from the frontmatter for `challenges`, `excelbi`, and `edna`
+  (these platforms have no numeric ID).
+- Set `difficulty: null` for excelbi, edna, and challenges.
+- Omit `## Source` for leetcode and stratascratch -- the `link` frontmatter field
+  is sufficient and there is no associated LinkedIn/external post to credit.
+- Omit `## Files` entries for files that do not yet exist (e.g. `notes.md` before
+  it has been created).
+- Omit `## Input Schema` when `dataset: none`.
+- Omit `## Constraints` entirely when none are stated -- do not leave a blank stub.
 
 ### Challenge-level README (challenges branch)
 
