@@ -77,12 +77,23 @@ q01_find_the_murderer      # q##_slug
 
 | File | Convention |
 |---|---|
-| Solution files | `solution.py` / `solution.sql` / `solution.pq` |
-| Revised solution (same language) | `solution_v2.py`, `solution_v3.py` |
+| Single-language solution | `solution.py` / `solution.sql` / `solution.pq` |
+| Multi-library Python solution | `solution_{library}.py` e.g. `solution_pandas.py`, `solution_polars.py` |
+| Revised solution (same file) | `solution_v2.py` / `solution_{library}_v2.py` |
 | Multi-language same problem | `solution.py` + `solution.sql` (extension differentiates) |
 | Variation files | `variations/v1_slug.py`, `variations/v2_slug.py` |
 | Seed file | `seed.sql` |
 | Dataset | original filename as-is; snake_case if renaming |
+
+**Multi-library Python naming rules:**
+
+- Use `solution_{library}.py` when more than one Python library solves the same problem:
+  `solution_pandas.py`, `solution_polars.py`, `solution_duckdb.py`, `solution_pyspark.py`
+- Use plain `solution.py` when there is only one Python file (no disambiguation needed),
+  or for pure DSA problems (LeetCode / StrataScatch) that use no external library.
+- A revised version of a library solution appends `_v2` at the end:
+  `solution_pandas_v2.py`, `solution_polars_v2.py`
+- `solution_*.py` glob always catches every Python solution file regardless of library.
 
 ---
 
@@ -139,12 +150,20 @@ merge_queries, append_queries
 
 ## 8. Language Field Values
 
-Used in `notes.md` frontmatter. Always a list, always lowercase:
+Used in `notes.md` frontmatter. Always a list, always lowercase.
+
+For Python, use the library name instead of `python` when an external library is the
+primary tool. Use plain `python` only for pure DSA solutions with no external library:
 
 ```yaml
 language: [sql]
-language: [python]
-language: [python, sql]
+language: [python]          # pure DSA -- no external library (e.g. LeetCode)
+language: [pandas]          # pandas solution
+language: [polars]          # polars solution
+language: [duckdb]          # duckdb solution
+language: [pyspark]         # pyspark solution
+language: [pandas, polars]  # multiple library solutions for the same problem
+language: [python, sql]     # mixed language problem
 language: [pq]
 ```
 
@@ -161,9 +180,11 @@ solve: {platform} {id} {slug} [{language}]
 | Platform | Example |
 |---|---|
 | leetcode | `solve: leetcode 0001 two_sum [python]` |
-| stratascratch | `solve: stratascratch 1234 top_earning_sales [sql, python]` |
+| stratascratch (pandas) | `solve: stratascratch 1234 top_earning_sales [pandas]` |
+| stratascratch (sql + pandas) | `solve: stratascratch 1234 top_earning_sales [sql, pandas]` |
 | excelbi | `solve: excelbi 2025_04_01 sales_by_region [pq]` |
-| edna | `solve: edna 2025_w01 customer_churn [python]` |
+| excelbi (multi-library) | `solve: excelbi 2025_04_01 sales_by_region [pandas, polars]` |
+| edna | `solve: edna 2025_w01 customer_churn [pandas]` |
 | challenges | `solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]` |
 
 With variations:
@@ -174,7 +195,10 @@ solve: leetcode 0001 two_sum + 3 variations [python]
 Rules:
 - `{id}` zero-padded to 4 digits: `0001` not `1`
 - `{slug}` snake_case
-- `[{language}]` bracketed list, lowercase: `[python]`, `[sql, python]`
+- `[{language}]` bracketed list, lowercase
+- For Python with an external library, use the library name: `[pandas]`, `[polars]`,
+  `[duckdb]`, `[pyspark]` -- not `[python]`
+- Use `[python]` only for pure DSA solutions with no external library (e.g. LeetCode)
 - No period, no emoji, no commit body -- subject line is the entire commit
 
 ### `wip:` -- in-progress commits on a branch

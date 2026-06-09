@@ -20,6 +20,7 @@ problem_solving/
 ├── docs/
 │   ├── conventions.md       <- naming rules, commits, frontmatter (source of truth)
 │   └── structure.md         <- this file
+├── utils/                   <- shared display helpers (display.py)
 ├── .claude/
 │   ├── settings.json
 │   └── skills/              <- Claude Code skills
@@ -73,9 +74,20 @@ problem_solving/
 
 ```
 0001_two_sum/
-├── README.md       <- problem statement, link, frontmatter
-├── solution.py     <- solution file(s)
-└── notes.md        <- approach, complexity, frontmatter
+├── README.md              <- problem statement, link, frontmatter
+├── solution.py            <- single solution (or solution_{library}.py for multi-library Python)
+└── notes.md               <- approach, complexity, frontmatter
+```
+
+For problems solved in multiple Python libraries, name each file after its library:
+```
+04_01_sales_by_region/
+├── README.md
+├── data/
+│   └── sales.xlsx
+├── solution_pandas.py
+├── solution_polars.py
+└── notes.md
 ```
 
 ### With variations
@@ -219,7 +231,7 @@ platform:         # leetcode | stratascratch | excelbi | edna | challenges
 problem_id:       # quoted string e.g. "0001" -- omit for challenges
 slug:             # snake_case
 difficulty:       # easy | medium | hard | null
-language:         # always a list e.g. [sql] or [python, sql]
+language:         # always a list e.g. [pandas] or [sql, pandas]; [python] only for pure DSA
 topics:           # always a list e.g. [window_functions, cte]
 date_solved:      # YYYY-MM-DD
 revisit:          # true | false
@@ -257,7 +269,8 @@ this is an established exception to the ASCII-only rule.
 ## Python Solution Code Style
 
 Solution files are standalone -- no shared utilities, no project structure.
-Each `solution.py` solves one problem and is read in isolation.
+Each solution file (`solution.py`, `solution_pandas.py`, etc.) solves one problem
+and is read in isolation.
 
 **Structure:**
 
@@ -335,7 +348,7 @@ The repo and Obsidian work together:
 ```
 1. /new-problem    -- scaffold branch, folder, README.md skeleton, notes.md, solution file
 2. /write-readme   -- fill in README.md from the problem statement
-3.  write solution -- solve the problem in solution.py / solution.sql / solution.pq
+3.  write solution -- solve the problem in solution.py / solution_{library}.py / solution.sql / solution.pq
 4. /evaluate-solution -- run examples, generate edge cases, check correctness + complexity
 5.  iterate        -- fix issues found by evaluation, re-run /evaluate-solution if needed
 6. /solve          -- squash merge with correctly formatted commit message onto main
