@@ -69,7 +69,12 @@ Risk Review (stage 30) is not -- stages completed out of order.
 
 ## Files
 
-- [solution.py](solution.py)
+- [solution.sql](solution.sql)
+- [solution_pandas.py](solution_pandas.py)
+- [solution_polars.py](solution_polars.py)
+- [solution_duckdb.py](solution_duckdb.py)
+- [solution_pyspark.py](solution_pyspark.py)
+- [notes.md](notes.md)
 - [data/cases.csv](data/cases.csv)
 
 ## Source

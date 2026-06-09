@@ -1,2 +1,2 @@
 platform,id,slug,difficulty,language,topics,date_solved,dataset,link,path
-excelbi,PQ00398,case_stage_progress,null,pandas,,,provided,https://lnkd.in/gg7thZjF,problems/excelbi/2026/06_09_case_stage_progress
+excelbi,PQ00398,case_stage_progress,null,"sql, pandas, polars, duckdb, pyspark","aggregations, case_when, cte, window_functions, joins, pandas_groupby",2026-06-09,provided,https://lnkd.in/gg7thZjF,problems/excelbi/2026/06_09_case_stage_progress

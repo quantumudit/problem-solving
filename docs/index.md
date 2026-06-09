@@ -10,4 +10,4 @@ Last updated: 2026-06-09  |  Total: 1
 
 | ID | Slug | Difficulty | Language | Date Solved | Link |
 |---|---|---|---|---|---|
-| PQ00398 | [case_stage_progress](problems/excelbi/2026/06_09_case_stage_progress) | - | pandas | - | [link](https://lnkd.in/gg7thZjF) |
+| PQ00398 | [case_stage_progress](problems/excelbi/2026/06_09_case_stage_progress) | - | sql, pandas, polars, duckdb, pyspark | 2026-06-09 | [link](https://lnkd.in/gg7thZjF) |
