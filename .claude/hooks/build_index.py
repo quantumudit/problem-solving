@@ -6,6 +6,7 @@ Scans all problem-specific README.md and notes.md files and writes:
 Run from any directory; uses file-relative paths internally.
 Skips silently when not on the main branch.
 """
+
 from __future__ import annotations
 
 import csv
@@ -69,7 +70,9 @@ def detect_languages(folder: Path) -> str:
     if py_files:
         libraries: set[str] = set()
         for f in py_files:
-            parts = f.stem.split("_")  # e.g. ["solution"], ["solution","pandas"], ["solution","v2"]
+            parts = f.stem.split(
+                "_"
+            )  # e.g. ["solution"], ["solution","pandas"], ["solution","v2"]
             if len(parts) == 1 or (parts[1].startswith("v") and parts[1][1:].isdigit()):
                 libraries.add("python")
             else:
@@ -99,18 +102,20 @@ def collect_standalone(platform: str) -> list[dict]:
         lang_raw = notes_fm.get("language", "")
         language = clean_list(lang_raw) if lang_raw else detect_languages(folder)
 
-        records.append({
-            "platform": platform,
-            "id": fm.get("problem_id", ""),
-            "slug": fm.get("slug", folder.name),
-            "difficulty": fm.get("difficulty", "null"),
-            "language": language,
-            "topics": clean_list(notes_fm.get("topics", "")),
-            "date_solved": notes_fm.get("date_solved", ""),
-            "dataset": fm.get("dataset", "none"),
-            "link": fm.get("link", ""),
-            "path": str(folder.relative_to(REPO_ROOT)).replace("\\", "/"),
-        })
+        records.append(
+            {
+                "platform": platform,
+                "id": fm.get("problem_id", ""),
+                "slug": fm.get("slug", folder.name),
+                "difficulty": fm.get("difficulty", "null"),
+                "language": language,
+                "topics": clean_list(notes_fm.get("topics", "")),
+                "date_solved": notes_fm.get("date_solved", ""),
+                "dataset": fm.get("dataset", "none"),
+                "link": fm.get("link", ""),
+                "path": str(folder.relative_to(REPO_ROOT)).replace("\\", "/"),
+            }
+        )
     return records
 
 
@@ -135,18 +140,20 @@ def collect_challenges() -> list[dict]:
         challenge = folder.parent.name
         q_num = folder.name.split("_")[0]
 
-        records.append({
-            "platform": "challenges",
-            "id": f"{source}/{challenge}/{q_num}",
-            "slug": fm.get("slug", "_".join(folder.name.split("_")[1:])),
-            "difficulty": "null",
-            "language": language,
-            "topics": clean_list(fm.get("topics", "")),
-            "date_solved": fm.get("date_solved", ""),
-            "dataset": challenge_fm.get("dataset", ""),
-            "link": challenge_fm.get("link", ""),
-            "path": str(folder.relative_to(REPO_ROOT)).replace("\\", "/"),
-        })
+        records.append(
+            {
+                "platform": "challenges",
+                "id": f"{source}/{challenge}/{q_num}",
+                "slug": fm.get("slug", "_".join(folder.name.split("_")[1:])),
+                "difficulty": "null",
+                "language": language,
+                "topics": clean_list(fm.get("topics", "")),
+                "date_solved": fm.get("date_solved", ""),
+                "dataset": challenge_fm.get("dataset", ""),
+                "link": challenge_fm.get("link", ""),
+                "path": str(folder.relative_to(REPO_ROOT)).replace("\\", "/"),
+            }
+        )
     return records
 
 
@@ -194,8 +201,16 @@ def write_markdown(records: list[dict]) -> None:
 
 def write_csv(records: list[dict]) -> None:
     fields = [
-        "platform", "id", "slug", "difficulty", "language", "topics",
-        "date_solved", "dataset", "link", "path",
+        "platform",
+        "id",
+        "slug",
+        "difficulty",
+        "language",
+        "topics",
+        "date_solved",
+        "dataset",
+        "link",
+        "path",
     ]
     with INDEX_CSV.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
