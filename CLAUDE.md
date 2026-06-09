@@ -18,6 +18,11 @@ problem_solving/
 ├── CLAUDE.md
 ├── README.md
 ├── .gitignore
+├── Dockerfile              # PySpark image (extends apache/spark-py)
+├── docker-compose.yml      # container config for pyspark-lab
+├── .dockerignore
+├── justfile                # task runner
+├── pyproject.toml          # Python deps (pandas, polars, duckdb, rich, ...)
 ├── docs/
 │   ├── conventions.md
 │   ├── structure.md
@@ -208,3 +213,27 @@ Only `seed.sql` is committed. Add `*.db` and `*.sqlite` to `data/.gitignore`.
 | `branching-strategy` | Creating or naming a branch |
 | `committing-changes` | Staging and committing files |
 | `use-virtual-environment` | Running a Python solution that needs external packages |
+
+---
+
+## Running Solutions
+
+Most solutions run via the justfile:
+
+```powershell
+just excelbi 06_09_case_stage_progress pandas   # solution_pandas.py via uv run
+just excelbi 06_09_case_stage_progress polars   # solution_polars.py via uv run
+just excelbi 06_09_case_stage_progress duckdb   # solution_duckdb.py via uv run
+```
+
+**PySpark solutions are different -- they run inside Docker, not via `uv run`.**
+PySpark is not installed in the local venv; it lives only in the container.
+
+```powershell
+just excelbi-pyspark 06_09_case_stage_progress       # solution_pyspark.py
+just excelbi-pyspark 06_09_case_stage_progress v2    # solution_pyspark_v2.py
+```
+
+`just excelbi-pyspark` auto-starts the container if it is not running.
+Use `just spark-create` for first-time setup (build image + start container).
+See `docs/structure.md` for full Docker container management commands.

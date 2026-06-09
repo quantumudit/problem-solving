@@ -17,6 +17,11 @@ problem_solving/
 ├── CLAUDE.md
 ├── README.md
 ├── .gitignore
+├── Dockerfile               <- PySpark image (extends apache/spark-py)
+├── docker-compose.yml       <- container config (pyspark-lab)
+├── .dockerignore
+├── justfile                 <- task runner (just excelbi, just excelbi-pyspark, etc.)
+├── pyproject.toml           <- Python deps (pandas, polars, duckdb, rich, ...)
 ├── docs/
 │   ├── conventions.md       <- naming rules, commits, frontmatter (source of truth)
 │   └── structure.md         <- this file
@@ -325,6 +330,50 @@ Rules:
 - Never commit `.venv/`, `pyproject.toml`, or `uv.lock`
 
 See the `use-virtual-environment` skill for full setup details.
+
+---
+
+## PySpark / Docker
+
+PySpark solutions (`solution_pyspark.py`) run inside Docker, not via `uv run`.
+PySpark is not installed locally -- it lives only in the container.
+
+### Why Docker?
+
+The `apache/spark-py` image ships Spark, Java, and PySpark pre-wired together.
+Running PySpark locally would require a separate Java + Spark installation.
+Docker keeps it isolated and deletable when not needed.
+
+### Image
+
+`Dockerfile` extends `apache/spark-py:latest` and adds `pandas`, `polars`, and `rich`
+(needed by `utils/display.py`). The image is built once and reused.
+
+### Container
+
+`docker-compose.yml` mounts the entire repo into `/workspace` at runtime, so
+any file edited locally is immediately visible inside the container.
+`PYTHONPATH=/workspace` makes `from utils import show` work.
+
+### Running PySpark solutions
+
+```powershell
+# First-time setup (build image + start container)
+just spark-create
+
+# Run a solution
+just excelbi-pyspark 06_09_case_stage_progress
+just excelbi-pyspark 06_09_case_stage_progress v2   # _v2 variant
+
+# Container lifecycle
+just spark-up       # start (auto-runs before excelbi-pyspark)
+just spark-stop     # stop (keeps container, restartable)
+just spark-down     # remove container (image stays cached)
+just spark-clean    # remove container + built image
+just spark-verify   # check container status + package imports + spark version
+```
+
+`just excelbi-pyspark` automatically starts the container if it is not running.
 
 ---
 
