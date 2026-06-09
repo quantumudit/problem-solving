@@ -79,14 +79,15 @@ def merge(self, intervals: list[list[int]]) -> list[list[int]]: ...
 
 ## Comments
 
-Write no comments by default. Code should be self-explanatory through good naming.
+Comments are welcome when they add explanation value or enhance readability.
 
-Add a comment only when the **why** is non-obvious:
-- A non-intuitive invariant (`# right boundary is exclusive`)
-- A specific edge case being handled (`# empty string returns 0, not -1`)
-- A math trick that is not immediately clear
+Good reasons to add a comment:
+- A non-intuitive invariant or edge case being handled
+- A math trick or algorithmic choice that is not immediately clear
+- Section headers that help orient a reader in longer scripts
+- A brief note clarifying a non-obvious step in a data pipeline
 
-Never write comments that describe **what** the code does -- good names do that.
+Avoid comments that merely restate what the code already says clearly through good naming.
 
 ---
 
@@ -100,7 +101,7 @@ from heapq import heappush, heappop
 import pandas as pd
 ```
 
-No project-local imports -- solution files are standalone.
+No project-local imports except `from utils import ...` -- the `utils/` package is the one shared library allowed in this repo.
 
 ---
 
@@ -124,6 +125,17 @@ result = (
 # avoid
 result = df.groupby("category")["value"].sum().reset_index().rename(columns={"value": "total"})
 ```
+
+---
+
+## Interview Prep Context
+
+These solutions serve a dual purpose: correctness practice and interview preparation.
+As a result, the following are acceptable and encouraged:
+
+- `print()` statements that trace intermediate steps (e.g. month-by-month acquisition log)
+- Verbose variable names that communicate reasoning clearly to an interviewer
+- Step-by-step logic over one-liners when clarity matters more than brevity
 
 ---
 
