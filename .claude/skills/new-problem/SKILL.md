@@ -14,7 +14,11 @@ Scaffold a new problem. If $ARGUMENTS was provided, parse platform and slug from
 
 1. **Platform**: `leetcode` | `stratascratch` | `excelbi` | `edna` | `challenges`
 2. **Difficulty**: `easy` | `medium` | `hard` — leetcode and stratascratch only; use `null` for others
-3. **Problem ID**: numeric, zero-padded to 4 digits (e.g. `"0001"`) — leetcode and stratascratch only; omit for others
+3. **Problem ID**:
+   - leetcode / stratascratch: numeric, zero-padded to 4 digits e.g. `"0001"`
+   - excelbi: series prefix + 5-digit padded (7 chars total) -- ask the user which series:
+     `PQ` for Power Query e.g. `"PQ00398"`, `EX` for Excel e.g. `"EX00991"`
+   - edna / challenges: omit
 4. **Slug**: snake_case (e.g. `two_sum`)
 5. **Language(s)**: `python` | `sql` | `pq` — can be multiple.
    For Python, also ask: **which library?** `none` | `pandas` | `polars` | `duckdb` | `pyspark` | other.

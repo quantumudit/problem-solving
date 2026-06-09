@@ -40,9 +40,9 @@ problem_solving/
 
 | Platform | Difficulty | ID | Folder pattern |
 |---|---|---|---|
-| leetcode | easy/medium/hard | 4-digit padded | `problems/leetcode/{difficulty}/{id}_{slug}/` |
-| stratascratch | easy/medium/hard | 4-digit padded | `problems/stratascratch/{difficulty}/{id}_{slug}/` |
-| excelbi | null | none | `problems/excelbi/{year}/{MM_DD_slug}/` |
+| leetcode | easy/medium/hard | 4-digit padded e.g. `"0001"` | `problems/leetcode/{difficulty}/{id}_{slug}/` |
+| stratascratch | easy/medium/hard | 4-digit padded e.g. `"1234"` | `problems/stratascratch/{difficulty}/{id}_{slug}/` |
+| excelbi | null | `PQ` or `EX` prefix + 5-digit padded e.g. `"PQ00398"`, `"EX00991"` | `problems/excelbi/{year}/{MM_DD_slug}/` |
 | edna | null | none | `problems/edna/{year}/{w##_slug}/` |
 | challenges | null | none | `problems/challenges/{source}/{challenge}/{q##_slug}/` |
 

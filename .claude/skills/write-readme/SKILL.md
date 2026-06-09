@@ -39,7 +39,7 @@ Parse the branch name to derive all values:
 |---|---|---|
 | `leetcode` / `stratascratch` / etc. | `platform` | as-is |
 | `{difficulty}` | `difficulty` | easy / medium / hard / null |
-| `{id}` | `problem_id` | quoted string, zero-padded e.g. `"0001"` -- omit for challenges |
+| `{id}` | `problem_id` | leetcode/stratascratch: zero-padded e.g. `"0001"`; excelbi: prefix + 4-digit e.g. `"PQ00398"`; omit for challenges/edna |
 | `{slug}` | `slug` | as-is from branch |
 
 If the branch is `main` or unrecognized, stop and ask the user which problem to document.
@@ -166,8 +166,10 @@ especially edge cases like out-of-order completions, nulls, or boundary values}
 - [{Source or Author} - {Post or Challenge Name}]({full_url}) -- {context e.g. "PQ_Challenge_398, posted YYYY-MM-DD"}
 ```
 
-- Omit `problem_id` from the frontmatter for `challenges`, `excelbi`, and `edna`
-  (these platforms have no numeric ID).
+- Omit `problem_id` from the frontmatter for `challenges` and `edna` (no ID).
+- For `excelbi`, include `problem_id` using the series prefix and 5-digit padded number
+  (7 chars total): `PQ` for Power Query challenges e.g. `"PQ00398"`, `EX` for Excel
+  challenges e.g. `"EX00991"`.
 - Set `difficulty: null` for excelbi, edna, and challenges.
 - Omit `## Source` for leetcode and stratascratch -- the `link` frontmatter field
   is sufficient and there is no associated LinkedIn/external post to credit.
