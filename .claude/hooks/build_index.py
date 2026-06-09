@@ -22,6 +22,14 @@ INDEX_CSV = REPO_ROOT / "docs" / "index.csv"
 
 PLATFORM_ORDER = ["leetcode", "stratascratch", "excelbi", "edna", "challenges"]
 
+PLATFORM_DISPLAY = {
+    "leetcode": "LeetCode",
+    "stratascratch": "StrataScatch",
+    "excelbi": "ExcelBI",
+    "edna": "EDNA",
+    "challenges": "Challenges",
+}
+
 
 def current_branch() -> str:
     result = subprocess.run(
@@ -57,8 +65,16 @@ def clean_list(value: str) -> str:
 
 def detect_languages(folder: Path) -> str:
     langs = []
-    if any(folder.glob("solution*.py")) or any(folder.glob("variations/*.py")):
-        langs.append("python")
+    py_files = list(folder.glob("solution*.py")) + list(folder.glob("variations/*.py"))
+    if py_files:
+        libraries: set[str] = set()
+        for f in py_files:
+            parts = f.stem.split("_")  # e.g. ["solution"], ["solution","pandas"], ["solution","v2"]
+            if len(parts) == 1 or (parts[1].startswith("v") and parts[1][1:].isdigit()):
+                libraries.add("python")
+            else:
+                libraries.add(parts[1])  # pandas, polars, duckdb, pyspark, etc.
+        langs.extend(sorted(libraries))
     if any(folder.glob("solution*.sql")):
         langs.append("sql")
     if any(folder.glob("solution*.pq")):
@@ -155,9 +171,10 @@ def write_markdown(records: list[dict]) -> None:
         if platform not in by_platform:
             continue
         rows = by_platform[platform]
-        lines.append(f"## {platform.capitalize()} ({len(rows)})")
+        display = PLATFORM_DISPLAY.get(platform, platform.capitalize())
+        lines.append(f"## {display} ({len(rows)})")
         lines.append("")
-        lines.append("| ID / Ref | Slug | Difficulty | Language | Date Solved | Link |")
+        lines.append("| ID | Slug | Difficulty | Language | Date Solved | Link |")
         lines.append("|---|---|---|---|---|---|")
         for r in rows:
             ref = r["id"] or "-"

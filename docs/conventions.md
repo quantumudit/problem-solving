@@ -53,6 +53,13 @@ All folder names: snake_case, lowercase.
 1_two_sum          wrong
 ```
 
+ExcelBI uses a 2-character series prefix followed by a 5-digit padded number (7 chars total):
+
+| Series | Prefix | Example |
+|---|---|---|
+| Power Query | `PQ` | `PQ00398` (Power Query Challenge 398) |
+| Excel | `EX` | `EX00991` (Excel Challenge 991) |
+
 ### Date-based folders (excelbi)
 
 ```
