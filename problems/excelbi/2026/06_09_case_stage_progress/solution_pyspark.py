@@ -12,10 +12,6 @@ data_file = str(Path(__file__).parent / "data" / "cases.csv")
 
 df = spark.read.option("header", True).option("inferSchema", True).csv(data_file)
 
-# --------------------------------------------------
-# Stage Summary
-# --------------------------------------------------
-
 stage_summary = df.groupBy("CaseID").agg(
     F.coalesce(F.max(F.when(F.col("Cleared"), F.col("StageNo"))), F.lit(0)).alias(
         "CurrentStageNo"
@@ -27,10 +23,6 @@ stage_summary = df.groupBy("CaseID").agg(
         F.avg(F.when(F.col("Cleared"), F.lit(1.0)).otherwise(F.lit(0.0))) * 100, 0
     ).alias("ProgressPct"),
 )
-
-# --------------------------------------------------
-# Current Stage
-# --------------------------------------------------
 
 current_stage = (
     stage_summary.alias("s")
@@ -48,10 +40,6 @@ current_stage = (
     )
 )
 
-# --------------------------------------------------
-# Next Stage Candidates
-# --------------------------------------------------
-
 next_stage_candidates = df.alias("c").join(
     stage_summary.alias("s"),
     (
@@ -62,17 +50,15 @@ next_stage_candidates = df.alias("c").join(
     "inner",
 )
 
-w = Window.partitionBy("c.CaseID").orderBy("c.StageNo")
+next_stage_window = Window.partitionBy("c.CaseID").orderBy("c.StageNo")
 
-next_stage_candidates = next_stage_candidates.withColumn("rn", F.row_number().over(w))
+next_stage_candidates = next_stage_candidates.withColumn(
+    "rn", F.row_number().over(next_stage_window)
+)
 
 next_stage = next_stage_candidates.filter(F.col("rn") == 1).select(
     F.col("c.CaseID").alias("CaseID"), F.col("c.StageName").alias("NextStage")
 )
-
-# --------------------------------------------------
-# Final Result
-# --------------------------------------------------
 
 result = (
     stage_summary.alias("s")
