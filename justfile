@@ -28,4 +28,48 @@ check: lint format
 excelbi slug library="" year="2026":
     uv run .\problems\excelbi\{{ year }}\{{ slug }}\{{ if library == "" { "solution.py" } else { "solution_" + library + ".py" } }}
 
+# Run a PySpark solution inside Docker (auto-starts container if needed)
+# Examples:
+#   just excelbi-pyspark 06_09_case_stage_progress
+#   just excelbi-pyspark 06_09_case_stage_progress v2
+#   just excelbi-pyspark 06_09_case_stage_progress "" 2025
+excelbi-pyspark slug version="" year="2026": spark-up
+    docker compose exec spark /opt/spark/bin/spark-submit problems/excelbi/{{ year }}/{{ slug }}/{{ if version == "" { "solution_pyspark.py" } else { "solution_pyspark_" + version + ".py" } }}
 
+# --- Docker Desktop ---
+
+# Launch Docker Desktop (run this first if Docker is not running)
+docker-start:
+    Start-Process "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"
+
+# --- Spark container lifecycle ---
+
+# Build the PySpark image from Dockerfile (run once, or after Dockerfile changes)
+spark-build:
+    docker compose build
+
+# Start the container in the background
+spark-up:
+    docker compose up -d
+
+# Build image and start the container
+spark-create: spark-build spark-up
+
+
+# Stop the container (keeps it -- restart with spark-up)
+spark-stop:
+    docker compose stop
+
+# Stop and remove the container (image is kept)
+spark-down:
+    docker compose down
+
+# Remove container and the built image (base apache/spark-py image stays cached)
+spark-clean:
+    docker compose down --rmi local
+
+# Verify the setup: container status + package imports + spark version
+spark-verify: spark-up
+    docker compose ps
+    docker compose exec spark python3 -c "import pandas, polars, rich; print('pandas / polars / rich OK')"
+    docker compose exec spark /opt/spark/bin/spark-submit --version
