@@ -13,6 +13,10 @@ wheels/
 *.db
 *.sqlite
 
+# Jupyter Notebook checkpoints & Jupyter Notebook
+.ipynb_checkpoints/
+test_*.ipynb
+
 # IDE
 .vscode/
 .idea/
