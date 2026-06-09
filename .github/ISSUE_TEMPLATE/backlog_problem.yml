@@ -1,0 +1,61 @@
+name: Backlog Problem
+description: Log a problem found online to solve later
+title: "[platform] id slug [difficulty]"
+labels: ["backlog"]
+body:
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: "leetcode | stratascratch | excelbi | edna | challenges"
+    validations:
+      required: true
+  - type: input
+    id: problem_id
+    attributes:
+      label: Problem ID
+      placeholder: "e.g. 0001"
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options:
+        - easy
+        - medium
+        - hard
+        - "null"
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      placeholder: "https://..."
+    validations:
+      required: true
+  - type: textarea
+    id: problem_statement
+    attributes:
+      label: Problem Statement
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+  - type: checkboxes
+    id: solve_checklist
+    attributes:
+      label: Solve Checklist
+      options:
+        - label: "`/new-problem` -- scaffold branch and folder"
+        - label: "Fill in README.md with full problem statement"
+        - label: "Write solution"
+        - label: "`/evaluate-solution` -- verify correctness"
+        - label: "`/solve` -- squash merge and close this issue"
