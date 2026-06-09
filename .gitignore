@@ -10,9 +10,26 @@ wheels/
 # Virtual environments
 .venv
 
+# Secrets and credentials
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
 # Databases (only seed.sql is committed, not the db files)
 *.db
 *.sqlite
+
+# Data files that may contain PII
+*.xlsx
+*.xls
+*.parquet
+*.pkl
+*.pickle
 
 # Jupyter Notebook checkpoints & Jupyter Notebook
 .ipynb_checkpoints/
