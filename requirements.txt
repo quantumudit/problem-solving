@@ -12,8 +12,6 @@ decorator==5.3.1
     # via ipython
 duckdb==1.5.3
     # via problem-solving (pyproject.toml)
-et-xmlfile==2.0.0
-    # via openpyxl
 executing==2.2.1
     # via stack-data
 ipykernel==7.2.0
@@ -42,8 +40,6 @@ nest-asyncio==1.6.0
     # via ipykernel
 numpy==2.4.6
     # via pandas
-openpyxl==3.1.5
-    # via problem-solving (pyproject.toml)
 packaging==26.2
     # via ipykernel
 pandas==3.0.3
@@ -64,17 +60,11 @@ psutil==7.2.2
     #   ipython
 pure-eval==0.2.3
     # via stack-data
-py4j==0.10.9.9
-    # via pyspark
-pyarrow==24.0.0
-    # via problem-solving (pyproject.toml)
 pygments==2.20.0
     # via
     #   ipython
     #   ipython-pygments-lexers
     #   rich
-pyspark==4.1.2
-    # via problem-solving (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
     #   jupyter-client
@@ -91,8 +81,6 @@ six==1.17.0
     # via python-dateutil
 stack-data==0.6.3
     # via ipython
-tabulate==0.10.0
-    # via problem-solving (pyproject.toml)
 tornado==6.5.7
     # via
     #   ipykernel
