@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
+.ruff_cache/
 
 # Virtual environments
 .venv
@@ -27,3 +28,6 @@ Thumbs.db
 
 # Other Docs
 docs/prep/
+
+# Spark temp files (created by spark-submit in the working directory)
+java_opts.txt
