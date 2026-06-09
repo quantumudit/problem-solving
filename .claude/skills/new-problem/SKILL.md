@@ -1,40 +1,56 @@
 ---
 name: new-problem
-description: Scaffold a new problem — creates the branch, folder structure, README.md, notes.md, and empty solution file. Use when starting work on a new problem on any supported platform.
+description: Scaffold a new problem -- confirms slug and branch name with user, creates folder, README.md, and notes.md. No solution files. All git actions require explicit user approval.
 argument-hint: "[platform] [slug]"
 disable-model-invocation: true
-allowed-tools: Bash(git *) Bash(mkdir *) Bash(ls *)
+allowed-tools: Bash(git *) Bash(mkdir *) Bash(ls *) Write Edit Read
 ---
 
 Today's date: !`date +%Y-%m-%d`
 
-Scaffold a new problem. If $ARGUMENTS was provided, parse platform and slug from it; otherwise ask the user for the missing pieces one at a time.
+Scaffold a new problem. Follow the steps below in order. Never skip ahead.
+Every git action requires explicit user approval before running.
 
-### Inputs to collect
+---
+
+### Step 1 -- Deduce and confirm the slug
+
+From the problem description or $ARGUMENTS, derive a snake_case slug.
+Show the user: "Proposed slug: `{slug}` -- does that look good?"
+Wait for confirmation or correction before proceeding.
+
+---
+
+### Step 2 -- Collect missing problem metadata
+
+Check what information is already known from the problem description. Ask only for what is missing:
 
 1. **Platform**: `leetcode` | `stratascratch` | `excelbi` | `edna` | `challenges`
-2. **Difficulty**: `easy` | `medium` | `hard` — leetcode and stratascratch only; use `null` for others
-3. **Difficulty rating**: personal assessment of difficulty — `easy` | `medium` | `hard` | `null`; ask for all platforms
-4. **Problem ID**:
+2. **Problem link**: direct URL to the problem
+3. **Difficulty**: `easy` | `medium` | `hard` -- leetcode and stratascratch only; `null` for others
+4. **Difficulty rating**: personal assessment -- `easy` | `medium` | `hard` | `null`; ask for all platforms
+5. **Problem ID**:
    - leetcode / stratascratch: numeric, zero-padded to 4 digits e.g. `"0001"`
-   - excelbi: series prefix + 5-digit padded (7 chars total) -- ask the user which series:
+   - excelbi: series prefix + 5-digit padded (7 chars total):
      `PQ` for Power Query e.g. `"PQ00398"`, `EX` for Excel e.g. `"EX00991"`
    - edna / challenges: omit
-5. **Slug**: snake_case (e.g. `two_sum`)
-6. **Language(s)**: `python` | `sql` | `pq` — can be multiple.
+6. **Language(s)**: `python` | `sql` | `pq` -- can be multiple.
    For Python, also ask: **which library?** `none` | `pandas` | `polars` | `duckdb` | `pyspark` | other.
-   Use `none` for pure DSA (no external library). This determines the solution filename and
-   the `language` field in `notes.md`.
-7. **Date solved**: defaults to today's date injected above
+   Use `none` for pure DSA (no external library).
+7. **Date**: defaults to today's date injected above
 
 For `challenges`, also collect:
 - Source (e.g. `data_with_danny`)
 - Challenge name (snake_case)
 - Question number (e.g. `01`)
 
+Ask for missing fields in one go if possible. Do not ask for fields already provided.
+
 ---
 
-### Step 1 — Determine branch name
+### Step 3 -- Confirm branch name
+
+Derive the branch name from the confirmed slug and collected metadata:
 
 | Platform | Branch pattern |
 |---|---|
@@ -44,7 +60,22 @@ For `challenges`, also collect:
 | edna | `edna/{YYYY_w##}_{slug}` |
 | challenges | `challenges/{source}/{challenge_name}` |
 
-### Step 2 — Determine folder path
+Show the user: "Proposed branch: `{branch_name}` -- OK to create?"
+Wait for explicit approval. Do not create the branch until the user confirms.
+
+---
+
+### Step 4 -- Create branch and folder
+
+Only after user approves the branch name, show the exact commands and ask permission:
+
+```
+git checkout main
+git checkout -b {branch_name}
+mkdir -p {folder_path}
+```
+
+Folder path patterns:
 
 | Platform | Folder path |
 |---|---|
@@ -54,15 +85,9 @@ For `challenges`, also collect:
 | edna | `problems/edna/{YYYY}/{w##_slug}/` |
 | challenges question | `problems/challenges/{source}/{challenge}/{q##_slug}/` |
 
-### Step 3 — Create branch and folder
+---
 
-```bash
-git checkout main
-git checkout -b {branch_name}
-mkdir -p {folder_path}
-```
-
-### Step 4 — Create README.md
+### Step 5 -- Create README.md
 
 For standalone problems (leetcode, stratascratch, excelbi, edna), create at `{folder_path}/README.md`:
 
@@ -72,12 +97,12 @@ platform: {platform}
 problem_id: "{id}"
 slug: {slug}
 difficulty: {difficulty}
-link:
+link: {link}
 dataset: none
 ---
 
 ## Problem
-[{Platform} - {Title}]()
+[{Platform} - {Title}]({link})
 
 ## Problem Statement
 
@@ -97,14 +122,14 @@ For `challenges`, create a challenge-level README at `problems/challenges/{sourc
 platform: challenges
 source: {source}
 challenge: {challenge}
-link:
+link: {link}
 dataset:
 date_started: {date}
 date_completed: null
 ---
 
 ## Challenge
-[{Source} - {Challenge Title}]()
+[{Source} - {Challenge Title}]({link})
 
 ## Description
 
@@ -118,7 +143,11 @@ date_completed: null
 | q{##} | {slug} | {language} | {date} |
 ```
 
-### Step 5 — Create notes.md
+If the problem statement was provided in full, fill in the Problem Statement, Constraints, and Examples sections now. Otherwise leave them blank for the user to fill in.
+
+---
+
+### Step 6 -- Create notes.md
 
 For standalone problems, create at `{folder_path}/notes.md`:
 
@@ -145,7 +174,7 @@ revisit: false
 ## What tripped me up
 
 
-## 💡 Tricks / New Learnings
+## Tricks / New Learnings
 
 
 ## Revisit notes
@@ -175,25 +204,9 @@ revisit: false
 ## What tripped me up
 
 
-## 💡 Tricks / New Learnings
+## Tricks / New Learnings
 
 ```
-
-### Step 6 — Create empty solution file
-
-| Language | Library | File |
-|---|---|---|
-| python | none (pure DSA) | `solution.py` |
-| python | pandas | `solution_pandas.py` |
-| python | polars | `solution_polars.py` |
-| python | duckdb | `solution_duckdb.py` |
-| python | pyspark | `solution_pyspark.py` |
-| python | other | `solution_{library}.py` |
-| sql | -- | `solution.sql` |
-| pq | -- | `solution.pq` |
-
-For challenges, place the solution file inside the question folder (`q##_slug/`).
-For multiple languages or libraries, create one file per language/library combination.
 
 **`notes.md` language field** -- use the library name, not `python`, when a library is used:
 ```yaml
@@ -202,20 +215,34 @@ language: [pandas, polars]  # multiple library solutions
 language: [python]          # pure DSA only
 ```
 
+No solution files are created at this stage. The user will create them when ready to solve.
+
 ---
 
-### Step 7 -- Push branch to remote
+### Step 7 -- Commit with user approval
 
-Push the branch immediately so it exists on remote from the start:
+Show the user the exact command and ask permission before running:
 
-```bash
+```
+git add {folder_path}
+git commit -m "wip: scaffold {slug}"
+```
+
+Wait for explicit approval. Do not commit until the user confirms.
+
+---
+
+### Step 8 -- Push with user approval
+
+Show the user the exact command and ask permission before running:
+
+```
 git push -u origin {branch_name}
 ```
 
-If the push fails (e.g. no remote configured), report the error clearly -- do not
-leave this step silently skipped.
+Wait for explicit approval. Do not push until the user confirms.
 
 ---
 
-After scaffolding, confirm the files created, the remote push, and remind the user
-to fill in the problem link and statement in README.md.
+After everything is done, confirm what was created and remind the user to fill in
+any blank sections in README.md (problem statement, constraints, examples, link).
