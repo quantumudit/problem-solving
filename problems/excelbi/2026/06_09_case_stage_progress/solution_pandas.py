@@ -15,9 +15,22 @@ def get_current_stage(g: pd.DataFrame) -> str:
 
 
 def get_next_stage(g: pd.DataFrame) -> str:
-    if (~g["Cleared"]).any():
-        return g.loc[~g["Cleared"]].sort_values("StageNo")["StageName"].iloc[0]
-    return "Completed"
+    # If there are no uncleared stages, the process is complete.
+    if not (~g["Cleared"]).any():
+        return "Completed"
+
+    # Find the current stage number. If no stages are cleared yet, return 0
+    current_stage_no = g.loc[g["Cleared"], "StageNo"].max() if g["Cleared"].any() else 0
+
+    # Keep only uncleared stages that come after the current stage.
+    next_stages = g.loc[(~g["Cleared"]) & (g["StageNo"] > current_stage_no)]
+
+    # If there are no remaining stages post the current stage, return completed.
+    if next_stages.empty:
+        return "Completed"
+
+    # Return the stage name corresponding to the earliest uncleared stage.
+    return next_stages.sort_values("StageNo")["StageName"].iloc[0]
 
 
 def get_progress(g: pd.DataFrame) -> tuple[str, float]:
