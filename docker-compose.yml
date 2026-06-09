@@ -1,0 +1,13 @@
+services:
+  spark:
+    build: .
+    container_name: pyspark-lab
+    working_dir: /workspace
+    environment:
+      - PYTHONPATH=/workspace
+      - PYSPARK_PYTHON=/usr/bin/python3
+    volumes:
+      - .:/workspace
+    stdin_open: true
+    tty: true
+    command: sleep infinity
