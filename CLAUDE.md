@@ -29,6 +29,7 @@ problem_solving/
 │   ├── index.md        # auto-generated problem index (do not edit manually)
 │   └── index.csv       # auto-generated problem index (do not edit manually)
 ├── utils/              # shared display helpers (display.py)
+├── scratchpad/         # local scratch, rough work, quick experiments (gitignored)
 └── problems/
     ├── leetcode/{difficulty}/{id}_{slug}/
     ├── stratascratch/{difficulty}/{id}_{slug}/

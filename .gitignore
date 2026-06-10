@@ -31,9 +31,10 @@ secrets.json
 *.pkl
 *.pickle
 
-# Jupyter Notebook checkpoints & Jupyter Notebook
+# Jupyter Notebook checkpoints & Scratchpad folder (local only)
 .ipynb_checkpoints/
-test_*.ipynb
+scratchpad/*
+!scratchpad/.gitkeep
 
 # IDE
 .vscode/

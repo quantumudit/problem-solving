@@ -26,6 +26,8 @@ problem_solving/
 │   ├── conventions.md       <- naming rules, commits, frontmatter (source of truth)
 │   └── structure.md         <- this file
 ├── utils/                   <- shared display helpers (display.py)
+├── scratchpad/              <- local scratch, rough work, quick experiments (gitignored)
+│   └── .gitkeep
 ├── .claude/
 │   ├── settings.json
 │   └── skills/              <- Claude Code skills
@@ -375,6 +377,23 @@ just spark-verify   # check container status + package imports + spark version
 ```
 
 `just excelbi-pyspark` automatically starts the container if it is not running.
+
+---
+
+## Scratchpad
+
+`scratchpad/` is a local-only workspace for rough work that should never be committed.
+
+Typical uses:
+- Quick data exploration and one-off queries
+- Jupyter notebooks for problem analysis before writing a clean solution
+- Throwaway scripts for testing a library or API
+- Any file that is too messy or temporary to belong in a problem folder
+
+Rules:
+- Everything inside `scratchpad/` is gitignored via `scratchpad/*`
+- Only `.gitkeep` is tracked, to preserve the folder in the repo
+- Never move scratchpad content into a problem folder -- rewrite it clean instead
 
 ---
 
