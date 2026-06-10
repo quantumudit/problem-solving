@@ -169,7 +169,7 @@ date_completed:   # YYYY-MM-DD | null
 
 **SQL:** `window_functions, cte, joins, aggregations, subqueries, string_manipulation, date_functions, case_when, set_operations, self_joins, having, update, delete, insert`
 
-**Python:** `pandas_groupby, pandas_reshaping, pandas_merge, pandas_filter, list_comprehensions, datetime, string_ops, lambda_functions`
+**Python:** `aggregation, reshaping, joins, filtering, sorting, string_ops, datetime, list_comprehensions, lambda_functions, simulation, stateful_iteration, conditional_logic, recursion, two_pointers, sliding_window, dynamic_programming`
 
 **PowerQuery:** `table_ops, custom_functions, m_language, data_type_handling, merge_queries, append_queries`
 

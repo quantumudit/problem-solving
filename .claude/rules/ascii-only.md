@@ -66,6 +66,6 @@ All files in this repo:
 
 - **Code blocks**: content inside fenced code blocks (` ``` `) or inline code (`` ` ``) is exempt
 - **ASCII art**: directory trees, flowcharts, and box-drawing borders used for diagrams are exempt
-- **notes.md section heading**: the `## Tricks / New Learnings` section in notes.md files
-  uses an emoji as part of the defined template in this repo's conventions -- this specific
-  heading is exempt
+- **Markdown emoji**: in `.md` files, emojis are allowed when they add genuine visual value
+  (e.g. difficulty ratings in tables, status indicators, section markers). Decorative or
+  redundant emoji -- ones that restate what surrounding text already says -- are still prohibited.
