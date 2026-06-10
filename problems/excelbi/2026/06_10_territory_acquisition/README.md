@@ -89,7 +89,8 @@ Apr through Jun -- only East remains as an owner; no further acquisitions.
 
 ## Files
 
-- [solution]()
+- [solution_pandas.py](solution_pandas.py)
+- [solution_polars.py](solution_polars.py)
 - [notes.md](notes.md)
 - [data/revenues.csv](data/revenues.csv)
 
