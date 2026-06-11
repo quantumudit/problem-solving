@@ -1,3 +1,5 @@
 platform,id,slug,difficulty,language,topics,date_solved,dataset,link,path
+stratascratch,10353,workers_with_the_highest_salaries,easy,"sql, pandas, polars","joins, filtering, window_functions",2026-06-11,platform,https://platform.stratascratch.com/coding/10353-workers-with-the-highest-salaries,problems/stratascratch/easy/10353_workers_with_the_highest_salaries
+stratascratch,10352,users_by_avg_session_time,medium,"sql, pandas, polars","aggregation, datetime, filtering, cte, joins, date_functions, case_when",2026-06-11,platform,https://platform.stratascratch.com/coding/10352-users-by-avg-session-time,problems/stratascratch/medium/10352_users_by_avg_session_time
 excelbi,PQ00398,case_stage_progress,null,"sql, pandas, polars, duckdb, pyspark","aggregations, case_when, cte, window_functions, joins, pandas_groupby",2026-06-09,provided,https://lnkd.in/gg7thZjF,problems/excelbi/2026/06_09_case_stage_progress
 excelbi,PQ00397,territory_acquisition,null,"pandas, polars","simulation, aggregation, stateful_iteration, string_ops",2026-06-10,provided,https://lnkd.in/gywHUGik,problems/excelbi/2026/06_10_territory_acquisition
