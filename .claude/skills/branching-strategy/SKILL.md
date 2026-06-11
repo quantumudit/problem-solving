@@ -7,10 +7,10 @@ description: Branch naming conventions for this problem-solving repo. Apply when
 
 ## Core Rules
 
-- **One branch per unit of work** -- a single standalone problem, or a full challenge set (all questions share one branch)
+- **Two valid branch modes** -- single-problem (one branch per problem) or multi-problem batch (one branch for several problems from the same platform in a session)
 - **Always branch from `main`**
 - **Push to remote immediately** after creating a branch -- every branch must exist on remote from day one
-- **Squash merge back to `main`** when the problem is done -- messy WIP commits on the branch are fine and expected
+- **Squash merge back to `main`** when done -- messy WIP commits on the branch are fine and expected
 - **Push the branch before merging** -- ensure remote is up to date before running the squash merge
 - **Delete local and remote branch after merge** -- once the solve commit is confirmed on main, delete both
 - **Never delete a branch that has not been merged** unless the user explicitly asks
@@ -19,6 +19,8 @@ description: Branch naming conventions for this problem-solving repo. Apply when
 ---
 
 ## Branch Naming Format
+
+### Single-Problem Branches
 
 Branch names are platform-specific. All slugs are snake_case, lowercase.
 
@@ -35,6 +37,31 @@ Branch names are platform-specific. All slugs are snake_case, lowercase.
 - `{id}` is always zero-padded to 4 digits: `0001`, not `1`
 - `{slug}` is always snake_case: `two_sum`, not `twoSum` or `two-sum`
 - For challenges, the branch covers the entire challenge set -- not individual questions
+
+---
+
+### Multi-Problem (Batch) Branches
+
+Use when the user explicitly wants to solve several problems from the same platform in one session.
+The branch name encodes the platform and date only -- no problem ID or slug.
+
+| Platform | Pattern | Example |
+|---|---|---|
+| stratascratch | `stratascratch/batch_{YYYY_MM_DD}` | `stratascratch/batch_2026_06_11` |
+| leetcode | `leetcode/batch_{YYYY_MM_DD}` | `leetcode/batch_2026_06_11` |
+| excelbi | `excelbi/batch_{YYYY_MM_DD}` | `excelbi/batch_2026_06_11` |
+
+**Merge commit format** -- list every problem solved on the branch:
+
+```
+solve: stratascratch batch 2026_06_11 [pandas] -- 1234 slug_one, 5678 slug_two
+```
+
+If problems span multiple languages:
+
+```
+solve: stratascratch batch 2026_06_11 [sql, pandas] -- 1234 slug_one, 5678 slug_two
+```
 
 ---
 
