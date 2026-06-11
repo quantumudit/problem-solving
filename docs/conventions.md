@@ -114,6 +114,11 @@ easy | medium | hard | null
 
 `null` is used for platforms that do not provide difficulty: excelbi, edna, challenges.
 
+`difficulty_rating` in `notes.md` is a personal assessment. When the platform provides a
+difficulty and no override is needed, set it to the same value as `difficulty`. Only use
+`null` for platforms without a difficulty (excelbi, edna, challenges) or when a personal
+rating has not yet been decided.
+
 ---
 
 ## 6. Dataset Field Values
@@ -123,6 +128,7 @@ Used in `README.md` frontmatter:
 | Value | Meaning |
 |---|---|
 | `none` | No dataset needed |
+| `platform` | Data lives on the coding platform (StrataScratch, LeetCode, etc.) -- not available locally |
 | `provided` | Static file committed as-is |
 | `mutable` | Had `seed.sql` from the start |
 | `mutable_extracted` | Had `.db`, extracted `seed.sql` from it |

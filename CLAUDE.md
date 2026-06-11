@@ -130,7 +130,7 @@ problem_id:       # quoted string e.g. "0001" -- omit for challenges
 slug:             # snake_case e.g. two_sum
 difficulty:       # easy | medium | hard | null
 link:             # direct url to the problem
-dataset:          # none | provided | mutable | mutable_extracted | mutable_committed
+dataset:          # none | platform | provided | mutable | mutable_extracted | mutable_committed
 ---
 ```
 
@@ -142,7 +142,7 @@ platform:         # leetcode | stratascratch | excelbi | edna | challenges
 problem_id:       # quoted string e.g. "0001" -- omit for challenges
 slug:             # snake_case
 difficulty:       # easy | medium | hard | null
-difficulty_rating: # easy | medium | hard | null -- personal assessment
+difficulty_rating: # easy | medium | hard | null -- personal assessment; default to difficulty value when platform provides one
 language:         # always a list e.g. [pandas] or [sql, pandas]; [python] only for pure DSA
 topics:           # always a list e.g. [window_functions, cte]
 date_solved:      # YYYY-MM-DD
