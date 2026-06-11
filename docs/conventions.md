@@ -27,13 +27,14 @@ Every branch represents one unit of work -- a single problem, or a full challeng
 | stratascratch | `stratascratch/{difficulty}/{id}_{slug}` | `stratascratch/medium/1234_top_earning_sales` |
 | excelbi | `excelbi/{YYYY_MM_DD}_{slug}` | `excelbi/2025_04_01_sales_by_region` |
 | edna | `edna/{YYYY_w##}_{slug}` | `edna/2025_w01_customer_churn` |
-| challenges | `challenges/{source}/{challenge_name}` | `challenges/data_with_danny/murder_mystery` |
+| misc | `misc/{id}_{slug}` | `misc/0001_two_sum` |
+| projects | `projects/{source}/{challenge_name}` | `projects/data_with_danny/murder_mystery` |
 
 Rules:
 - `{difficulty}` always lowercase: `easy`, `medium`, `hard`
 - `{id}` always zero-padded to 4 digits: `0001` not `1`
 - `{slug}` always snake_case: `two_sum` not `twoSum` or `two-sum`
-- For challenges, one branch covers the entire challenge set -- not per question
+- For projects, one branch covers the entire project set -- not per question
 - Always branch from `main`; never commit solutions directly to `main`
 - Push the branch to remote immediately after creation -- every branch must exist on remote from day one
 - Push the branch to remote before running the squash merge -- remote must be up to date
@@ -112,11 +113,14 @@ Used in folder structure and frontmatter. Always lowercase:
 easy | medium | hard | null
 ```
 
-`null` is used for platforms that do not provide difficulty: excelbi, edna, challenges.
+`null` is used for platforms that do not provide difficulty: excelbi, edna, projects.
+
+For `misc`, difficulty may be set to a known value (`easy`, `medium`, `hard`) or left as
+`null` if unknown. The `misc` folder structure is always flat -- no difficulty subdirectory.
 
 `difficulty_rating` in `notes.md` is a personal assessment. When the platform provides a
 difficulty and no override is needed, set it to the same value as `difficulty`. Only use
-`null` for platforms without a difficulty (excelbi, edna, challenges) or when a personal
+`null` for platforms without a difficulty (excelbi, edna, projects) or when a personal
 rating has not yet been decided.
 
 ---
@@ -198,7 +202,8 @@ solve: {platform} {id} {slug} [{language}]
 | excelbi | `solve: excelbi 2025_04_01 sales_by_region [pq]` |
 | excelbi (multi-library) | `solve: excelbi 2025_04_01 sales_by_region [pandas, polars]` |
 | edna | `solve: edna 2025_w01 customer_churn [pandas]` |
-| challenges | `solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]` |
+| misc | `solve: misc 0001 two_sum [python]` |
+| projects | `solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]` |
 
 With variations:
 ```

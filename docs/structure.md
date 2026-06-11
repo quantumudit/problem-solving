@@ -31,34 +31,40 @@ problem_solving/
 ├── .claude/
 │   ├── settings.json
 │   └── skills/              <- Claude Code skills
-└── problems/
-    ├── leetcode/
-    │   ├── easy/
-    │   │   └── 0001_two_sum/
-    │   ├── medium/
-    │   │   └── 0056_merge_intervals/
-    │   └── hard/
-    │       └── 0023_merge_k_lists/
-    ├── stratascratch/
-    │   ├── easy/
-    │   ├── medium/
-    │   │   └── 1234_top_earning_sales/
-    │   └── hard/
-    ├── excelbi/
-    │   └── 2025/
-    │       └── 04_01_sales_by_region/
-    ├── edna/
-    │   └── 2025/
-    │       └── w01_customer_churn/
-    └── challenges/
-        ├── data_with_danny/
-        │   └── murder_mystery/
-        │       ├── README.md          <- challenge-level readme
-        │       ├── data/
-        │       ├── q01_find_the_murderer/
-        │       └── q02_find_the_witness/
-        └── linkedin_learning/
-            └── some_course/
+├── problems/
+│   ├── leetcode/
+│   │   ├── easy/
+│   │   │   └── 0001_two_sum/
+│   │   ├── medium/
+│   │   │   └── 0056_merge_intervals/
+│   │   └── hard/
+│   │       └── 0023_merge_k_lists/
+│   ├── stratascratch/
+│   │   ├── easy/
+│   │   ├── medium/
+│   │   │   └── 1234_top_earning_sales/
+│   │   └── hard/
+│   ├── excelbi/
+│   │   └── 2025/
+│   │       └── 04_01_sales_by_region/
+│   ├── edna/
+│   │   └── 2025/
+│   │       └── w01_customer_churn/
+│   └── misc/
+│       └── 0001_some_problem/
+└── projects/
+    ├── data_with_danny/
+    │   └── murder_mystery/
+    │       ├── README.md          <- project-level readme
+    │       ├── data/
+    │       ├── q01_find_the_murderer/
+    │       └── q02_find_the_witness/
+    ├── frontend_mentor/
+    │   └── some_challenge/
+    ├── linkedin_learning/
+    │   └── some_course/
+    └── misc/
+        └── some_lost_challenge/
 ```
 
 ---
@@ -71,13 +77,14 @@ problem_solving/
 | stratascratch | yes | on demand | `problems/stratascratch/{difficulty}/{id}_{slug}/` |
 | excelbi | no | daily | `problems/excelbi/{year}/{MM_DD_slug}/` |
 | edna | no | weekly | `problems/edna/{year}/{w##_slug}/` |
-| challenges | no | challenge set | `problems/challenges/{source}/{challenge}/{q##_slug}/` |
+| misc | no | on demand | `problems/misc/{id}_{slug}/` |
+| projects | no | project set | `projects/{source}/{challenge}/{q##_slug}/` |
 
 ---
 
 ## Per-Problem Folder Contents
 
-### Standalone problem (leetcode, stratascratch, excelbi, edna)
+### Standalone problem (leetcode, stratascratch, excelbi, edna, misc)
 
 ```
 0001_two_sum/
@@ -138,14 +145,14 @@ they are one unit of work.
 └── notes.md
 ```
 
-### Challenge set (challenges/)
+### Project set (projects/)
 
-Data is shared across all questions -- it lives at the challenge level, not per question.
+Data is shared across all questions -- it lives at the project level, not per question.
 Individual question folders contain only `solution.*` and `notes.md`.
 
 ```
 murder_mystery/
-├── README.md               <- challenge-level readme with questions index
+├── README.md               <- project-level readme with questions index
 ├── data/
 │   └── murder_mystery.db
 ├── q01_find_the_murderer/
@@ -160,11 +167,11 @@ murder_mystery/
 
 ## File Templates
 
-### README.md -- standalone problems (leetcode, stratascratch, excelbi, edna)
+### README.md -- standalone problems (leetcode, stratascratch, excelbi, edna, misc)
 
 ```yaml
 ---
-platform:         # leetcode | stratascratch | excelbi | edna
+platform:         # leetcode | stratascratch | excelbi | edna | misc
 problem_id:       # quoted string e.g. "0001"
 slug:             # snake_case e.g. two_sum
 difficulty:       # easy | medium | hard | null
@@ -195,14 +202,14 @@ Output: ...
 
 ---
 
-### README.md -- challenge-level only
+### README.md -- project-level only
 
-One README per challenge set, not per question. Acts as the index for all questions.
+One README per project set, not per question. Acts as the index for all questions.
 
 ```yaml
 ---
-platform:         # challenges
-source:           # data_with_danny | linkedin_learning | etc.
+platform:         # projects
+source:           # data_with_danny | linkedin_learning | misc | etc.
 challenge:        # snake_case challenge name
 link:             # url to the challenge or course
 dataset:          # filename or description
@@ -234,8 +241,8 @@ date_completed:   # YYYY-MM-DD | null
 
 ```yaml
 ---
-platform:         # leetcode | stratascratch | excelbi | edna | challenges
-problem_id:       # quoted string e.g. "0001" -- omit for challenges
+platform:         # leetcode | stratascratch | excelbi | edna | misc | projects
+problem_id:       # quoted string e.g. "0001" -- omit for projects
 slug:             # snake_case
 difficulty:       # easy | medium | hard | null
 difficulty_rating: # easy | medium | hard | null -- personal assessment

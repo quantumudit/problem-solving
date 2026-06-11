@@ -23,7 +23,8 @@ Use the branch name injected above to extract commit message components:
 | `stratascratch/{difficulty}/{id}_{slug}` | platform, id, slug |
 | `excelbi/{YYYY_MM_DD}_{slug}` | platform, date, slug |
 | `edna/{YYYY_w##}_{slug}` | platform, week, slug |
-| `challenges/{source}/{challenge}` | platform, source, challenge |
+| `misc/{id}_{slug}` | platform, id, slug |
+| `projects/{source}/{challenge}` | platform, source, challenge |
 
 If the branch is `main` or unrecognized, stop and ask the user to switch to a problem branch first.
 
@@ -48,7 +49,8 @@ Examples:
 solve: leetcode 0001 two_sum [python]
 solve: stratascratch 1234 top_earning_sales [sql, python]
 solve: excelbi 2025_04_01 sales_by_region [pq]
-solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]
+solve: misc 0001 some_problem [python]
+solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]
 ```
 
 If variations exist:

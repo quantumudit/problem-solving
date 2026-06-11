@@ -25,22 +25,25 @@ Wait for confirmation or correction before proceeding.
 
 Check what information is already known from the problem description. Ask only for what is missing:
 
-1. **Platform**: `leetcode` | `stratascratch` | `excelbi` | `edna` | `challenges`
-2. **Problem link**: direct URL to the problem
-3. **Difficulty**: `easy` | `medium` | `hard` -- leetcode and stratascratch only; `null` for others
+1. **Platform**: `leetcode` | `stratascratch` | `excelbi` | `edna` | `misc` | `projects`
+2. **Problem link**: direct URL to the problem; for `misc`, leave empty if the source is lost
+3. **Difficulty**: `easy` | `medium` | `hard` -- leetcode and stratascratch only; `null` for others.
+   For `misc`, use the known value if available, otherwise `null`.
 4. **Difficulty rating**: personal assessment -- `easy` | `medium` | `hard` | `null`; ask for all platforms
 5. **Problem ID**:
    - leetcode / stratascratch: numeric, zero-padded to 4 digits e.g. `"0001"`
    - excelbi: series prefix + 5-digit padded (7 chars total):
      `PQ` for Power Query e.g. `"PQ00398"`, `EX` for Excel e.g. `"EX00991"`
-   - edna / challenges: omit
+   - misc: self-assigned sequential integer, zero-padded to 4 digits; check existing
+     `problems/misc/` folder names to find the highest ID and increment by 1
+   - edna / projects: omit
 6. **Language(s)**: `python` | `sql` | `pq` -- can be multiple.
    For Python, also ask: **which library?** `none` | `pandas` | `polars` | `duckdb` | `pyspark` | other.
    Use `none` for pure DSA (no external library).
 7. **Date**: defaults to today's date injected above
 
-For `challenges`, also collect:
-- Source (e.g. `data_with_danny`)
+For `projects`, also collect:
+- Source (e.g. `data_with_danny`, or `misc` if source is lost)
 - Challenge name (snake_case)
 - Question number (e.g. `01`)
 
@@ -58,7 +61,8 @@ Derive the branch name from the confirmed slug and collected metadata:
 | stratascratch | `stratascratch/{difficulty}/{id}_{slug}` |
 | excelbi | `excelbi/{YYYY_MM_DD}_{slug}` |
 | edna | `edna/{YYYY_w##}_{slug}` |
-| challenges | `challenges/{source}/{challenge_name}` |
+| misc | `misc/{id}_{slug}` |
+| projects | `projects/{source}/{challenge_name}` |
 
 Show the user: "Proposed branch: `{branch_name}` -- OK to create?"
 Wait for explicit approval. Do not create the branch until the user confirms.
@@ -83,7 +87,8 @@ Folder path patterns:
 | stratascratch | `problems/stratascratch/{difficulty}/{id}_{slug}/` |
 | excelbi | `problems/excelbi/{YYYY}/{MM_DD_slug}/` |
 | edna | `problems/edna/{YYYY}/{w##_slug}/` |
-| challenges question | `problems/challenges/{source}/{challenge}/{q##_slug}/` |
+| misc | `problems/misc/{id}_{slug}/` |
+| projects question | `projects/{source}/{challenge}/{q##_slug}/` |
 
 ---
 
@@ -115,11 +120,11 @@ Input:
 Output:
 ```
 
-For `challenges`, create a challenge-level README at `problems/challenges/{source}/{challenge}/README.md`:
+For `projects`, create a project-level README at `projects/{source}/{challenge}/README.md`:
 
 ```markdown
 ---
-platform: challenges
+platform: projects
 source: {source}
 challenge: {challenge}
 link: {link}
@@ -181,11 +186,11 @@ revisit: false
 
 ```
 
-For challenge questions, create at `{q_folder}/notes.md` (no frontmatter `problem_id`):
+For project questions, create at `{q_folder}/notes.md` (no frontmatter `problem_id`):
 
 ```markdown
 ---
-platform: challenges
+platform: projects
 slug: {slug}
 difficulty: null
 language: [{language}]

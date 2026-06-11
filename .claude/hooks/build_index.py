@@ -21,14 +21,15 @@ PROBLEMS_DIR = REPO_ROOT / "problems"
 INDEX_MD = REPO_ROOT / "docs" / "index.md"
 INDEX_CSV = REPO_ROOT / "docs" / "index.csv"
 
-PLATFORM_ORDER = ["leetcode", "stratascratch", "excelbi", "edna", "challenges"]
+PLATFORM_ORDER = ["leetcode", "stratascratch", "excelbi", "edna", "misc", "projects"]
 
 PLATFORM_DISPLAY = {
     "leetcode": "LeetCode",
     "stratascratch": "StrataScatch",
     "excelbi": "ExcelBI",
     "edna": "EDNA",
-    "challenges": "Challenges",
+    "misc": "Misc",
+    "projects": "Projects",
 }
 
 
@@ -119,20 +120,20 @@ def collect_standalone(platform: str) -> list[dict]:
     return records
 
 
-def collect_challenges() -> list[dict]:
-    challenges_dir = PROBLEMS_DIR / "challenges"
-    if not challenges_dir.exists():
+def collect_projects() -> list[dict]:
+    projects_dir = REPO_ROOT / "projects"
+    if not projects_dir.exists():
         return []
 
     records = []
-    for notes_path in sorted(challenges_dir.rglob("notes.md")):
+    for notes_path in sorted(projects_dir.rglob("notes.md")):
         folder = notes_path.parent
-        # Only q## folders have notes.md -- skip challenge-root folders
+        # Only q## folders have notes.md -- skip project-root folders
         if not re.match(r"q\d+", folder.name):
             continue
 
         fm = parse_frontmatter(notes_path)
-        challenge_fm = parse_frontmatter(folder.parent / "README.md")
+        project_fm = parse_frontmatter(folder.parent / "README.md")
 
         lang_raw = fm.get("language", "")
         language = clean_list(lang_raw) if lang_raw else detect_languages(folder)
@@ -142,15 +143,15 @@ def collect_challenges() -> list[dict]:
 
         records.append(
             {
-                "platform": "challenges",
+                "platform": "projects",
                 "id": f"{source}/{challenge}/{q_num}",
                 "slug": fm.get("slug", "_".join(folder.name.split("_")[1:])),
                 "difficulty": "null",
                 "language": language,
                 "topics": clean_list(fm.get("topics", "")),
                 "date_solved": fm.get("date_solved", ""),
-                "dataset": challenge_fm.get("dataset", ""),
-                "link": challenge_fm.get("link", ""),
+                "dataset": project_fm.get("dataset", ""),
+                "link": project_fm.get("link", ""),
                 "path": str(folder.relative_to(REPO_ROOT)).replace("\\", "/"),
             }
         )
@@ -226,9 +227,9 @@ def main() -> None:
         sys.exit(0)
 
     records: list[dict] = []
-    for platform in ["leetcode", "stratascratch", "excelbi", "edna"]:
+    for platform in ["leetcode", "stratascratch", "excelbi", "edna", "misc"]:
         records.extend(collect_standalone(platform))
-    records.extend(collect_challenges())
+    records.extend(collect_projects())
 
     if not records:
         print("No problems found -- index not updated")

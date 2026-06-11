@@ -30,12 +30,14 @@ problem_solving/
 │   └── index.csv       # auto-generated problem index (do not edit manually)
 ├── utils/              # shared display helpers (display.py)
 ├── scratchpad/         # local scratch, rough work, quick experiments (gitignored)
-└── problems/
-    ├── leetcode/{difficulty}/{id}_{slug}/
-    ├── stratascratch/{difficulty}/{id}_{slug}/
-    ├── excelbi/{year}/{MM_DD_slug}/
-    ├── edna/{year}/{w##_slug}/
-    └── challenges/{source}/{challenge}/{q##_slug}/
+├── problems/
+│   ├── leetcode/{difficulty}/{id}_{slug}/
+│   ├── stratascratch/{difficulty}/{id}_{slug}/
+│   ├── excelbi/{year}/{MM_DD_slug}/
+│   ├── edna/{year}/{w##_slug}/
+│   └── misc/{id}_{slug}/
+└── projects/
+    └── {source}/{challenge}/{q##_slug}/
 ```
 
 `docs/index.md` and `docs/index.csv` are rebuilt automatically after every `git commit` on `main` via a `PostToolUse` hook. Run `python .claude/hooks/build_index.py` manually to force a rebuild at any time.
@@ -50,7 +52,8 @@ problem_solving/
 | stratascratch | easy/medium/hard | 4-digit padded e.g. `"1234"` | `problems/stratascratch/{difficulty}/{id}_{slug}/` |
 | excelbi | null | `PQ` or `EX` prefix + 5-digit padded e.g. `"PQ00398"`, `"EX00991"` | `problems/excelbi/{year}/{MM_DD_slug}/` |
 | edna | null | none | `problems/edna/{year}/{w##_slug}/` |
-| challenges | null | none | `problems/challenges/{source}/{challenge}/{q##_slug}/` |
+| misc | null (or known value) | self-assigned, 4-digit padded e.g. `"0001"` | `problems/misc/{id}_{slug}/` |
+| projects | null | none | `projects/{source}/{challenge}/{q##_slug}/` |
 
 ---
 
@@ -74,7 +77,8 @@ leetcode/easy/0001_two_sum
 stratascratch/medium/1234_top_earning_sales
 excelbi/2025_04_01_sales_by_region
 edna/2025_w01_customer_churn
-challenges/data_with_danny/murder_mystery
+misc/0001_two_sum
+projects/data_with_danny/murder_mystery
 ```
 
 ---
@@ -96,7 +100,8 @@ solve: stratascratch 1234 top_earning_sales [pandas]
 solve: stratascratch 1234 top_earning_sales [sql, pandas]
 solve: excelbi 2025_04_01 sales_by_region [pq]
 solve: excelbi 2025_04_01 sales_by_region [pandas, polars]
-solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]
+solve: misc 0001 some_problem [python]
+solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]
 ```
 
 > For Python solutions: use the library name (`pandas`, `polars`, `duckdb`, `pyspark`)
@@ -125,11 +130,11 @@ git push origin --delete {branch_name}
 
 ```yaml
 ---
-platform:         # leetcode | stratascratch | excelbi | edna | challenges
-problem_id:       # quoted string e.g. "0001" -- omit for challenges
+platform:         # leetcode | stratascratch | excelbi | edna | misc
+problem_id:       # quoted string e.g. "0001" -- omit for projects and edna; self-assigned for misc
 slug:             # snake_case e.g. two_sum
 difficulty:       # easy | medium | hard | null
-link:             # direct url to the problem
+link:             # direct url to the problem; empty string if source is lost (misc)
 dataset:          # none | platform | provided | mutable | mutable_extracted | mutable_committed
 ---
 ```
@@ -138,8 +143,8 @@ dataset:          # none | platform | provided | mutable | mutable_extracted | m
 
 ```yaml
 ---
-platform:         # leetcode | stratascratch | excelbi | edna | challenges
-problem_id:       # quoted string e.g. "0001" -- omit for challenges
+platform:         # leetcode | stratascratch | excelbi | edna | misc | projects
+problem_id:       # quoted string e.g. "0001" -- omit for projects and edna; self-assigned for misc
 slug:             # snake_case
 difficulty:       # easy | medium | hard | null
 difficulty_rating: # easy | medium | hard | null -- personal assessment; default to difficulty value when platform provides one
@@ -150,12 +155,12 @@ revisit:          # true | false
 ---
 ```
 
-## Challenge README Frontmatter (challenge-level only)
+## Project README Frontmatter (project-level only)
 
 ```yaml
 ---
-platform:         # challenges
-source:           # data_with_danny | linkedin_learning | etc.
+platform:         # projects
+source:           # data_with_danny | linkedin_learning | misc | etc.
 challenge:        # snake_case challenge name
 link:             # url to the challenge or course
 dataset:          # filename or description

@@ -21,7 +21,8 @@ solve: {platform} {id} {slug} [{language}]
 | excelbi | `solve: excelbi 2025_04_01 sales_by_region [pq]` |
 | excelbi (multi-library) | `solve: excelbi 2025_04_01 sales_by_region [pandas, polars]` |
 | edna | `solve: edna 2025_w01 customer_churn [pandas]` |
-| challenges | `solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]` |
+| misc | `solve: misc 0001 two_sum [python]` |
+| projects | `solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]` |
 
 **With variations:**
 ```

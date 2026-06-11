@@ -7,7 +7,7 @@ body:
     id: platform
     attributes:
       label: Platform
-      placeholder: "leetcode | stratascratch | excelbi | edna | challenges"
+      placeholder: "leetcode | stratascratch | excelbi | edna | misc | projects"
     validations:
       required: true
   - type: input

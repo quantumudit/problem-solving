@@ -30,13 +30,14 @@ Branch names are platform-specific. All slugs are snake_case, lowercase.
 | stratascratch | `stratascratch/{difficulty}/{id}_{slug}` | `stratascratch/medium/1234_top_earning_sales` |
 | excelbi | `excelbi/{YYYY_MM_DD}_{slug}` | `excelbi/2025_04_01_sales_by_region` |
 | edna | `edna/{YYYY_w##}_{slug}` | `edna/2025_w01_customer_churn` |
-| challenges | `challenges/{source}/{challenge_name}` | `challenges/data_with_danny/murder_mystery` |
+| misc | `misc/{id}_{slug}` | `misc/0001_two_sum` |
+| projects | `projects/{source}/{challenge_name}` | `projects/data_with_danny/murder_mystery` |
 
 ### Rules
 - `{difficulty}` is always lowercase: `easy`, `medium`, `hard`
 - `{id}` is always zero-padded to 4 digits: `0001`, not `1`
 - `{slug}` is always snake_case: `two_sum`, not `twoSum` or `two-sum`
-- For challenges, the branch covers the entire challenge set -- not individual questions
+- For projects, the branch covers the entire project set -- not individual questions
 
 ---
 

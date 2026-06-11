@@ -31,7 +31,8 @@ Parse the branch name to derive all values:
 | `stratascratch/{difficulty}/{id}_{slug}` | `problems/stratascratch/{difficulty}/{id}_{slug}/` | standalone |
 | `excelbi/{YYYY_MM_DD}_{slug}` | `problems/excelbi/{YYYY}/{MM_DD_slug}/` | standalone |
 | `edna/{YYYY_w##}_{slug}` | `problems/edna/{YYYY}/{w##_slug}/` | standalone |
-| `challenges/{source}/{challenge}` | `problems/challenges/{source}/{challenge}/` | challenge-level |
+| `misc/{id}_{slug}` | `problems/misc/{id}_{slug}/` | standalone |
+| `projects/{source}/{challenge}` | `projects/{source}/{challenge}/` | project-level |
 
 **Derived frontmatter values:**
 
@@ -39,7 +40,7 @@ Parse the branch name to derive all values:
 |---|---|---|
 | `leetcode` / `stratascratch` / etc. | `platform` | as-is |
 | `{difficulty}` | `difficulty` | easy / medium / hard / null |
-| `{id}` | `problem_id` | leetcode/stratascratch: zero-padded e.g. `"0001"`; excelbi: prefix + 4-digit e.g. `"PQ00398"`; omit for challenges/edna |
+| `{id}` | `problem_id` | leetcode/stratascratch: zero-padded e.g. `"0001"`; excelbi: prefix + 4-digit e.g. `"PQ00398"`; omit for projects/edna |
 | `{slug}` | `slug` | as-is from branch |
 
 If the branch is `main` or unrecognized, stop and ask the user which problem to document.
@@ -66,11 +67,11 @@ Use Glob to list all files in the problem folder.
 
 Only link files that actually exist. Do not create placeholder links.
 
-**Challenge branches only:** README.md lives at the challenge root
-(`problems/challenges/{source}/{challenge}/README.md`), not inside question folders.
+**Projects branches only:** README.md lives at the project root
+(`projects/{source}/{challenge}/README.md`), not inside question folders.
 Individual question folders (`q01_slug/`, `q02_slug/`) do not have README.md files.
 If the user asks to document a specific question, write or update the Questions Index
-table in the challenge-level README instead.
+table in the project-level README instead.
 
 ---
 
@@ -166,11 +167,12 @@ especially edge cases like out-of-order completions, nulls, or boundary values}
 - [{Source or Author} - {Post or Challenge Name}]({full_url}) -- {context e.g. "PQ_Challenge_398, posted YYYY-MM-DD"}
 ```
 
-- Omit `problem_id` from the frontmatter for `challenges` and `edna` (no ID).
+- Omit `problem_id` from the frontmatter for `projects` and `edna` (no ID).
+  For `misc`, include `problem_id` as the self-assigned 4-digit ID.
 - For `excelbi`, include `problem_id` using the series prefix and 5-digit padded number
   (7 chars total): `PQ` for Power Query challenges e.g. `"PQ00398"`, `EX` for Excel
   challenges e.g. `"EX00991"`.
-- Set `difficulty: null` for excelbi, edna, and challenges.
+- Set `difficulty: null` for excelbi, edna, and projects. For misc, use the known value or null if unknown.
 - Omit `## Source` for leetcode and stratascratch -- the `link` frontmatter field
   is sufficient and there is no associated LinkedIn/external post to credit.
 - Omit `## Files` entries for files that do not yet exist (e.g. `notes.md` before
@@ -178,11 +180,11 @@ especially edge cases like out-of-order completions, nulls, or boundary values}
 - Omit `## Input Schema` when `dataset: none`.
 - Omit `## Constraints` entirely when none are stated -- do not leave a blank stub.
 
-### Challenge-level README (challenges branch)
+### Project-level README (projects branch)
 
 ```markdown
 ---
-platform: challenges
+platform: projects
 source: {source}
 challenge: {challenge}
 link: {link}

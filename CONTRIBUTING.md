@@ -53,7 +53,7 @@ solve: leetcode 0001 two_sum [python]
 solve: stratascratch 1234 top_earning_sales [pandas]
 solve: excelbi 2025_04_01 sales_by_region [pq]
 solve: excelbi 2025_04_01 sales_by_region [pandas, polars]
-solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]
+solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]
 ```
 
 No emoji prefixes. No generic tags (`feat`, `fix`, `chore`).

@@ -83,7 +83,7 @@ git commit -m "solve: stratascratch 1234 top_earning_sales [pandas]"
 git commit -m "solve: stratascratch 1234 top_earning_sales [sql, pandas]"
 git commit -m "solve: excelbi 2025_04_01 sales_by_region [pq]"
 git commit -m "solve: excelbi 2025_04_01 sales_by_region [pandas, polars]"
-git commit -m "solve: challenges data_with_danny murder_mystery q01 find_the_murderer [sql]"
+git commit -m "solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]"
 ```
 
 Use the library name (`pandas`, `polars`, `duckdb`, `pyspark`) instead of `python` in the

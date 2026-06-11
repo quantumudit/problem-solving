@@ -17,7 +17,7 @@ Ask for each field that is missing. Do not ask for all fields at once -- gather 
 one group at a time so the user is not overwhelmed.
 
 **Required:**
-- **Platform**: snake_case name of the source platform (e.g. `leetcode`, `stratascratch`, `excelbi`, `edna`, `challenges`, or any other)
+- **Platform**: snake_case name of the source platform (e.g. `leetcode`, `stratascratch`, `excelbi`, `edna`, `misc`, `projects`, or any other)
 - **Slug**: snake_case problem name (e.g. `two_sum`, `sales_by_region`)
 - **Link**: direct URL to the problem
 
@@ -25,7 +25,8 @@ one group at a time so the user is not overwhelmed.
 - `leetcode` / `stratascratch`: **Problem ID** (zero-padded to 4 digits) and **Difficulty** (`easy` | `medium` | `hard`)
 - `excelbi`: **Date** in `YYYY_MM_DD` format
 - `edna`: **Week** in `YYYY_w##` format
-- `challenges`: **Source** (e.g. `data_with_danny`) and **Challenge name**
+- `projects`: **Source** (e.g. `data_with_danny`) and **Challenge name**
+- `misc`: no extra fields; link may be empty if the source is lost
 
 **Optional (skip if not available yet):**
 - Problem statement
@@ -84,7 +85,8 @@ Examples:
 - `[leetcode] 0042 trapping_rain_water [hard]`
 - `[hackerrank] 0017 climbing_the_leaderboard [medium]`
 - `[excelbi] 2025_04_01 sales_by_region`
-- `[challenges] data_with_danny murder_mystery`
+- `[projects] data_with_danny murder_mystery`
+- `[misc] 0001 some_problem`
 - `[projecteuler] 0001 multiples_of_3_or_5`
 
 When unsure, ask the user which format fits best.

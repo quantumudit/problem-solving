@@ -26,7 +26,8 @@ Parse the branch name from the task context to determine the folder path:
 | `stratascratch/{difficulty}/{id}_{slug}` | `problems/stratascratch/{difficulty}/{id}_{slug}/` |
 | `excelbi/{YYYY_MM_DD}_{slug}` | `problems/excelbi/{YYYY}/{MM_DD_slug}/` |
 | `edna/{YYYY_w##}_{slug}` | `problems/edna/{YYYY}/{w##_slug}/` |
-| `challenges/{source}/{challenge}` | `problems/challenges/{source}/{challenge}/` |
+| `misc/{id}_{slug}` | `problems/misc/{id}_{slug}/` |
+| `projects/{source}/{challenge}` | `projects/{source}/{challenge}/` |
 
 If the branch is `main` or unrecognized, report that evaluation cannot proceed and
 stop.
