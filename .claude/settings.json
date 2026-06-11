@@ -22,6 +22,12 @@
             "if": "Bash(git commit *)",
             "command": "python",
             "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/build_index.py"]
+          },
+          {
+            "type": "command",
+            "if": "Bash(git pull *)",
+            "command": "python",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/build_index.py"]
           }
         ]
       }
