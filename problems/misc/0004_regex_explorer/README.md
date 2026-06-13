@@ -31,7 +31,7 @@ tuples in order of appearance.
 | "Hello, World!"         | [(",", 5), ("!", 12)]                   |
 | "price: $9.99"          | [(":", 5), ("$", 8), (".", 10)]         |
 | "no specials here"      | []                                      |
-| "C++ is #1 lang!"       | [("+", 1), ("+", 2), ("#", 7), ("!", 15)] |
+| "C++ is #1 lang!"       | [("+", 2), ("#", 7), ("!", 15)] |
 
 ## CLI Interface
 
