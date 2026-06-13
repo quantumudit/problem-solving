@@ -21,7 +21,11 @@ def _error(message: str) -> None:
 
 @app.command()
 def convert(
-    minutes: int = typer.Argument(..., help="Number of minutes to convert to seconds"),
+    minutes: int = typer.Option(
+        ..., "--minutes", "-m",
+        prompt="Minutes",
+        help="Number of minutes to convert to seconds",
+    ),
 ):
     """Convert minutes to seconds."""
     try:
@@ -39,8 +43,16 @@ def convert(
 
 @app.command()
 def add(
-    num1: float = typer.Argument(..., help="First number"),
-    num2: float = typer.Argument(..., help="Second number"),
+    num1: float = typer.Option(
+        ..., "--num1", "-a",
+        prompt="First number",
+        help="First number",
+    ),
+    num2: float = typer.Option(
+        ..., "--num2", "-b",
+        prompt="Second number",
+        help="Second number",
+    ),
 ):
     """Add two numbers together."""
     try:
@@ -58,7 +70,11 @@ def add(
 
 @app.command()
 def fizzbuzz(
-    n: int = typer.Argument(..., help="Upper bound of the sequence (inclusive)"),
+    n: int = typer.Option(
+        ..., "--limit", "-n",
+        prompt="Upper bound (N)",
+        help="Upper bound of the FizzBuzz sequence (inclusive)",
+    ),
 ):
     """Print the FizzBuzz sequence from 1 to N."""
     try:
@@ -86,7 +102,11 @@ def fizzbuzz(
 
 @app.command()
 def parity(
-    num: int = typer.Argument(..., help="Integer to inspect (for negatives use: parity -- -4)"),
+    num: int = typer.Option(
+        ..., "--num", "-n",
+        prompt="Enter an integer",
+        help="Integer to inspect",
+    ),
 ):
     """Check the sign and parity of an integer."""
     try:
