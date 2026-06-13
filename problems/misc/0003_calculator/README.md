@@ -9,95 +9,144 @@ dataset: none
 
 # Calculator
 
-An interactive REPL calculator that combines two approaches: a Calculator
-class with standard arithmetic operators for structured operations, and a
-safe expression evaluator that uses regex validation and eval() with a
-restricted namespace for free-form expressions including math functions.
+Build an interactive REPL calculator in two parts:
+
+1. A `Calculator` class that owns all computation and history. It takes a `mode` at
+   construction that determines how inputs are processed for the session.
+2. A Typer REPL that asks the user to pick a mode at startup, then loops on the
+   appropriate input flow for that mode.
+
+The class does all the work. The REPL only handles prompting, command dispatch, and
+display.
 
 ## Part 1 -- Calculator Class
 
-A `Calculator` class that supports the four basic arithmetic operations
-and maintains a history of all computations performed in the session.
+`Calculator(mode)` takes one of two modes and maintains a shared history list across
+all computations in the session regardless of mode.
+
+```
+Calculator(mode: "expression" | "manual")
+```
 
 ### Methods
 
-| Method            | Description                                    |
-|-------------------|------------------------------------------------|
-| add(a, b)         | Return a + b                                   |
-| subtract(a, b)    | Return a - b                                   |
-| multiply(a, b)    | Return a * b                                   |
-| divide(a, b)      | Return a / b; raise ZeroDivisionError if b = 0 |
-| get_history()     | Return the full history list                   |
-| clear_history()   | Clear all history entries                      |
+| Method                          | Description                                         |
+|---------------------------------|-----------------------------------------------------|
+| evaluate(expression)            | Parse and evaluate a free-form math string          |
+| compute(a, b, operator)         | Apply a binary operator to two numbers              |
+| get_history()                   | Return the full history list                        |
+| clear_history()                 | Clear all history entries                           |
 
-Each successful operation appends a formatted string to history:
+Both `evaluate` and `compute` return a plain string -- either the result or an error
+message starting with `"Error:"`. They also append a formatted entry to history on
+success. The REPL checks for `"Error:"` to decide how to display the result; it never
+touches history directly.
 
-```
-"3 + 4 = 7"
-"10 / 2 = 5.0"
-"sqrt(16) = 4.0"
-```
+---
 
-## Part 2 -- Safe Expression Evaluator
+### evaluate(expression: str) -> str
 
-An `evaluate(expression: str)` function that safely parses and evaluates
-a free-form math string.
+Used in expression mode. Safely parses and evaluates a free-form math string.
 
-### Implementation Requirements
+**Implementation:**
 
-1. Compile a regex pattern to validate the expression before evaluating.
-   Only allow: digits, decimal points, arithmetic operators (+, -, *, /,
-   **), parentheses, whitespace, and the names of the allowed functions
-   listed below. Reject anything else.
+1. Validate with a compiled regex. Allow only: digits, decimal points, whitespace,
+   operators `+ - * / % **`, parentheses, and the function names listed below.
+   Return an error string for anything else.
 
-2. Call eval() with a fully restricted namespace -- no builtins, only
-   the allowed names:
+2. Call `eval()` with a fully restricted namespace -- no builtins, only:
 
 ```python
-allowed_names = {
-    "sqrt":  math.sqrt,
-    "abs":   abs,
-    "round": round,
-}
+{"sqrt": math.sqrt, "abs": abs, "round": round}
 ```
 
-3. Catch and return an error string (not raise) for:
-   - Expressions that fail regex validation
-   - ZeroDivisionError
-   - Any other eval-time exception
+3. Catch and return an error string (not raise) for `ZeroDivisionError`, `SyntaxError`,
+   `NameError`, `TypeError`, and `ValueError`.
 
-### Examples
+4. On success, append `"<expression> = <result>"` to history and return the result
+   as a string.
 
-| Expression              | Result          |
-|-------------------------|-----------------|
-| "2 + 3"                 | 5               |
-| "10 / 4"                | 2.5             |
-| "2 ** 8"                | 256             |
-| "sqrt(144)"             | 12.0            |
-| "abs(-7) + round(2.9)"  | 10.0            |
-| "sqrt(2) * round(1.5)"  | 1.414...        |
-| "10 / 0"                | "Error: ..."    |
-| "__import__('os')"      | "Error: ..."    |
+**Examples:**
 
-## Part 3 -- Typer REPL
+| Expression             | Result       |
+|------------------------|--------------|
+| "2 + 3"                | "5"          |
+| "10 / 4"               | "2.5"        |
+| "2 ** 8"               | "256"        |
+| "10 % 3"               | "1"          |
+| "sqrt(144)"            | "12.0"       |
+| "abs(-7) + round(2.9)" | "10.0"       |
+| "10 / 0"               | "Error: ..." |
+| "__import__('os')"     | "Error: ..." |
 
-An interactive REPL that wraps the evaluator, launched via a Typer
-command.
+---
+
+### compute(a: int | float, b: int | float, operator: str) -> str
+
+Used in manual mode. Applies a binary operator to two numbers.
+
+Supported operators: `+  -  *  /  %  **`
+
+Returns an error string for an unrecognised operator or division/modulo by zero.
+On success, appends `"<a> <operator> <b> = <result>"` to history and returns the
+result as a string.
+
+---
+
+## Part 2 -- Typer REPL
+
+An interactive REPL launched via:
 
 ```
 python solution.py repl
 ```
 
-### Behavior
+### Startup
 
-- On startup, display a Rich panel with usage instructions, listing
-  supported operators and math functions.
-- Each line of user input is passed to `evaluate()` and the result is
-  printed in Rich-formatted output.
-- Every successful computation is also appended to the Calculator's
-  history so both the class and the evaluator share one history list.
-- Special commands (case-insensitive):
-  - `history` -- display a Rich table of all past computations
-  - `clear`   -- clear the history
-  - `exit` or `quit` -- end the REPL session
-- Invalid or failed expressions show an error message without crashing.
+1. Prompt the user to choose a mode:
+
+```
+Mode (expression / manual):
+```
+
+   Re-prompt on invalid input.
+
+2. Create a `Calculator` instance with the chosen mode.
+
+3. Display a Rich panel with instructions for the chosen mode.
+
+### Expression mode loop
+
+Each iteration prompts for a single expression string:
+
+```
+> 2 ** 8
+256
+> sqrt(144)
+12.0
+```
+
+### Manual mode loop
+
+Each iteration prompts for three inputs in sequence:
+
+```
+  First Number : 10
+  Second Number: 3
+  Operator     : %
+1
+```
+
+Special commands (`history`, `clear`, `exit`, `quit`) are accepted at the `First Number`
+prompt so the user is not forced to complete a computation to exit or check history.
+
+### Commands (both modes)
+
+| Command        | Action                              |
+|----------------|-------------------------------------|
+| history        | Display a Rich table of past results|
+| clear          | Clear the history                   |
+| exit / quit    | End the session                     |
+
+Failed expressions or invalid inputs print an error in red and continue the loop
+without crashing.
