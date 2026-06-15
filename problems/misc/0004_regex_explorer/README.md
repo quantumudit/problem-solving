@@ -9,46 +9,97 @@ dataset: none
 
 # Regex Explorer
 
-A command-line tool that searches input text for characters that are
-neither word characters (\w) nor whitespace (\s) -- that is, punctuation
-and special symbols. Each match is reported with its position, and the
-original text is displayed with matches highlighted using Rich markup.
+A command-line text analysis tool built in two parts:
 
-## Function to Implement
+1. A `TextAnalysis` class that uses compiled regex patterns to extract special
+   character positions and count characters by category.
+2. A Typer CLI that takes a text argument, runs the analysis, and displays the
+   results with Rich-formatted output.
 
-### match_special_chars(text: str) -> list[tuple[str, int]]
+## Part 1 -- TextAnalysis Class
 
-Search the input string for all non-word, non-whitespace characters using
-a compiled regex pattern and return a list of (matched_char, start_index)
-tuples in order of appearance.
+```python
+TextAnalysis(text: str)
+```
 
-- Pattern: `[^\w\s]`
-- Input: a string
-- Output: list of (str, int) tuples
+All five patterns are compiled once at module level and shared across both methods.
 
-| Input                   | Output                                  |
-|-------------------------|-----------------------------------------|
-| "Hello, World!"         | [(",", 5), ("!", 12)]                   |
-| "price: $9.99"          | [(":", 5), ("$", 8), (".", 10)]         |
-| "no specials here"      | []                                      |
-| "C++ is #1 lang!"       | [("+", 2), ("#", 7), ("!", 15)] |
+### Methods
 
-## CLI Interface
+| Method               | Returns                  | Description                                         |
+|----------------------|--------------------------|-----------------------------------------------------|
+| special_chars_pos()  | list[tuple[str, int]]    | Each non-word non-whitespace char and its position  |
+| char_counts()        | dict[str, int]           | Count of each character category plus total         |
 
-Accept the text to search as a Typer argument.
+### special_chars_pos()
+
+Finds all characters matching `[^\w\s]` using `re.finditer` and returns a list of
+`(matched_char, start_index)` tuples in order of appearance.
+
+| Input                | Output                                          |
+|----------------------|-------------------------------------------------|
+| "Hello, World!"      | [(",", 5), ("!", 12)]                           |
+| "price: $9.99"       | [(":", 5), ("$", 8), (".", 10)]                 |
+| "no specials here"   | []                                              |
+| "C++ is #1 lang!"    | [("+", 1), ("+", 2), ("#", 7), ("!", 14)]       |
+
+### char_counts()
+
+Returns a dict with counts for each character category:
+
+```python
+{
+    "special_chars":     int,
+    "uppercase_letters": int,
+    "lowercase_letters": int,
+    "whitespaces":       int,
+    "digits":            int,
+    "total":             int,
+}
+```
+
+---
+
+## Part 2 -- Typer CLI
 
 ```
 python solution.py search "Hello, World!"
 python solution.py search "C++ is #1 lang!"
 ```
 
-### Output Format
+Text is passed as a positional argument. Empty input is rejected with an error panel.
 
-1. Display the original text with each matched character highlighted
-   inline using Rich markup (e.g., bold or colored span).
-2. Below that, display a Rich table with three columns:
-   - Match : the matched character
-   - Index : its position in the string (0-based)
-   - Context : a short excerpt showing a few characters around the match
+### Output
 
-If no matches are found, display a styled message indicating a clean result.
+**1. Input panel** -- displays the original text with each special character
+highlighted inline in bold red using Rich markup.
+
+```
++-------------------------------+
+|          Input Text           |
+| Hello[bold red],[/] World[bold red]![/]  |
++-------------------------------+
+```
+
+**2. Match table** -- one row per special character found:
+
+| Match | Index | Context                  |
+|-------|-------|--------------------------|
+| ,     | 5     | Hello[bold],[\] Wor      |
+| !     | 12    | orld[bold]![/]           |
+
+The Context column shows up to 3 characters on either side of the match, with the
+matched character highlighted.
+
+If no special characters are found, a styled green message is shown instead.
+
+**3. Character counts table** -- counts per category with the Total row highlighted:
+
+| Category           | Count |
+|--------------------|-------|
+| Special Characters |     2 |
+| Uppercase Letters  |     2 |
+| Lowercase Letters  |     8 |
+| Whitespaces        |     1 |
+| Digits             |     0 |
+| **Total**          |    14 |
