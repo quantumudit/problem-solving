@@ -9,59 +9,82 @@ dataset: none
 
 # Mad Libs
 
-An interactive Mad Libs game that prompts the user to supply words for
-named placeholders in a story template, then displays the completed
-story with Rich styling.
+An interactive Mad Libs game that prompts the user to supply words for named
+placeholders in a story template, then displays the completed story with the
+filled-in words highlighted using Rich styling.
 
-## What to Implement
+## Part 1 -- templates.py
 
 ### Story Templates
 
-Include at least three distinct templates, each identified by a short
-name (e.g. "adventure", "office", "space"). Each template is a Python
-f-string-style string with named placeholders such as {noun}, {verb},
-{adjective}, {place}, {emotion}.
+A `TEMPLATES` dict mapping a short name to a format-string template with named
+placeholders. Four templates are included:
 
-Example template:
+| Story     | Placeholders                                               |
+|-----------|------------------------------------------------------------|
+| adventure | adjective, name, noun, place, animal, verb, number, emotion|
+| office    | adjective, name, noun, verb, number, food, emotion, adverb |
+| space     | name, adjective, place, verb, animal, number, noun, emotion|
+| cooking   | name, adjective, place, food, adverb, number, noun, emotion|
 
+A placeholder name that appears more than once in a template (e.g. `{name}`) is
+prompted for only once and reused across all occurrences.
+
+### get_placeholders(template: str) -> list[str]
+
+Extracts all unique placeholder names from a template string in order of first
+appearance. Uses `re.findall(r"\{(\w+)\}", template)` and deduplicates while
+preserving order.
+
+```python
+get_placeholders("Hi {name}, you have {number} messages, {name}.")
+# ["name", "number"]
 ```
-One {adjective} day, a {noun} decided to {verb} all the way to {place}.
-Everyone in town was {emotion} to see it happen.
-```
-
-Placeholder names should be descriptive (noun, verb, adjective, adverb,
-place, name, number, emotion, animal, food -- use whatever fits the story).
 
 ### fill_madlib(template: str, words: dict[str, str]) -> str
 
-Fill a template string with the provided substitution dict.
+Fills a template string with the provided substitution dict using `str.format_map()`.
 
-- Input: a template string, a dict mapping placeholder names to words
-- Output: the completed story string with all placeholders replaced
+```python
+fill_madlib("A {adjective} {noun}.", {"adjective": "brave", "noun": "knight"})
+# "A brave knight."
+```
 
-### Typer CLI
+Because `format_map` treats dict values as plain strings, passing values that contain
+Rich markup works transparently -- the markup is substituted in and rendered when the
+result is printed.
+
+---
+
+## Part 2 -- solution.py
 
 ```
 python solution.py play [--story STORY_NAME]
 python solution.py list
 ```
 
-#### play
+### play
 
-- If `--story` is omitted, select a template at random.
-- Extract all placeholder names from the chosen template.
-- Prompt the user interactively for each placeholder using Typer's
-  prompt() -- e.g. "Enter a noun: ".
-- After all words are collected, pass them to `fill_madlib()` and
-  display the completed story in a Rich panel with styled text.
-- The story title (template name) appears as the panel header.
+- If `--story` is omitted, picks a template at random and tells the user which
+  story was chosen.
+- Validates `--story` against `TEMPLATES` and exits with an error if unknown.
+- Displays a startup panel showing the story name and its placeholder list.
+- Prompts the user for each placeholder in order. The article ("a" or "an") is
+  chosen automatically based on the placeholder name:
+  - "Enter an adjective", "Enter an adverb", "Enter an emotion"
+  - "Enter a noun", "Enter a verb", "Enter a place"
+- Re-prompts on empty input until a non-empty value is provided.
+- Wraps each filled word in `[bold cyan]...[/bold cyan]` before substitution so
+  the user-supplied words are visually highlighted in the final story.
+- Displays the completed story in a green Rich panel with the story name as the title.
 
-#### list
+### list
 
-Display a Rich table listing all available story names and their
-placeholder words, so the user knows what to expect before playing.
+Displays a Rich table of all available story names and their placeholder lists,
+so the user knows what to expect before playing.
 
-### Input Validation
-
-If the user provides an empty string for any placeholder, prompt again
-until a non-empty value is entered.
+| Story     | Placeholders                                    |
+|-----------|-------------------------------------------------|
+| adventure | adjective, name, noun, place, animal, ...       |
+| office    | adjective, name, noun, verb, number, food, ...  |
+| ...       | ...                                             |
