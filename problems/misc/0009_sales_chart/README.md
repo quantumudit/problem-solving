@@ -9,58 +9,63 @@ dataset: none
 
 # Sales Chart
 
-A parameterized monthly sales visualization built with Matplotlib and
-the Cyberpunk visual style. The chart renders a line plot with circular
-markers, formatted tick labels, and a gradient fill beneath the line.
+A monthly sales line chart built with Matplotlib, exposed through a Typer CLI.
+The chart uses a built-in seaborn style, formatted dollar tick labels, and dynamic
+y-axis limits that adapt to whatever data is provided.
 
-## Embedded Dataset (2023)
+## Part 1 -- utils.py
 
-Monthly sales figures in thousands of USD, used as the default dataset:
+### Constants
+
+| Name           | Type             | Description                                    |
+|----------------|------------------|------------------------------------------------|
+| `MONTHS`       | list[str]        | Month abbreviations Jan-Dec (x-axis labels)    |
+| `DEFAULT_SALES`| list[int]        | Default 2023 sales figures in thousands of USD |
+
+Default dataset:
 
 | Month | Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec |
 |-------|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
-| Sales |  28 |  32 |  37 |  31 |  40 |  46 |  43 |  51 |  49 |  56 |  62 |  68 |
+| Sales |  25 |  35 |  32 |  40 |  38 |  37 |  48 |  43 |  34 |  41 |  45 |  42 |
 
-## Chart Requirements
-
-- Style: Cyberpunk (applied via `mplcyberpunk` or manual dark theme)
-- Plot type: line chart with circular markers at each data point
-- X-axis: month abbreviations (Jan, Feb, ..., Dec)
-- Y-axis: tick labels formatted as "$NK" (e.g., "$35K", "$50K")
-  with appropriate axis limits and minor gridlines enabled
-- Title: "Monthly Sales Performance -- {year}"
-- X-label: "Month"
-- Y-label: "Sales (USD)"
-- Gradient fill: semi-transparent vertical fill between the plotted line
-  and the x-axis to enhance visual depth (use alpha-blended layers or
-  a LinearSegmentedColormap fill)
-
-## Function Signature
+### generate_sales_chart(sales)
 
 ```python
-def plot_sales(
-    months: list[str],
-    sales: list[float],
-    year: int,
-    output_path: str | None = None,
-) -> None:
-    ...
+def generate_sales_chart(sales: list[int | float]) -> None
 ```
 
-- `months`: list of month label strings
-- `sales`: corresponding sales values in thousands of USD
-- `year`: integer used in the chart title
-- `output_path`: if provided, save the figure to this path (PNG);
-  if None, display the chart interactively via plt.show()
+Builds and saves the chart to `sales_trend.png` (200 dpi).
 
-The function must work with any monthly dataset of matching length, not
-just the 2023 data above.
+- Style: `seaborn-v0_8-darkgrid`
+- Plot: line chart with circular markers at each data point
+- X-axis: `MONTHS` labels
+- Y-axis: tick labels formatted as `$NK` (e.g. `$35K`, `$50K`) via `FormatStrFormatter`
+- Y-limits: dynamic -- 10% padding above and below the data range so the line
+  never hugs the edges regardless of the input values
+- Closes the figure after saving to release memory
 
-## Entry Point
+---
 
-When the script is run directly, call `plot_sales` with the embedded
-2023 dataset:
+## Part 2 -- solution.py
 
 ```
 python solution.py
+python solution.py --sales
+python solution.py -s
 ```
+
+| Flag             | Behaviour                                              |
+|------------------|--------------------------------------------------------|
+| _(none)_         | Use `DEFAULT_SALES`; print a summary and save chart    |
+| `--sales` / `-s` | Prompt for each month's value interactively, then save |
+
+Interactive mode prompts one month at a time and re-prompts on non-numeric input:
+
+```
+Enter sales value (in thousands USD) for each month:
+  Jan: 28
+  Feb: 34
+  ...
+```
+
+The chart is always saved to `sales_trend.png` in the working directory.
