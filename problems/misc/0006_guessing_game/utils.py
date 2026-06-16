@@ -11,7 +11,7 @@ HARD_ATTEMPTS = 7
 
 
 def guessing_game(difficulty: str) -> int:
-    normalized = difficulty.lower()
+    normalized = difficulty.strip().lower()
     if normalized not in DIFFICULTY_RANGES:
         raise ValueError("Valid options are: easy/medium/hard")
 
