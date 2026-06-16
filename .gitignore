@@ -49,3 +49,6 @@ docs/prep/
 
 # Spark temp files (created by spark-submit in the working directory)
 java_opts.txt
+
+# Generated chart output files
+*.png

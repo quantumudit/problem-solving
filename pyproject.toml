@@ -7,11 +7,13 @@ requires-python = ">=3.12"
 dependencies = [
     "duckdb>=1.5.3",
     "ipykernel>=7.2.0",
+    "matplotlib>=3.11.0",
     "pandas>=3.0.3",
     "polars>=1.41.2",
     "pyarrow>=24.0.0",
     "rich>=15.0.0",
     "ruff>=0.15.16",
+    "typer>=0.26.7",
 ]
 
 [tool.ruff.lint.per-file-ignores]
