@@ -3,3 +3,12 @@ stratascratch,10353,workers_with_the_highest_salaries,easy,"sql, pandas, polars"
 stratascratch,10352,users_by_avg_session_time,medium,"sql, pandas, polars","aggregation, datetime, filtering, cte, joins, date_functions, case_when",2026-06-11,platform,https://platform.stratascratch.com/coding/10352-users-by-avg-session-time,problems/stratascratch/medium/10352_users_by_avg_session_time
 excelbi,PQ00398,case_stage_progress,null,"sql, pandas, polars, duckdb, pyspark","aggregations, case_when, cte, window_functions, joins, pandas_groupby",2026-06-09,provided,https://lnkd.in/gg7thZjF,problems/excelbi/2026/06_09_case_stage_progress
 excelbi,PQ00397,territory_acquisition,null,"pandas, polars","simulation, aggregation, stateful_iteration, string_ops",2026-06-10,provided,https://lnkd.in/gywHUGik,problems/excelbi/2026/06_10_territory_acquisition
+misc,0001,python_utilities,null,python,"conditional_logic, stateful_iteration",2026-06-13,none,,problems/misc/0001_python_utilities
+misc,0002,data_explorer,null,python,"aggregation, filtering, sorting, string_ops, lambda_functions, list_comprehensions",2026-06-13,none,,problems/misc/0002_data_explorer
+misc,0003,calculator,null,python,"string_ops, conditional_logic",2026-06-14,none,,problems/misc/0003_calculator
+misc,0004,regex_explorer,null,python,string_ops,2026-06-14,none,,problems/misc/0004_regex_explorer
+misc,0005,madlibs,null,python,"string_ops, conditional_logic",2026-06-14,none,,problems/misc/0005_madlibs
+misc,0006,guessing_game,null,python,"conditional_logic, stateful_iteration",2026-06-14,none,,problems/misc/0006_guessing_game
+misc,0007,rock_paper_scissors,null,python,"conditional_logic, simulation",2026-06-14,none,,problems/misc/0007_rock_paper_scissors
+misc,0008,circle,null,python,conditional_logic,2026-06-14,none,,problems/misc/0008_circle
+misc,0009,sales_chart,null,matplotlib,conditional_logic,2026-06-14,none,,problems/misc/0009_sales_chart
