@@ -29,12 +29,14 @@ Every branch represents one unit of work -- a single problem, or a full challeng
 | edna | `edna/{YYYY_w##}_{slug}` | `edna/2025_w01_customer_churn` |
 | misc | `misc/{id}_{slug}` | `misc/0001_two_sum` |
 | projects | `projects/{source}/{challenge_name}` | `projects/data_with_danny/murder_mystery` |
+| community | `community/{name}/batch_{YYYY_MM}` | `community/microsoft_fabric/batch_2026_06` |
 
 Rules:
 - `{difficulty}` always lowercase: `easy`, `medium`, `hard`
 - `{id}` always zero-padded to 4 digits: `0001` not `1`
 - `{slug}` always snake_case: `two_sum` not `twoSum` or `two-sum`
 - For projects, one branch covers the entire project set -- not per question
+- For community, one branch covers a batch of contributions (typically a month or quarter)
 - Always branch from `main`; never commit solutions directly to `main`
 - Push the branch to remote immediately after creation -- every branch must exist on remote from day one
 - Push the branch to remote before running the squash merge -- remote must be up to date
@@ -115,8 +117,17 @@ easy | medium | hard | null
 
 `null` is used for platforms that do not provide difficulty: excelbi, edna, projects.
 
-For `misc`, difficulty may be set to a known value (`easy`, `medium`, `hard`) or left as
-`null` if unknown. The `misc` folder structure is always flat -- no difficulty subdirectory.
+`misc` is the catch-all folder for two cases:
+- **Unknown source**: problem found somewhere, source lost. Use `platform: misc` in frontmatter.
+- **Known but infrequent source**: source is known but does not warrant its own dedicated folder.
+  Use the real platform name in frontmatter: `platform: hackerrank`, `platform: projecteuler`, etc.
+
+In both cases the folder is `problems/misc/{id}_{slug}/`. The `platform:` frontmatter field
+is the source of truth. The index groups all misc problems under one "Misc" heading with a
+Platform column to show the actual source.
+
+For difficulty in `misc`: use the known value if available, otherwise `null`.
+The folder structure is always flat -- no difficulty subdirectory regardless of value.
 
 `difficulty_rating` in `notes.md` is a personal assessment. When the platform provides a
 difficulty and no override is needed, set it to the same value as `difficulty`. Only use
@@ -204,6 +215,7 @@ solve: {platform} {id} {slug} [{language}]
 | edna | `solve: edna 2025_w01 customer_churn [pandas]` |
 | misc | `solve: misc 0001 two_sum [python]` |
 | projects | `solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]` |
+| community | `solve: community microsoft_fabric 2026_06` |
 
 With variations:
 ```

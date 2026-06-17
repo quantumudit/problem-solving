@@ -36,8 +36,12 @@ problem_solving/
 │   ├── excelbi/{year}/{MM_DD_slug}/
 │   ├── edna/{year}/{w##_slug}/
 │   └── misc/{id}_{slug}/
-└── projects/
-    └── {source}/{challenge}/{q##_slug}/
+├── projects/
+│   └── {source}/{challenge}/{q##_slug}/
+└── community/
+    └── {name}/
+        ├── README.md              # contribution tracker
+        └── solutions/             # code files for non-trivial answers
 ```
 
 `docs/index.md` and `docs/index.csv` are rebuilt automatically after every `git commit` on `main` via a `PostToolUse` hook. Run `python .claude/hooks/build_index.py` manually to force a rebuild at any time.
@@ -53,6 +57,10 @@ problem_solving/
 | excelbi | null | `PQ` or `EX` prefix + 5-digit padded e.g. `"PQ00398"`, `"EX00991"` | `problems/excelbi/{year}/{MM_DD_slug}/` |
 | edna | null | none | `problems/edna/{year}/{w##_slug}/` |
 | misc | null (or known value) | self-assigned, 4-digit padded e.g. `"0001"` | `problems/misc/{id}_{slug}/` |
+
+> `misc` covers two cases: unknown source (`platform: misc`) and known but infrequent source
+> (`platform: hackerrank`, `platform: projecteuler`, etc.). Folder is always `problems/misc/`;
+> frontmatter `platform:` holds the real source. Index groups all under one "Misc" heading.
 | projects | null | none | `projects/{source}/{challenge}/{q##_slug}/` |
 
 ---
@@ -79,6 +87,7 @@ excelbi/2025_04_01_sales_by_region
 edna/2025_w01_customer_churn
 misc/0001_two_sum
 projects/data_with_danny/murder_mystery
+community/microsoft_fabric/batch_2026_06
 ```
 
 ---
@@ -102,6 +111,7 @@ solve: excelbi 2025_04_01 sales_by_region [pq]
 solve: excelbi 2025_04_01 sales_by_region [pandas, polars]
 solve: misc 0001 some_problem [python]
 solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]
+solve: community microsoft_fabric 2026_06
 ```
 
 > For Python solutions: use the library name (`pandas`, `polars`, `duckdb`, `pyspark`)
