@@ -1,6 +1,6 @@
 # problem-solving
 
-Personal archive of data engineering and algorithm problem solutions across multiple platforms.
+Personal archive of data engineering and algorithm problem solutions, project-based challenges, and community contributions across multiple platforms.
 
 ## Index
 

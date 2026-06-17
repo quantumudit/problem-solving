@@ -52,19 +52,24 @@ problem_solving/
 │   │       └── w01_customer_churn/
 │   └── misc/
 │       └── 0001_some_problem/
-└── projects/
-    ├── data_with_danny/
-    │   └── murder_mystery/
-    │       ├── README.md          <- project-level readme
-    │       ├── data/
-    │       ├── q01_find_the_murderer/
-    │       └── q02_find_the_witness/
-    ├── frontend_mentor/
-    │   └── some_challenge/
-    ├── linkedin_learning/
-    │   └── some_course/
-    └── misc/
-        └── some_lost_challenge/
+├── projects/
+│   ├── data_with_danny/
+│   │   └── murder_mystery/
+│   │       ├── README.md          <- project-level readme
+│   │       ├── data/
+│   │       ├── q01_find_the_murderer/
+│   │       └── q02_find_the_witness/
+│   ├── frontend_mentor/
+│   │   └── some_challenge/
+│   ├── linkedin_learning/
+│   │   └── some_course/
+│   └── misc/
+│       └── some_lost_challenge/
+└── community/
+    └── microsoft_fabric/
+        ├── README.md              <- contribution tracker
+        └── solutions/             <- code files for non-trivial answers
+            └── rolling_average.dax
 ```
 
 ---
@@ -163,6 +168,20 @@ murder_mystery/
     └── notes.md
 ```
 
+### Community folder (community/)
+
+Each community gets a subfolder with a tracker README and an optional `solutions/` folder
+for non-trivial code files worth keeping locally. Blogs, reports, and simple answers are
+tracked as rows only -- no local file needed.
+
+```
+microsoft_fabric/
+├── README.md               <- contribution tracker (one table, all types)
+└── solutions/              <- only when the answer has meaningful code
+    ├── rolling_average.dax
+    └── unpivot_headers.pq
+```
+
 ---
 
 ## File Templates
@@ -234,6 +253,33 @@ date_completed:   # YYYY-MM-DD | null
 | q01 | find_the_murderer | sql | 2025-04-01 |
 | q02 | find_the_witness  | sql | 2025-04-02 |
 ```
+
+---
+
+### README.md -- community tracker
+
+One README per community. Acts as the running contribution log.
+
+```yaml
+---
+community:          # snake_case e.g. microsoft_fabric
+link:               # url to the community homepage
+---
+```
+
+```markdown
+## {Community Name}
+
+| Date | Type | Title | Tags | Link |
+|---|---|---|---|-------------|
+| YYYY-MM-DD | answer | Title of the answer | dax, time_intelligence | [link](...) |
+| YYYY-MM-DD | blog   | Title of the blog post | pq | [link](...) |
+```
+
+Type values: `answer` | `blog` | `report` | `tutorial`
+
+For entries with non-trivial code, also save the file in `solutions/` and link it in the
+Title cell: `[Title](solutions/slug.dax)`.
 
 ---
 
