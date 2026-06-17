@@ -94,7 +94,10 @@ def collect_standalone(platform: str) -> list[dict]:
     records = []
     for readme in sorted(platform_dir.rglob("README.md")):
         fm = parse_frontmatter(readme)
-        if fm.get("platform", "") != platform:
+        actual_platform = fm.get("platform", platform)
+        # misc collects everything in the folder regardless of frontmatter platform
+        # (covers both unknown-source and known-but-infrequent-source problems)
+        if platform != "misc" and actual_platform != platform:
             continue
 
         folder = readme.parent
@@ -103,12 +106,17 @@ def collect_standalone(platform: str) -> list[dict]:
         lang_raw = notes_fm.get("language", "")
         language = clean_list(lang_raw) if lang_raw else detect_languages(folder)
 
+        difficulty = fm.get("difficulty", "null")
+        if difficulty == "null":
+            difficulty = notes_fm.get("difficulty_rating", "null")
+
         records.append(
             {
                 "platform": platform,
+                "source_platform": actual_platform,
                 "id": fm.get("problem_id", ""),
                 "slug": fm.get("slug", folder.name),
-                "difficulty": fm.get("difficulty", "null"),
+                "difficulty": difficulty,
                 "language": language,
                 "topics": clean_list(notes_fm.get("topics", "")),
                 "date_solved": notes_fm.get("date_solved", ""),
@@ -141,12 +149,17 @@ def collect_projects() -> list[dict]:
         challenge = folder.parent.name
         q_num = folder.name.split("_")[0]
 
+        difficulty = fm.get("difficulty_rating", "null")
+
         records.append(
             {
                 "platform": "projects",
+                "source_platform": "projects",
+                "source": source,
+                "challenge": challenge,
                 "id": f"{source}/{challenge}/{q_num}",
                 "slug": fm.get("slug", "_".join(folder.name.split("_")[1:])),
-                "difficulty": "null",
+                "difficulty": difficulty,
                 "language": language,
                 "topics": clean_list(fm.get("topics", "")),
                 "date_solved": fm.get("date_solved", ""),
@@ -182,18 +195,47 @@ def write_markdown(records: list[dict]) -> None:
         display = PLATFORM_DISPLAY.get(platform, platform.capitalize())
         lines.append(f"## {display} ({len(rows)})")
         lines.append("")
-        lines.append("| ID | Slug | Difficulty | Language | Date Solved | Link |")
-        lines.append("|---|---|---|---|---|---|")
-        for r in rows:
-            ref = r["id"] or "-"
-            slug_cell = f"[{r['slug']}]({r['path']})"
-            diff = r["difficulty"] if r["difficulty"] != "null" else "-"
-            date_s = r["date_solved"] or "-"
-            link_cell = f"[link]({r['link']})" if r["link"] else "-"
-            lines.append(
-                f"| {ref} | {slug_cell} | {diff} | {r['language'] or '-'}"
-                f" | {date_s} | {link_cell} |"
-            )
+        if platform == "misc":
+            lines.append("| ID | Platform | Slug | Difficulty | Language | Date Solved | Link |")
+            lines.append("|---|---|---|---|---|---|---|")
+            for r in rows:
+                ref = r["id"] or "-"
+                src = r.get("source_platform", "misc")
+                slug_cell = f"[{r['slug']}]({r['path']})"
+                diff = r["difficulty"] if r["difficulty"] != "null" else "-"
+                date_s = r["date_solved"] or "-"
+                link_cell = f"[link]({r['link']})" if r["link"] else "-"
+                lines.append(
+                    f"| {ref} | {src} | {slug_cell} | {diff} | {r['language'] or '-'}"
+                    f" | {date_s} | {link_cell} |"
+                )
+        elif platform == "projects":
+            lines.append("| Source | Project | Question | Difficulty | Language | Date Solved | Link |")
+            lines.append("|---|---|---|---|---|---|---|")
+            for r in rows:
+                src = r.get("source", "-")
+                proj = r.get("challenge", "-")
+                slug_cell = f"[{r['slug']}]({r['path']})"
+                diff = r["difficulty"] if r["difficulty"] != "null" else "-"
+                date_s = r["date_solved"] or "-"
+                link_cell = f"[link]({r['link']})" if r["link"] else "-"
+                lines.append(
+                    f"| {src} | {proj} | {slug_cell} | {diff} | {r['language'] or '-'}"
+                    f" | {date_s} | {link_cell} |"
+                )
+        else:
+            lines.append("| ID | Slug | Difficulty | Language | Date Solved | Link |")
+            lines.append("|---|---|---|---|---|---|")
+            for r in rows:
+                ref = r["id"] or "-"
+                slug_cell = f"[{r['slug']}]({r['path']})"
+                diff = r["difficulty"] if r["difficulty"] != "null" else "-"
+                date_s = r["date_solved"] or "-"
+                link_cell = f"[link]({r['link']})" if r["link"] else "-"
+                lines.append(
+                    f"| {ref} | {slug_cell} | {diff} | {r['language'] or '-'}"
+                    f" | {date_s} | {link_cell} |"
+                )
         lines.append("")
 
     INDEX_MD.write_text("\n".join(lines), encoding="utf-8")
@@ -203,6 +245,7 @@ def write_markdown(records: list[dict]) -> None:
 def write_csv(records: list[dict]) -> None:
     fields = [
         "platform",
+        "source_platform",
         "id",
         "slug",
         "difficulty",
