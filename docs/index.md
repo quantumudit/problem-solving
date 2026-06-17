@@ -17,19 +17,19 @@ Last updated: 2026-06-17  |  Total: 13
 
 | ID | Slug | Difficulty | Language | Date Solved | Link |
 |---|---|---|---|---|---|
-| PQ00398 | [case_stage_progress](problems/excelbi/2026/06_09_case_stage_progress) | - | sql, pandas, polars, duckdb, pyspark | 2026-06-09 | [link](https://lnkd.in/gg7thZjF) |
-| PQ00397 | [territory_acquisition](problems/excelbi/2026/06_10_territory_acquisition) | - | pandas, polars | 2026-06-10 | [link](https://lnkd.in/gywHUGik) |
+| PQ00398 | [case_stage_progress](problems/excelbi/2026/06_09_case_stage_progress) | medium | sql, pandas, polars, duckdb, pyspark | 2026-06-09 | [link](https://lnkd.in/gg7thZjF) |
+| PQ00397 | [territory_acquisition](problems/excelbi/2026/06_10_territory_acquisition) | medium | pandas, polars | 2026-06-10 | [link](https://lnkd.in/gywHUGik) |
 
 ## Misc (9)
 
-| ID | Slug | Difficulty | Language | Date Solved | Link |
-|---|---|---|---|---|---|
-| 0001 | [python_utilities](problems/misc/0001_python_utilities) | - | python | 2026-06-13 | - |
-| 0002 | [data_explorer](problems/misc/0002_data_explorer) | - | python | 2026-06-13 | - |
-| 0003 | [calculator](problems/misc/0003_calculator) | - | python | 2026-06-14 | - |
-| 0004 | [regex_explorer](problems/misc/0004_regex_explorer) | - | python | 2026-06-14 | - |
-| 0005 | [madlibs](problems/misc/0005_madlibs) | - | python | 2026-06-14 | - |
-| 0006 | [guessing_game](problems/misc/0006_guessing_game) | - | python | 2026-06-14 | - |
-| 0007 | [rock_paper_scissors](problems/misc/0007_rock_paper_scissors) | - | python | 2026-06-14 | - |
-| 0008 | [circle](problems/misc/0008_circle) | - | python | 2026-06-14 | - |
-| 0009 | [sales_chart](problems/misc/0009_sales_chart) | - | matplotlib | 2026-06-14 | - |
+| ID | Platform | Slug | Difficulty | Language | Date Solved | Link |
+|---|---|---|---|---|---|---|
+| 0001 | misc | [python_utilities](problems/misc/0001_python_utilities) | easy | python | 2026-06-13 | - |
+| 0002 | misc | [data_explorer](problems/misc/0002_data_explorer) | easy | python | 2026-06-13 | - |
+| 0003 | misc | [calculator](problems/misc/0003_calculator) | easy | python | 2026-06-14 | - |
+| 0004 | misc | [regex_explorer](problems/misc/0004_regex_explorer) | easy | python | 2026-06-14 | - |
+| 0005 | misc | [madlibs](problems/misc/0005_madlibs) | medium | python | 2026-06-14 | - |
+| 0006 | misc | [guessing_game](problems/misc/0006_guessing_game) | easy | python | 2026-06-14 | - |
+| 0007 | misc | [rock_paper_scissors](problems/misc/0007_rock_paper_scissors) | easy | python | 2026-06-14 | - |
+| 0008 | misc | [circle](problems/misc/0008_circle) | medium | python | 2026-06-14 | - |
+| 0009 | misc | [sales_chart](problems/misc/0009_sales_chart) | easy | matplotlib | 2026-06-14 | - |
