@@ -51,4 +51,4 @@ docs/prep/
 java_opts.txt
 
 # Generated chart output files
-*.png
+problems/misc/0009_sales_chart/sales_trend.png
