@@ -44,10 +44,10 @@ Output: `False` (three 19's, need exactly two)
 
 | File | Approach |
 |---|---|
-| `solution.py` | Primary -- using built-in `count()` |
-| `variations/v1_dict_frequency.py` | Dictionary frequency count |
-| `variations/v2_manual_iteration.py` | Manual iteration without `count()` |
-| `variations/v3_recursive.py` | Recursive verification |
+| [`solution.py`](solution.py) | Primary -- using built-in `count()` |
+| [`variations/v1_dict_frequency.py`](variations/v1_dict_frequency.py) | Dictionary frequency count |
+| [`variations/v2_manual_iteration.py`](variations/v2_manual_iteration.py) | Manual iteration without `count()` |
+| [`variations/v3_recursive.py`](variations/v3_recursive.py) | Recursive verification |
 
 ### Variant Descriptions
 
