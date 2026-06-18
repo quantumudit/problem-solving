@@ -20,7 +20,16 @@ surround different data types. Strip out both delimiters and format the data cle
 
 | File | Description |
 |---|---|
-| `data/poems.csv` | Raw input with mixed quote delimiters surrounding field values |
+| [data/poems.csv](data/poems.csv) | Raw input with mixed quote delimiters surrounding field values |
+
+## Solutions
+
+| File | Description |
+|---|---|
+| [solution.yxmd](solution.yxmd) | Alteryx workflow solution |
+| [workflow.png](workflow.png) | Workflow diagram |
+| [solution_pandas.py](solution_pandas.py) | Pandas solution |
+| [solution_polars.py](solution_polars.py) | Polars solution |
 
 ## Steps
 

@@ -25,8 +25,17 @@ customers.
 
 | File                        | Description                                                      |
 | --------------------------- | ---------------------------------------------------------------- |
-| `data/customer_segment.csv` | Main customer records with postal codes and other fields         |
-| `data/region_range.csv`     | Reference table with postcode range boundaries and region labels |
+| [data/customer_segment.csv](data/customer_segment.csv) | Main customer records with postal codes and other fields         |
+| [data/region_range.csv](data/region_range.csv)     | Reference table with postcode range boundaries and region labels |
+
+## Solutions
+
+| File | Description |
+|---|---|
+| [solution.yxmd](solution.yxmd) | Alteryx workflow solution |
+| [workflow.png](workflow.png) | Workflow diagram |
+| [solution_pandas.py](solution_pandas.py) | Pandas solution |
+| [solution_polars.py](solution_polars.py) | Polars solution |
 
 ## Steps
 
