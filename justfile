@@ -28,6 +28,14 @@ check: lint format
 excelbi slug library="" year="2026":
     uv run .\problems\excelbi\{{ year }}\{{ slug }}\{{ if library == "" { "solution.py" } else { "solution_" + library + ".py" } }}
 
+# Run solution for a misc problem by ID prefix
+# Examples:
+#   just misc 0011               # runs solution.py
+#   just misc 0011 pandas        # runs solution_pandas.py
+#   just misc 0011 pandas_v2     # runs solution_pandas_v2.py
+misc id library="":
+    $folder = (Get-ChildItem -Directory ".\problems\misc\{{ id }}_*" | Select-Object -First 1).FullName; uv run "$folder\{{ if library == "" { "solution.py" } else { "solution_" + library + ".py" } }}"
+
 # Run a PySpark solution inside Docker (auto-starts container if needed)
 # Examples:
 #   just excelbi-pyspark 06_09_case_stage_progress

@@ -23,10 +23,10 @@ customers.
 
 ## Datasets
 
-| File | Description |
-|---|---|
-| `data/customer_segment.csv` | Main customer records with postal codes and other fields |
-| `data/region_range.csv` | Reference table with postcode range boundaries and region labels |
+| File                        | Description                                                      |
+| --------------------------- | ---------------------------------------------------------------- |
+| `data/customer_segment.csv` | Main customer records with postal codes and other fields         |
+| `data/region_range.csv`     | Reference table with postcode range boundaries and region labels |
 
 ## Steps
 
