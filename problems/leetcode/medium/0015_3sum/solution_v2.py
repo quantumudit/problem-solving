@@ -7,19 +7,19 @@ class Solution:
         for i in range(len(nums)):
             if i > 0 and nums[i] == nums[i - 1]:  # skip duplicate anchor
                 continue
-            l = i + 1
-            r = len(nums) - 1
-            while l < r:
-                if nums[i] + nums[l] + nums[r] < 0:
-                    l += 1
-                elif nums[i] + nums[l] + nums[r] > 0:
-                    r -= 1
+            left = i + 1
+            right = len(nums) - 1
+            while left < right:
+                if nums[i] + nums[left] + nums[right] < 0:
+                    left += 1
+                elif nums[i] + nums[left] + nums[right] > 0:
+                    right -= 1
                 else:
-                    result.append([nums[i], nums[l], nums[r]])
-                    l += 1
-                    r -= 1
-                    while l < r and nums[l] == nums[l - 1]:  # skip duplicate l
-                        l += 1
-                    while l < r and nums[r] == nums[r + 1]:  # skip duplicate r
-                        r -= 1
+                    result.append([nums[i], nums[left], nums[right]])
+                    left += 1
+                    right -= 1
+                    while left < right and nums[left] == nums[left - 1]:  # skip duplicate left
+                        left += 1
+                    while left < right and nums[right] == nums[right + 1]:  # skip duplicate right
+                        right -= 1
         return result
