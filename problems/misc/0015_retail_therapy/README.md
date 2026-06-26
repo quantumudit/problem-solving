@@ -21,8 +21,8 @@ The analysis must:
 
 ## Dataset
 
-| File | Description |
-|---|---|
+| File                                    | Description                                                                         |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
 | `data/womens_clothing_ecom_reviews.csv` | Women's clothing e-commerce reviews with ratings, feedback counts, and class labels |
 
 ## Steps
@@ -37,3 +37,10 @@ The analysis must:
 - Data preparation
 - Filtering with aggregate conditions
 - Grouped ranking / top-N per group
+
+## Files
+
+| File | Description |
+|---|---|
+| [`solution_pandas.py`](solution_pandas.py) | Pandas solution |
+| [`notes.md`](notes.md) | Learning notes and key concepts |
