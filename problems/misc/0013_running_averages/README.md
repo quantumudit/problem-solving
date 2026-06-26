@@ -24,8 +24,8 @@ Create 3-month and 6-month running averages by RM Category for the following col
 
 ## Dataset
 
-| File | Description |
-|---|---|
+| File                     | Description                    |
+| ------------------------ | ------------------------------ |
 | `data/rm_categories.csv` | Monthly values per RM Category |
 
 ## Steps
@@ -39,3 +39,10 @@ Create 3-month and 6-month running averages by RM Category for the following col
 - Data preparation
 - Rolling / sliding window aggregations
 - Grouped time-series calculations
+
+## Files
+
+| File | Description |
+|---|---|
+| [`solution_pandas.py`](solution_pandas.py) | Pandas solution |
+| [`notes.md`](notes.md) | Learning notes and key concepts |
