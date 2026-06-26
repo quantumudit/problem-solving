@@ -12,3 +12,10 @@ misc,misc,0006,guessing_game,easy,python,"conditional_logic, stateful_iteration"
 misc,misc,0007,rock_paper_scissors,easy,python,"conditional_logic, simulation",2026-06-14,none,,problems/misc/0007_rock_paper_scissors
 misc,misc,0008,circle,medium,python,conditional_logic,2026-06-14,none,,problems/misc/0008_circle
 misc,misc,0009,sales_chart,easy,matplotlib,conditional_logic,2026-06-14,none,,problems/misc/0009_sales_chart
+misc,w3resource,0010,number_occurrence_check,easy,python,"conditional_logic, stateful_iteration, recursion",2026-06-18,none,https://www.w3resource.com/python-exercises/puzzles/python-programming-puzzles-1.php,problems/misc/0010_number_occurrence_check
+misc,alteryx_community,0011,join_to_range,medium,"pandas, polars","pandas_merge, pandas_groupby, string_ops",2026-06-18,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-1-Join-to-Range/td-p/36621,problems/misc/0011_join_to_range
+misc,alteryx_community,0012,preparing_delimited_data,easy,"pandas, polars","string_ops, datetime",2026-06-18,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-2-Preparing-Delimited-Data/td-p/36622,problems/misc/0012_preparing_delimited_data
+misc,alteryx_community,0013,running_averages,medium,pandas,"reshaping, aggregation",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-3-Running-Averages/td-p/36814,problems/misc/0013_running_averages
+misc,alteryx_community,0014,date_parsing,hard,pandas,"string_ops, datetime",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-4-Date-Parsing/td-p/36731,problems/misc/0014_date_parsing
+misc,alteryx_community,0015,retail_therapy,easy,pandas,"filtering, aggregation, sorting",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-164-Retail-Therapy/td-p/414754,problems/misc/0015_retail_therapy
+misc,alteryx_community,0016,womens_world_cup_wins,easy,pandas,"conditional_logic, aggregation, sorting",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-169-Women-s-World-Cup-Wins/td-p/430886/,problems/misc/0016_womens_world_cup_wins
