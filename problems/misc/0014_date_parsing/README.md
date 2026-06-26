@@ -41,3 +41,10 @@ formats. Parse each date string and produce a clean, uniform Date/Time field.
 - Data analysis
 - Multi-format date parsing
 - String pattern matching and extraction
+
+## Files
+
+| File | Description |
+|---|---|
+| [`solution_pandas.py`](solution_pandas.py) | Pandas solution |
+| [`notes.md`](notes.md) | Learning notes and key concepts |
