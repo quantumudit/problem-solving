@@ -52,3 +52,7 @@ java_opts.txt
 
 # Generated chart output files
 problems/misc/0009_sales_chart/sales_trend.png
+projects/**/output/*.png
+projects/**/output/*.jpg
+projects/**/output/*.svg
+projects/**/output/*.html
