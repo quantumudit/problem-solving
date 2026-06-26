@@ -17,8 +17,8 @@ Determine which team has won the most games in the Women's World Cup.
 
 ## Dataset
 
-| File | Description |
-|---|---|
+| File                        | Description                              |
+| --------------------------- | ---------------------------------------- |
 | `data/womens_world_cup.csv` | Match results from the Women's World Cup |
 
 ## Steps
@@ -31,3 +31,10 @@ Determine which team has won the most games in the Women's World Cup.
 - Data analysis
 - Data preparation
 - Grouped aggregation and ranking
+
+## Files
+
+| File | Description |
+|---|---|
+| [`solution_pandas.py`](solution_pandas.py) | Pandas solution |
+| [`notes.md`](notes.md) | Learning notes and key concepts |
