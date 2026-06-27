@@ -1,0 +1,1 @@
+-- Which countries have won Silver or Bronze medals but never won Gold?
