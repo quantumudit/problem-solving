@@ -13,6 +13,7 @@ dependencies = [
     "pyarrow>=24.0.0",
     "rich>=15.0.0",
     "ruff>=0.15.16",
+    "seaborn>=0.13.2",
     "typer>=0.26.7",
 ]
 
