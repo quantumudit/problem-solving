@@ -43,6 +43,12 @@ misc id library="":
 project source challenge q library="pandas":
     uv run .\projects\{{ source }}\{{ challenge }}\scripts\{{ q }}_solution_{{ library }}.py
 
+# Run a SQL solution script from a projects/ folder using DuckDB
+# Examples:
+#   just project-sql misc olympic_history_analysis q01
+project-sql source challenge q:
+    uv run .\projects\{{ source }}\{{ challenge }}\scripts\runner.py {{ q }}
+
 # Run a PySpark solution inside Docker (auto-starts container if needed)
 # Examples:
 #   just excelbi-pyspark 06_09_case_stage_progress
