@@ -30,7 +30,8 @@ date_completed: null
   <a href="#dataset">Dataset</a> •
   <a href="#libraries">Libraries</a> •
   <a href="#structure">Structure</a> •
-  <a href="#questions">Questions</a>
+  <a href="#questions">Questions</a> •
+  <a href="#insights">Insights</a>
 </p>
 
 ---
@@ -117,3 +118,76 @@ demographic_data_analysis/
 | q08 | Min/Max Countries by Birth Rate and Internet Users | pandas | [q08_solution_pandas.py](scripts/q08_solution_pandas.py) |
 | q09 | Above/Below Global Average by Income Group | pandas | [q09_solution_pandas.py](scripts/q09_solution_pandas.py) |
 | q10 | Pearson Correlation Overall and by Income Group | pandas | [q10_solution_pandas.py](scripts/q10_solution_pandas.py) |
+
+---
+
+## Insights
+
+The ten questions are designed to progressively peel back the dataset -- starting from
+surface-level rankings, moving into distributional patterns, and finally landing on
+quantified correlations. Here is what the analysis reveals at each stage.
+
+---
+
+**Ranking and Extremes (q01, q02)**
+
+The top-10 birth rate countries are almost entirely from Sub-Saharan Africa -- Niger
+leads at ~49.7 births per 1,000, followed by Angola, Chad, Burundi, and Mali. At the
+other end, Hong Kong and Portugal share the lowest birth rate at 7.9, alongside Japan,
+Germany, and Greece -- all high-income, ageing-population nations.
+
+For internet usage, the top-10 is dominated by Nordic and Western European countries --
+Iceland tops the list at 96.5%, followed by Bermuda, Norway, and Sweden. The bottom-10
+is led by Eritrea at just 0.9%, alongside Timor-Leste, Somalia, and Burundi -- countries
+that also appear near the top of the birth rate ranking, hinting at a strong inverse
+relationship.
+
+---
+
+**Visualizations (q03, q04, q05)**
+
+The scatter plot (q03) makes the inverse relationship unmistakable: countries with high
+birth rates cluster in the bottom-left (low internet penetration) while low-birth-rate
+countries cluster in the top-right (high internet penetration). The colour-coding by
+income group reveals a clean diagonal separation -- each income tier occupies a distinct
+band in the chart.
+
+The distribution plots (q04) show that birth rate is right-skewed, with the majority of
+countries sitting between 10 and 20 births per 1,000 and a long tail extending toward
+50. Internet usage, by contrast, is relatively flat across the 0-100% range with a
+slight spike at the low end, indicating many countries still have very limited access.
+
+The box plots (q05) confirm that income group is a strong predictor of both metrics.
+High-income countries show tight, low birth rates with high median internet usage. As
+income decreases, birth rate medians rise sharply and internet usage medians fall --
+with low-income countries showing the widest spread on birth rate, suggesting greater
+internal variation within that group.
+
+---
+
+**Income Group Deep Dive (q06, q07, q08, q09, q10)**
+
+The summary table (q06) shows that high-income countries account for the largest group
+(67 of 195), with the lowest average birth rate and highest average internet usage.
+Low-income countries (30) sit at the opposite extreme on both metrics.
+
+The percentile breakdown (q07) reveals that even within each income group there is
+meaningful variation -- particularly in the low-income group, where the interquartile
+range for birth rate is wide, meaning not all poor countries have identically high birth
+rates.
+
+The extremes analysis (q08) pinpoints which countries pull each income group to its
+limits -- useful for spotting outliers that do not fit the group's typical profile.
+
+The above/below global average breakdown (q09) shows that virtually all low-income
+countries are above the global average birth rate, while the majority of high-income
+countries are below it. The pattern flips cleanly for internet users -- nearly all
+high-income countries exceed the global average, while most low-income countries fall
+short.
+
+The Pearson correlation (q10) quantifies what the scatter plot suggested: the overall
+correlation between birth rate and internet users is strongly negative. When computed
+within each income group separately, a negative correlation persists across all four
+groups, confirming that the inverse relationship is not just a compositional artifact
+of mixing countries from different income levels -- it holds even when controlling for
+income group.
