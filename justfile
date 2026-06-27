@@ -36,6 +36,13 @@ excelbi slug library="" year="2026":
 misc id library="":
     $folder = (Get-ChildItem -Directory ".\problems\misc\{{ id }}_*" | Select-Object -First 1).FullName; uv run "$folder\{{ if library == "" { "solution.py" } else { "solution_" + library + ".py" } }}"
 
+# Run a solution script from a projects/ folder
+# Examples:
+#   just project misc demographic_data_analysis q01           # runs q01_solution_pandas.py
+#   just project misc demographic_data_analysis q01 polars    # runs q01_solution_polars.py
+project source challenge q library="pandas":
+    uv run .\projects\{{ source }}\{{ challenge }}\scripts\{{ q }}_solution_{{ library }}.py
+
 # Run a PySpark solution inside Docker (auto-starts container if needed)
 # Examples:
 #   just excelbi-pyspark 06_09_case_stage_progress
