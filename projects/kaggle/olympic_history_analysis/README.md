@@ -5,7 +5,7 @@ challenge: olympic_history_analysis
 link: https://www.kaggle.com/datasets/heesoo37/120-years-of-olympic-history-athletes-and-results
 dataset: mutable_committed
 date_started: 2026-06-27
-date_completed: null
+date_completed: 2026-08-30
 ---
 
 <h4 align="center">
@@ -145,3 +145,25 @@ olympic_history_analysis/
 ---
 
 ## Insights
+
+- **Olympic participation grew 17x in 120 years.** From 12 nations at Athens 1896
+  to 204 at Rio 2016. The growth was not monotonic -- Cold War boycotts caused
+  visible dips: Montreal 1976 dropped to 90 nations, Moscow 1980 dropped to 80,
+  before recovering strongly from 1984 onward.
+
+- **The dataset covers 51 Games, not 50.** The 1906 Intercalated Games in Athens
+  are included, which most official counts exclude. This affects any query that
+  compares a country or sport's appearances against the total.
+
+- **Hockey is India's most successful Olympic sport by medal count.** India
+  dominated Olympic hockey historically, winning medals across multiple Games.
+  The q18 results show exactly which editions contributed to that tally.
+
+- **The oldest gold medalists competed in shooting.** The top-3 oldest athletes to
+  win Gold were all in shooting events, with Charles Jacobus and Oscar Gomer Swahn
+  both winning at age 64. Swahn also appears at age 60 -- he medalled across
+  multiple Games spanning decades.
+
+- **Most nations have never won Gold.** The q14 results show a meaningful number
+  of countries that accumulated Silver and Bronze medals across multiple Games
+  without ever reaching the top step of the podium.

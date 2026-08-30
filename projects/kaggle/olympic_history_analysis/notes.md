@@ -5,13 +5,49 @@ difficulty: null
 difficulty_rating: null
 language: [sql]
 topics: [aggregation, joins, window_functions, cte, subqueries, having, case_when, string_manipulation, filtering, sorting]
-date_solved: null
+date_solved: 2026-08-30
 revisit: false
 ---
 
 ## Approach
 
+SQL-only analysis using DuckDB as the in-process query engine -- no database
+setup needed. Both CSVs are loaded as in-memory views via `read_csv_auto` inside
+runner.py, and each question is a self-contained `.sql` file. Questions are
+executed from the terminal via:
+
+```
+just project-sql kaggle olympic_history_analysis q01
+just project-sql kaggle olympic_history_analysis q04 v2   -- versioned solutions
+```
+
+The runner (runner.py) accepts an optional version suffix (v2, v3, ...) to run
+alternate solution files alongside the primary one.
+
 ## Key Observations
+
+- **Data grain**: one row per athlete per event per Olympic Games. An athlete who
+  competed in 5 events at one Games appears 5 times. Always use
+  `COUNT(DISTINCT ID)` -- not `COUNT(ID)` -- when counting athletes.
+
+- **"NA" is a string, not NULL**: missing values in `Age`, `Height`, and `Weight`
+  are stored as the literal string `"NA"`. Filter with `WHERE col != 'NA'` and
+  cast with `TRY_CAST(col AS INTEGER)` for numeric operations (see q10 note).
+
+- **Medal = "NA" means no medal**: 85% of rows have `Medal = 'NA'`. This is not
+  missing data -- it means the athlete did not win. Always filter
+  `WHERE Medal != 'NA'` when counting medals.
+
+- **Use region, not Team, for country aggregations**: the `Team` column can differ
+  from the NOC-mapped country name for historical reasons (e.g. "Australasia").
+  Always join `noc_regions` on `NOC` and use `region` as the country identifier.
+
+- **Participation growth**: nation count grew from 12 in Athens 1896 to 204 in
+  Rio 2016 -- a 17x increase over 120 years. Cold War boycotts are visible as
+  dips: Montreal 1976 dropped to 90, Moscow 1980 dropped to 80.
+
+- **51 Games, not 50**: the dataset includes the 1906 Intercalated Games in Athens,
+  which is often excluded from official Olympic counts.
 
 ## Tricks / New Learnings
 
@@ -106,3 +142,10 @@ makes the pattern easier to scan at a glance.
 - Wide: easier to read as a report, required when comparing columns side by side
 
 ## Revisit notes
+
+No problems flagged for revisit. Key patterns from this project worth ingraining:
+
+- `TRY_CAST` for any column that is VARCHAR but holds numeric data with "NA" noise
+- `COUNT(CASE WHEN ...)` for long-to-wide pivots -- no WHERE clause needed
+- `RANK() OVER (...)` + `WHERE rnk = 1` for top-N by group -- avoids correlated subqueries
+- `MAX(CASE WHEN rnk = 1 THEN col END)` to collapse ranked rows into one row per group
