@@ -10,6 +10,7 @@ Skips silently when not on the main branch.
 from __future__ import annotations
 
 import csv
+import os
 import re
 import subprocess
 import sys
@@ -34,6 +35,10 @@ PLATFORM_DISPLAY = {
 
 
 def current_branch() -> str:
+    # GitHub Actions checks out in detached HEAD; GITHUB_REF_NAME holds the branch name
+    env_ref = os.environ.get("GITHUB_REF_NAME", "")
+    if env_ref:
+        return env_ref
     result = subprocess.run(
         ["git", "branch", "--show-current"],
         capture_output=True,
