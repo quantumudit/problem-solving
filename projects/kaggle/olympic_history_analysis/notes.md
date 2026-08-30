@@ -72,4 +72,37 @@ digits. The bug surfaces when mixed-length values appear, e.g. "9" sorts after
 Rule: always use `TRY_CAST` when a column is VARCHAR but represents a number, and
 filter `WHERE col != 'NA'` before any arithmetic.
 
+### q13 -- pivoting long format to wide format with CASE WHEN
+
+When a column holds a category (e.g. `Medal = 'Gold' / 'Silver' / 'Bronze'`) and
+you want each category as its own column, use `COUNT(CASE WHEN ... THEN 1 END)`:
+
+```sql
+-- Long format (one row per country per medal type)
+SELECT region, Medal, COUNT(*) AS total
+FROM ...
+GROUP BY region, Medal
+
+-- Wide format (one row per country, one column per medal type)
+SELECT
+    region,
+    COUNT(CASE WHEN Medal = 'Gold'   THEN 1 END) AS gold,
+    COUNT(CASE WHEN Medal = 'Silver' THEN 1 END) AS silver,
+    COUNT(CASE WHEN Medal = 'Bronze' THEN 1 END) AS bronze
+FROM ...
+GROUP BY region
+```
+
+**How it works:** `CASE WHEN` returns `1` for matching rows and `NULL` for
+everything else. `COUNT` ignores NULLs, so each column only counts its own
+category. No `WHERE Medal != 'NA'` needed -- non-matching values (including
+`'NA'`) return NULL and are silently skipped.
+
+**Alignment trick:** pad the category strings so the `THEN` keywords line up --
+makes the pattern easier to scan at a glance.
+
+**When to use long vs wide:**
+- Long: easier to aggregate further, filter, or join on the category
+- Wide: easier to read as a report, required when comparing columns side by side
+
 ## Revisit notes
