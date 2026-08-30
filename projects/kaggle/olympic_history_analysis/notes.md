@@ -40,4 +40,36 @@ Scales better and avoids repeated aggregation sub-scans.
 Rule: when you need to filter rows by a min/max of the same dataset, prefer
 `RANK() OVER (ORDER BY ...)` + `WHERE rnk = 1` over correlated subqueries.
 
+### q10 -- TRY_CAST vs CAST vs :: for "NA"-polluted numeric columns
+
+The `Age`, `Height`, and `Weight` columns are stored as VARCHAR in the CSV because
+missing values are the string `"NA"`, not SQL NULLs (see data README).
+
+When you need to sort or do arithmetic on these columns, you must cast them:
+
+| Syntax | Behavior on "NA" | Safe to use? |
+|---|---|---|
+| `CAST(Age AS INTEGER)` | Throws a runtime error | No |
+| `Age::INTEGER` | Same as CAST -- throws an error | No |
+| `TRY_CAST(Age AS INTEGER)` | Returns NULL instead of erroring | Yes |
+
+`CAST` and `::` are identical -- `::` is just shorthand. Both fail hard on any
+non-numeric string, so "NA" breaks them.
+
+`TRY_CAST` is the safe choice: it converts what it can and silently returns NULL
+for anything it cannot parse.
+
+**Why the bug in q10 is hidden:** even without TRY_CAST, the `WHERE Age != 'NA'`
+filter removes the bad rows before the cast in most execution plans. But this
+depends on evaluation order, which the engine does not guarantee. TRY_CAST makes
+the intent explicit and protects against edge cases.
+
+**When lexicographic sort coincidentally works:** ordering VARCHAR ages like "60",
+"63", "64" gives the correct result because all values have the same number of
+digits. The bug surfaces when mixed-length values appear, e.g. "9" sorts after
+"64" lexicographically but is numerically smaller.
+
+Rule: always use `TRY_CAST` when a column is VARCHAR but represents a number, and
+filter `WHERE col != 'NA'` before any arithmetic.
+
 ## Revisit notes
