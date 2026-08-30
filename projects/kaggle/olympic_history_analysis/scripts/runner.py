@@ -12,8 +12,12 @@ data_dir = scripts_dir.parent / "data"
 
 
 @app.command()
-def run(q: str = typer.Argument(..., help="Question prefix, e.g. q01")) -> None:
-    sql_file = next(scripts_dir.rglob(f"{q}_solution.sql"))
+def run(
+    q: str = typer.Argument(..., help="Question prefix, e.g. q01"),
+    version: str = typer.Argument("", help="Optional version suffix, e.g. v2, v3"),
+) -> None:
+    suffix = f"_{version}" if version else ""
+    sql_file = next(scripts_dir.rglob(f"{q}_solution{suffix}.sql"))
 
     athlete_events_path = (data_dir / "athlete_events.csv").as_posix()
     noc_regions_path = (data_dir / "noc_regions.csv").as_posix()
