@@ -1,21 +1,39 @@
-platform,source_platform,id,slug,difficulty,language,topics,date_solved,dataset,link,path
-stratascratch,stratascratch,10353,workers_with_the_highest_salaries,easy,"sql, pandas, polars","joins, filtering, window_functions",2026-06-11,platform,https://platform.stratascratch.com/coding/10353-workers-with-the-highest-salaries,problems/stratascratch/easy/10353_workers_with_the_highest_salaries
-stratascratch,stratascratch,10352,users_by_avg_session_time,medium,"sql, pandas, polars","aggregation, datetime, filtering, cte, joins, date_functions, case_when",2026-06-11,platform,https://platform.stratascratch.com/coding/10352-users-by-avg-session-time,problems/stratascratch/medium/10352_users_by_avg_session_time
-excelbi,excelbi,PQ00398,case_stage_progress,medium,"sql, pandas, polars, duckdb, pyspark","aggregations, case_when, cte, window_functions, joins, pandas_groupby",2026-06-09,provided,https://lnkd.in/gg7thZjF,problems/excelbi/2026/06_09_case_stage_progress
-excelbi,excelbi,PQ00397,territory_acquisition,medium,"pandas, polars","simulation, aggregation, stateful_iteration, string_ops",2026-06-10,provided,https://lnkd.in/gywHUGik,problems/excelbi/2026/06_10_territory_acquisition
-misc,misc,0001,python_utilities,easy,python,"conditional_logic, stateful_iteration",2026-06-13,none,,problems/misc/0001_python_utilities
-misc,misc,0002,data_explorer,easy,python,"aggregation, filtering, sorting, string_ops, lambda_functions, list_comprehensions",2026-06-13,none,,problems/misc/0002_data_explorer
-misc,misc,0003,calculator,easy,python,"string_ops, conditional_logic",2026-06-14,none,,problems/misc/0003_calculator
-misc,misc,0004,regex_explorer,easy,python,string_ops,2026-06-14,none,,problems/misc/0004_regex_explorer
-misc,misc,0005,madlibs,medium,python,"string_ops, conditional_logic",2026-06-14,none,,problems/misc/0005_madlibs
-misc,misc,0006,guessing_game,easy,python,"conditional_logic, stateful_iteration",2026-06-14,none,,problems/misc/0006_guessing_game
-misc,misc,0007,rock_paper_scissors,easy,python,"conditional_logic, simulation",2026-06-14,none,,problems/misc/0007_rock_paper_scissors
-misc,misc,0008,circle,medium,python,conditional_logic,2026-06-14,none,,problems/misc/0008_circle
-misc,misc,0009,sales_chart,easy,matplotlib,conditional_logic,2026-06-14,none,,problems/misc/0009_sales_chart
-misc,w3resource,0010,number_occurrence_check,easy,python,"conditional_logic, stateful_iteration, recursion",2026-06-18,none,https://www.w3resource.com/python-exercises/puzzles/python-programming-puzzles-1.php,problems/misc/0010_number_occurrence_check
-misc,alteryx_community,0011,join_to_range,medium,"pandas, polars","pandas_merge, pandas_groupby, string_ops",2026-06-18,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-1-Join-to-Range/td-p/36621,problems/misc/0011_join_to_range
-misc,alteryx_community,0012,preparing_delimited_data,easy,"pandas, polars","string_ops, datetime",2026-06-18,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-2-Preparing-Delimited-Data/td-p/36622,problems/misc/0012_preparing_delimited_data
-misc,alteryx_community,0013,running_averages,medium,pandas,"reshaping, aggregation",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-3-Running-Averages/td-p/36814,problems/misc/0013_running_averages
-misc,alteryx_community,0014,date_parsing,hard,pandas,"string_ops, datetime",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-4-Date-Parsing/td-p/36731,problems/misc/0014_date_parsing
-misc,alteryx_community,0015,retail_therapy,easy,pandas,"filtering, aggregation, sorting",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-164-Retail-Therapy/td-p/414754,problems/misc/0015_retail_therapy
-misc,alteryx_community,0016,womens_world_cup_wins,easy,pandas,"conditional_logic, aggregation, sorting",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-169-Women-s-World-Cup-Wins/td-p/430886/,problems/misc/0016_womens_world_cup_wins
+platform,source_platform,source,challenge,id,slug,difficulty,language,topics,date_solved,dataset,link,path
+leetcode,leetcode,,,0001,two_sum,easy,python,hash_map,2026-06-19,none,https://leetcode.com/problems/two-sum/,problems/leetcode/easy/0001_two_sum
+leetcode,leetcode,,,0020,valid_parentheses,easy,,,,none,https://leetcode.com/problems/valid-parentheses/,problems/leetcode/easy/0020_valid_parentheses
+leetcode,leetcode,,,0121,best_time_to_buy_and_sell_stock,easy,python,"two_pointers, sliding_window",2026-08-29,none,https://leetcode.com/problems/best-time-to-buy-and-sell-stock/,problems/leetcode/easy/0121_best_time_to_buy_and_sell_stock
+leetcode,leetcode,,,0125,valid_palindrome,easy,python,"string_ops, two_pointers",2026-06-23,none,https://leetcode.com/problems/valid-palindrome/,problems/leetcode/easy/0125_valid_palindrome
+leetcode,leetcode,,,0217,contains_duplicate,easy,python,"hash_map, sets",2026-06-19,none,https://leetcode.com/problems/contains-duplicate/,problems/leetcode/easy/0214_contains_duplicate
+leetcode,leetcode,,,0242,valid_anagram,easy,python,"hash_map, string_ops",2026-06-19,none,https://leetcode.com/problems/valid-anagram/,problems/leetcode/easy/0242_valid_anagrams
+leetcode,leetcode,,,0003,longest_substring_without_repeating_characters,medium,python,"sliding_window, two_pointers",2026-08-29,none,https://leetcode.com/problems/longest-substring-without-repeating-characters/,problems/leetcode/medium/0003_longest_substring_without_repeating_characters
+leetcode,leetcode,,,0011,container_with_most_water,medium,python,two_pointers,2026-06-23,none,https://leetcode.com/problems/container-with-most-water/,problems/leetcode/medium/0011_container_with_most_water
+leetcode,leetcode,,,0015,3sum,medium,python,"two_pointers, sorting",2026-06-23,none,https://leetcode.com/problems/3sum/,problems/leetcode/medium/0015_3sum
+leetcode,leetcode,,,0036,valid_sudoku,medium,,,,none,https://leetcode.com/problems/valid-sudoku/,problems/leetcode/medium/0036_valid_sudoku
+leetcode,leetcode,,,0049,group_anagrams,medium,python,"hash_map, string_ops",2026-06-19,none,https://leetcode.com/problems/group-anagrams/,problems/leetcode/medium/0049_group_anagrams
+leetcode,leetcode,,,0167,two_sum_ii_input_array_is_sorted,medium,python,two_pointers,2026-06-23,none,https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/,problems/leetcode/medium/0167_two_sum_ii_input_array_is_sorted
+leetcode,leetcode,,,0238,product_of_array_except_self,medium,python,stateful_iteration,2026-06-23,none,https://leetcode.com/problems/product-of-array-except-self/,problems/leetcode/medium/0238_product_of_array_except_self
+leetcode,leetcode,,,0347,top_k_frequent_elements,medium,python,"hash_map, sorting, bucket_sort",2026-06-23,none,https://leetcode.com/problems/top-k-frequent-elements/,problems/leetcode/medium/0347_top_k_frequent_elements
+leetcode,leetcode,,,0424,longest_repeating_character_replacement,medium,python,"sliding_window, two_pointers",2026-08-29,none,https://leetcode.com/problems/longest-repeating-character-replacement/,problems/leetcode/medium/0424_longest_repeating_character_replacement
+leetcode,leetcode,,,0567,permutation_in_string,medium,python,sliding_window,2026-08-29,none,https://leetcode.com/problems/permutation-in-string/,problems/leetcode/medium/0567_permutation_in_string
+stratascratch,stratascratch,,,10353,workers_with_the_highest_salaries,easy,"sql, pandas, polars","joins, filtering, window_functions",2026-06-11,platform,https://platform.stratascratch.com/coding/10353-workers-with-the-highest-salaries,problems/stratascratch/easy/10353_workers_with_the_highest_salaries
+stratascratch,stratascratch,,,10352,users_by_avg_session_time,medium,"sql, pandas, polars","aggregation, datetime, filtering, cte, joins, date_functions, case_when",2026-06-11,platform,https://platform.stratascratch.com/coding/10352-users-by-avg-session-time,problems/stratascratch/medium/10352_users_by_avg_session_time
+excelbi,excelbi,,,PQ00398,case_stage_progress,medium,"sql, pandas, polars, duckdb, pyspark","aggregations, case_when, cte, window_functions, joins, pandas_groupby",2026-06-09,provided,https://lnkd.in/gg7thZjF,problems/excelbi/2026/06_09_case_stage_progress
+excelbi,excelbi,,,PQ00397,territory_acquisition,medium,"pandas, polars","simulation, aggregation, stateful_iteration, string_ops",2026-06-10,provided,https://lnkd.in/gywHUGik,problems/excelbi/2026/06_10_territory_acquisition
+misc,misc,,,0001,python_utilities,easy,python,"conditional_logic, stateful_iteration",2026-06-13,none,,problems/misc/0001_python_utilities
+misc,misc,,,0002,data_explorer,easy,python,"aggregation, filtering, sorting, string_ops, lambda_functions, list_comprehensions",2026-06-13,none,,problems/misc/0002_data_explorer
+misc,misc,,,0003,calculator,easy,python,"string_ops, conditional_logic",2026-06-14,none,,problems/misc/0003_calculator
+misc,misc,,,0004,regex_explorer,easy,python,string_ops,2026-06-14,none,,problems/misc/0004_regex_explorer
+misc,misc,,,0005,madlibs,medium,python,"string_ops, conditional_logic",2026-06-14,none,,problems/misc/0005_madlibs
+misc,misc,,,0006,guessing_game,easy,python,"conditional_logic, stateful_iteration",2026-06-14,none,,problems/misc/0006_guessing_game
+misc,misc,,,0007,rock_paper_scissors,easy,python,"conditional_logic, simulation",2026-06-14,none,,problems/misc/0007_rock_paper_scissors
+misc,misc,,,0008,circle,medium,python,conditional_logic,2026-06-14,none,,problems/misc/0008_circle
+misc,misc,,,0009,sales_chart,easy,matplotlib,conditional_logic,2026-06-14,none,,problems/misc/0009_sales_chart
+misc,w3resource,,,0010,number_occurrence_check,easy,python,"conditional_logic, stateful_iteration, recursion",2026-06-18,none,https://www.w3resource.com/python-exercises/puzzles/python-programming-puzzles-1.php,problems/misc/0010_number_occurrence_check
+misc,alteryx_community,,,0011,join_to_range,medium,"pandas, polars","pandas_merge, pandas_groupby, string_ops",2026-06-18,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-1-Join-to-Range/td-p/36621,problems/misc/0011_join_to_range
+misc,alteryx_community,,,0012,preparing_delimited_data,easy,"pandas, polars","string_ops, datetime",2026-06-18,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-2-Preparing-Delimited-Data/td-p/36622,problems/misc/0012_preparing_delimited_data
+misc,alteryx_community,,,0013,running_averages,medium,pandas,"reshaping, aggregation",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-3-Running-Averages/td-p/36814,problems/misc/0013_running_averages
+misc,alteryx_community,,,0014,date_parsing,hard,pandas,"string_ops, datetime",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-4-Date-Parsing/td-p/36731,problems/misc/0014_date_parsing
+misc,alteryx_community,,,0015,retail_therapy,easy,pandas,"filtering, aggregation, sorting",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-164-Retail-Therapy/td-p/414754,problems/misc/0015_retail_therapy
+misc,alteryx_community,,,0016,womens_world_cup_wins,easy,pandas,"conditional_logic, aggregation, sorting",2026-06-26,provided,https://community.alteryx.com/t5/Weekly-Challenge/Challenge-169-Women-s-World-Cup-Wins/td-p/430886/,problems/misc/0016_womens_world_cup_wins
+projects,projects,kaggle,olympic_history_analysis,kaggle/olympic_history_analysis,olympic_history_analysis,null,sql,"aggregation, joins, window_functions, cte, subqueries, having, case_when, string_manipulation, filtering, sorting",2026-08-30,mutable_committed,https://www.kaggle.com/datasets/heesoo37/120-years-of-olympic-history-athletes-and-results,projects/kaggle/olympic_history_analysis
+projects,projects,misc,demographic_data_analysis,misc/demographic_data_analysis,demographic_data_analysis,null,pandas,"aggregation, filtering, sorting, joins, lambda_functions, conditional_logic",null,provided,,projects/misc/demographic_data_analysis

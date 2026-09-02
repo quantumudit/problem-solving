@@ -10,6 +10,7 @@ Skips silently when not on the main branch.
 from __future__ import annotations
 
 import csv
+import os
 import re
 import subprocess
 import sys
@@ -34,6 +35,10 @@ PLATFORM_DISPLAY = {
 
 
 def current_branch() -> str:
+    # GitHub Actions checks out in detached HEAD; GITHUB_REF_NAME holds the branch name
+    env_ref = os.environ.get("GITHUB_REF_NAME", "")
+    if env_ref:
+        return env_ref
     result = subprocess.run(
         ["git", "branch", "--show-current"],
         capture_output=True,
@@ -134,40 +139,42 @@ def collect_projects() -> list[dict]:
         return []
 
     records = []
-    for notes_path in sorted(projects_dir.rglob("notes.md")):
-        folder = notes_path.parent
-        # Only q## folders have notes.md -- skip project-root folders
-        if not re.match(r"q\d+", folder.name):
+    # Scan projects/{source}/{challenge}/ -- one notes.md per challenge
+    for source_dir in sorted(projects_dir.iterdir()):
+        if not source_dir.is_dir():
             continue
+        for challenge_dir in sorted(source_dir.iterdir()):
+            if not challenge_dir.is_dir():
+                continue
+            notes_path = challenge_dir / "notes.md"
+            if not notes_path.exists():
+                continue
 
-        fm = parse_frontmatter(notes_path)
-        project_fm = parse_frontmatter(folder.parent / "README.md")
+            fm = parse_frontmatter(notes_path)
+            project_fm = parse_frontmatter(challenge_dir / "README.md")
 
-        lang_raw = fm.get("language", "")
-        language = clean_list(lang_raw) if lang_raw else detect_languages(folder)
-        source = folder.parent.parent.name
-        challenge = folder.parent.name
-        q_num = folder.name.split("_")[0]
+            lang_raw = fm.get("language", "")
+            language = clean_list(lang_raw) if lang_raw else detect_languages(challenge_dir)
+            source = source_dir.name
+            challenge = challenge_dir.name
 
-        difficulty = fm.get("difficulty_rating", "null")
-
-        records.append(
-            {
-                "platform": "projects",
-                "source_platform": "projects",
-                "source": source,
-                "challenge": challenge,
-                "id": f"{source}/{challenge}/{q_num}",
-                "slug": fm.get("slug", "_".join(folder.name.split("_")[1:])),
-                "difficulty": difficulty,
-                "language": language,
-                "topics": clean_list(fm.get("topics", "")),
-                "date_solved": fm.get("date_solved", ""),
-                "dataset": project_fm.get("dataset", ""),
-                "link": project_fm.get("link", ""),
-                "path": str(folder.relative_to(REPO_ROOT)).replace("\\", "/"),
-            }
-        )
+            records.append(
+                {
+                    "platform": "projects",
+                    "source_platform": "projects",
+                    "source": source,
+                    "challenge": challenge,
+                    "id": f"{source}/{challenge}",
+                    "slug": challenge,
+                    "difficulty": fm.get("difficulty_rating", "null"),
+                    "language": language,
+                    "topics": clean_list(fm.get("topics", "")),
+                    "date_solved": fm.get("date_solved", ""),
+                    "dataset": project_fm.get("dataset", ""),
+                    "link": project_fm.get("link", ""),
+                    "path": str(challenge_dir.relative_to(REPO_ROOT)).replace("\\", "/"),
+                }
+            )
     return records
 
 
@@ -210,18 +217,17 @@ def write_markdown(records: list[dict]) -> None:
                     f" | {date_s} | {link_cell} |"
                 )
         elif platform == "projects":
-            lines.append("| Source | Project | Question | Difficulty | Language | Date Solved | Link |")
+            lines.append("| Source | Challenge | Difficulty | Language | Topics | Date Solved | Link |")
             lines.append("|---|---|---|---|---|---|---|")
             for r in rows:
                 src = r.get("source", "-")
-                proj = r.get("challenge", "-")
-                slug_cell = f"[{r['slug']}]({r['path']})"
+                challenge_cell = f"[{r.get('challenge', r['slug'])}]({r['path']})"
                 diff = r["difficulty"] if r["difficulty"] != "null" else "-"
                 date_s = r["date_solved"] or "-"
                 link_cell = f"[link]({r['link']})" if r["link"] else "-"
                 lines.append(
-                    f"| {src} | {proj} | {slug_cell} | {diff} | {r['language'] or '-'}"
-                    f" | {date_s} | {link_cell} |"
+                    f"| {src} | {challenge_cell} | {diff} | {r['language'] or '-'}"
+                    f" | {r['topics'] or '-'} | {date_s} | {link_cell} |"
                 )
         else:
             lines.append("| ID | Slug | Difficulty | Language | Date Solved | Link |")
@@ -246,6 +252,8 @@ def write_csv(records: list[dict]) -> None:
     fields = [
         "platform",
         "source_platform",
+        "source",
+        "challenge",
         "id",
         "slug",
         "difficulty",
@@ -257,7 +265,7 @@ def write_csv(records: list[dict]) -> None:
         "path",
     ]
     with INDEX_CSV.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+        writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore", restval="")
         writer.writeheader()
         writer.writerows(records)
     print(f"Written: {INDEX_CSV.relative_to(REPO_ROOT)}")
