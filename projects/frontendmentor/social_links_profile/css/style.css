@@ -1,0 +1,149 @@
+/* Style Reset */
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Constants and Default Font Size */
+
+:root {
+    font-size: 14px;
+    --green-col: hsl(75, 94%, 57%);
+    --white-col: hsl(0, 0%, 100%);
+    --grey-700: hsl(0, 0%, 20%);
+    --grey-800: hsl(0, 0%, 12%);
+    --grey-900: hsl(0, 0%, 8%);
+}
+
+/* Body styles */
+body {
+    font-family: "Inter", sans-serif;
+    line-height: 1.6;
+    background-color: var(--grey-900);
+}
+
+/* Element Styles */
+img {
+    width: 90px;
+    max-width: 100%;
+    border-radius: 50%;
+}
+
+ul {
+    list-style: none;
+}
+
+/* Main Content Style */
+
+.container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px 40px;
+    background-color: var(--grey-800);
+    border-radius: 1rem;
+}
+
+.main,
+.profile {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.profile {
+    gap: 1.8rem;
+    margin-bottom: 0.4rem;
+    text-align: center;
+    color: var(--white-col);
+    .name-place {
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 0.2rem;
+        }
+        p {
+            color: var(--green-col);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+    }
+}
+
+.links {
+    width: 100%;
+}
+
+ul li {
+    background-color: var(--grey-700);
+    font-weight: 700;
+    margin: 1.2rem auto;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+    &:hover {
+        background-color: var(--green-col);
+    }
+
+    a {
+        display: inline-block;
+        width: 100%;
+        padding: 0.7rem;
+        text-decoration: none;
+        color: var(--white-col);
+        transition: color 0.3s ease;
+        &:hover {
+            color: var(--grey-900);
+        }
+    }
+}
+
+/* Attributions */
+
+.attribution {
+    font-size: 0.8rem;
+    margin: 2rem auto;
+    text-align: center;
+    color: white;
+}
+.attribution a {
+    text-decoration: none;
+    color: hsl(228, 57%, 75%);
+    opacity: 0.8;
+    &:hover {
+        opacity: 1;
+    }
+}
+
+/* media queries */
+
+@media (max-width: 576px) {
+    .container {
+        margin: 30px auto;
+    }
+}
+
+@media (max-width: 450px) {
+    .container {
+        margin: 30px auto;
+        max-width: 300px;
+    }
+    .profile {
+        font-size: 0.8rem;
+        .name-place {
+            h1 {
+                font-size: 1.5rem;
+            }
+            p {
+                font-size: 0.8rem;
+            }
+        }
+    }
+
+    ul li a {
+        font-size: 0.8rem;
+    }
+}
