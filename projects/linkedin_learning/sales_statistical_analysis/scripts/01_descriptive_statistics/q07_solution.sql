@@ -1,0 +1,3 @@
+-- q07: Variance and Standard Deviation of Units Sold by Month
+-- Show the population variance and standard deviation (both rounded to 2
+-- decimal places) of units sold for each month, ordered by month.

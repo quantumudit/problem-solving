@@ -1,0 +1,6 @@
+-- q10: Correlation of Sales Metrics
+-- Compute (rounded to 2 decimal places) the correlation between:
+--   units_sold and revenue
+--   units_sold and employee_shifts
+--   units_sold and month_of_year
+-- Return all three correlations in a single row.
