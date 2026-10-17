@@ -68,8 +68,11 @@ problem_solving/
 └── community/
     └── microsoft_fabric/
         ├── README.md              <- contribution tracker
-        └── solutions/             <- code files for non-trivial answers
-            └── rolling_average.dax
+        └── solutions/
+            └── {year}/
+                └── {sno}_{slug}/
+                    ├── notes.md
+                    └── solution.pbix
 ```
 
 ---
@@ -170,16 +173,23 @@ murder_mystery/
 
 ### Community folder (community/)
 
-Each community gets a subfolder with a tracker README and an optional `solutions/` folder
-for non-trivial code files worth keeping locally. Blogs, reports, and simple answers are
-tracked as rows only -- no local file needed.
+Each community gets a subfolder with a tracker README and a `solutions/` folder for
+contributions worth documenting locally. Simple one-liner answers stay as tracker rows
+only -- no subfolder needed.
+
+`solutions/` is organized by year (the year you answered, not when the question was posted),
+then by contribution using a global zero-padded serial number and slug.
 
 ```
 microsoft_fabric/
-├── README.md               <- contribution tracker (one table, all types)
-└── solutions/              <- only when the answer has meaningful code
-    ├── rolling_average.dax
-    └── unpivot_headers.pq
+├── README.md                       <- contribution tracker (one row per contribution)
+└── solutions/
+    └── {year}/                     <- year the answer was posted
+        └── {sno}_{slug}/           <- one subfolder per non-trivial contribution
+            ├── notes.md            <- problem statement + solution write-up
+            ├── solution.pbix       <- optional, when a pbix file is created
+            └── data/               <- optional, when external data is needed
+                └── sample.xlsx
 ```
 
 ---
@@ -270,16 +280,19 @@ link:               # url to the community homepage
 ```markdown
 ## {Community Name}
 
-| Date | Type | Title | Tags | Link |
-|---|---|---|---|-------------|
-| YYYY-MM-DD | answer | Title of the answer | dax, time_intelligence | [link](...) |
-| YYYY-MM-DD | blog   | Title of the blog post | pq | [link](...) |
+| Sno | Date | Category | Type | Title | Accepted | Tags | Link | Files |
+|---|---|---|---|---|---|---|---|---|
+| 0001 | 2024-04-12 | Desktop | answer | Title of the answer | yes | dax, aggregations | [link](...) | [notes](solutions/2024/0001_slug/notes.md) |
+| 0002 | 2024-04-12 | DAX Commands and Tips | answer | Simple one-liner | yes | dax | [link](...) | - |
 ```
 
-Type values: `answer` | `blog` | `report` | `tutorial`
-
-For entries with non-trivial code, also save the file in `solutions/` and link it in the
-Title cell: `[Title](solutions/slug.dax)`.
+Column guide:
+- `Sno`: zero-padded to 4 digits; global across all batches, never resets per year
+- `Category`: forum category as-is e.g. `Desktop`, `DAX Commands and Tips`
+- `Type`: `answer` | `blog` | `report` | `tutorial`
+- `Accepted`: `yes` / `no`
+- `Tags`: snake_case comma-separated topic tags
+- `Files`: link to `notes.md` in the solution subfolder, or `-` for tracker-only rows
 
 ---
 
@@ -324,6 +337,42 @@ revisit:          # true | false
 
 Note: the `## Tricks / New Learnings` heading uses an emoji in the actual file --
 this is an established exception to the ASCII-only rule.
+
+---
+
+### notes.md -- community answers
+
+```yaml
+---
+community:          # snake_case e.g. microsoft_fabric
+sno:                # quoted string e.g. "0002"
+category:           # snake_case e.g. desktop, dax_commands_and_tips
+slug:               # snake_case
+topic_url:          # direct url to your answer post
+date_answered:      # YYYY-MM-DD
+accepted:           # true | false
+language:           # always a list e.g. [dax] or [pq]
+topics:             # always a list e.g. [window_functions, calculated_measures]
+---
+```
+
+```markdown
+## Problem
+
+...summary of the original question...
+
+## My Solution
+
+...your DAX / PQ solution with any brief explanation...
+
+## Why It Works
+
+...brief explanation when the approach is non-obvious...
+
+## Alternate Solutions
+
+...when your answer was not accepted, or another valid approach is worth noting...
+```
 
 ---
 
