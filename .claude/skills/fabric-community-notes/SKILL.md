@@ -30,6 +30,36 @@ parse the HTML manually.
 
 ---
 
+## Step 0 -- Get the HTML file into scratchpad/fabric-forum-refs/
+
+Two ways to get the HTML, in order of preference:
+
+**A. Download with the script (preferred)**
+
+The forum blocks unauthenticated requests. The script supports passing browser cookies
+to authenticate. Get the cookie string from DevTools:
+
+1. Open the forum in your browser (logged in).
+2. DevTools (F12) -> Network tab -> refresh the page -> click any request to the forum.
+3. Under Request Headers, copy the full value of the "Cookie" line.
+4. Run:
+
+```powershell
+python -I ".claude/skills/fabric-community-notes/scripts/download_page.py" `
+    "https://community.fabric.microsoft.com/t5/..." `
+    --cookies "<paste cookie string here>"
+```
+
+The file is saved to `scratchpad/fabric-forum-refs/` and named after the page title.
+The script prints the full saved path.
+
+**B. Manual save (fallback)**
+
+Open the topic URL in a browser where you are logged in, then File > Save Page As >
+"Web Page, Complete" (or "Web Page, HTML Only"). Save into `scratchpad/fabric-forum-refs/`.
+
+---
+
 ## Step 1 -- Run the extraction script
 
 HTML exports are always saved to `scratchpad/fabric-forum-refs/` in the repo root.
