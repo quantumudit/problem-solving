@@ -202,9 +202,14 @@ labs/
     └── youtube_rag_chatbot/
         ├── README.md
         ├── notes.md
-        ├── main.py
+        ├── main.py            <- script-based implementation
+        ├── notebook.ipynb     <- exploratory or notebook-based implementation
         └── data/              <- optional; only if local data is needed
 ```
+
+`main.py` and `notebook.ipynb` are not mutually exclusive -- a project may have one or both.
+Use `main.py` for clean, runnable implementations; use `notebook.ipynb` for exploratory work
+or step-by-step walkthroughs where cell output adds value.
 
 ### Multi-phase (progressive) project
 
@@ -215,7 +220,8 @@ labs/
         ├── README.md
         ├── notes.md
         ├── phase_01_trim_messages/
-        │   └── main.py
+        │   ├── main.py
+        │   └── notebook.ipynb   <- optional; include when the phase benefits from it
         ├── phase_02_delete_messages/
         │   └── main.py
         └── phase_03_delete_and_summarize/
@@ -223,8 +229,8 @@ labs/
 ```
 
 Phases are numbered sequentially: `phase_01_{slug}`, `phase_02_{slug}`, etc.
-Each phase has its own `main.py`. Shared utilities (if any) live at the project root.
-One branch covers the entire project -- not one branch per phase.
+Each phase has its own `main.py` and/or `notebook.ipynb`. Shared utilities (if any)
+live at the project root. One branch covers the entire project -- not one branch per phase.
 
 ---
 
