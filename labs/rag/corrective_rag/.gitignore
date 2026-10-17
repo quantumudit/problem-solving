@@ -1,0 +1,4 @@
+data/*
+!data/.gitkeep
+vector_store/*
+!vector_store/.gitkeep
