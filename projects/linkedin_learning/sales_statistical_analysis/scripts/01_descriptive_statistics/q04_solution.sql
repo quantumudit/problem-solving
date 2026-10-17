@@ -1,0 +1,3 @@
+-- q04: Monthly Max and Min Employee Shifts
+-- Show the maximum and minimum number of employee shifts for each
+-- month of the year, ordered by month.

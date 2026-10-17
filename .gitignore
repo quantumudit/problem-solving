@@ -40,6 +40,11 @@ scratchpad/*
 .vscode/
 .idea/
 
+# AI agent config (local only)
+.agents/
+.codex/
+AGENTS.md
+
 # OS
 .DS_Store
 Thumbs.db

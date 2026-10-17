@@ -1,0 +1,3 @@
+-- q06: Total and Average Units Sold by Month
+-- Show the total and average (rounded to 2 decimal places) units sold
+-- for each month of the year, ordered by month.

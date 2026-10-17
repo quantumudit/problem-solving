@@ -1,0 +1,3 @@
+-- q02: Transactions by Month
+-- Show the number of transactions for each month of the year,
+-- ordered by month.

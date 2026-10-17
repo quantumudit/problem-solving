@@ -1,0 +1,4 @@
+-- q13: Determine Required Employees via Linear Regression
+-- Use linear regression (slope and intercept) between units_sold and employee_shifts
+-- to estimate the number of employees required when units_sold = 1500.
+-- Return the given_units_sold value and the required_employees (ceiling of the estimate).

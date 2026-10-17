@@ -1,0 +1,3 @@
+-- q03: Annual Max and Min Employee Shifts
+-- Find the maximum and minimum number of employee shifts recorded
+-- across the entire year.
