@@ -1,16 +1,16 @@
 # Project Tracker
 
-Active work-in-progress across open branches. Each section is one batch branch.
-Update this file as questions are solved and projects close.
+Active and pending work across branches. Each section is one batch branch or standalone task group.
+Update this file as tasks are completed and branches are closed.
 
 ---
 
-## Branch: `projects/batch/analytics_scaffold_sep_2026`
+## Branch: `projects/batch/analytics_scaffold_sep_2026` -- MERGED
 
-Three analytics projects scaffolded and being solved in order: movie ratings, then basketball,
-then sales. Merge into `main` once all three are complete.
+This branch was squash-merged into `main`. The scaffold and EDA work is done.
+All three projects still have unsolved questions -- each will be tackled in its own branch.
 
-**Sequence:** movie_ratings_analysis -> basketball_players_analysis -> sales_statistical_analysis
+**Sequence (original):** movie_ratings_analysis -> basketball_players_analysis -> sales_statistical_analysis
 
 ---
 
@@ -18,9 +18,10 @@ then sales. Merge into `main` once all three are complete.
 
 **Path:** `projects/misc/movie_ratings_analysis/`
 **Stack:** Python, pandas, seaborn, matplotlib
-**Status:** IN PROGRESS -- currently active
+**Branch:** `projects/misc/movie_ratings_analysis` (to be created)
+**Status:** PENDING -- scaffold merged, questions not yet started
 
-**Completed:**
+**Completed (merged):**
 - [x] Scaffold project structure (data, scripts, assets, output)
 - [x] EDA notebook (`eda.ipynb`) -- fully refactored with insights, key takeaways, filter function
 
@@ -46,9 +47,10 @@ then sales. Merge into `main` once all three are complete.
 
 **Path:** `projects/misc/basketball_players_analysis/`
 **Stack:** Python, pandas, numpy, matplotlib
-**Status:** UP NEXT -- scaffold done, no questions solved yet
+**Branch:** `projects/misc/basketball_players_analysis` (to be created)
+**Status:** PENDING -- scaffold merged, questions not yet started
 
-**Completed:**
+**Completed (merged):**
 - [x] Scaffold project structure (data, scripts, assets, output)
 - [x] YAML source data (`basketball_players.yaml`) + `build_dataset.py`
 - [x] EDA notebook skeleton (`eda.ipynb`)
@@ -82,9 +84,10 @@ uv run .\projects\misc\basketball_players_analysis\build_dataset.py
 
 **Path:** `projects/linkedin_learning/sales_statistical_analysis/`
 **Stack:** SQL, DuckDB, Python (runner)
-**Status:** PENDING -- scaffold done, no questions solved yet
+**Branch:** `projects/linkedin_learning/sales_statistical_analysis` (to be created)
+**Status:** PENDING -- scaffold merged, questions not yet started
 
-**Completed:**
+**Completed (merged):**
 - [x] Scaffold project structure (data, scripts, assets, output)
 - [x] pgSQL source data (`storedb.sql`) + `build_dataset.py` (converts to CSV)
 - [x] DuckDB runner (`scripts/runner.py`) with typer CLI
@@ -126,15 +129,77 @@ just project-sql linkedin_learning sales_statistical_analysis q01
 
 ---
 
-### Branch close-out checklist
+## Microsoft Fabric Community -- Backlog Tasks
 
-When all three projects are done:
+**Path:** `community/microsoft_fabric/`
+**Branch prefix:** `community/microsoft_fabric/...` (one branch per task group)
 
-- [ ] movie_ratings_analysis -- all 7 questions solved
-- [ ] basketball_players_analysis -- all 8 questions solved
-- [ ] sales_statistical_analysis -- all 13 questions solved
-- [ ] All three README.md Insights sections filled
-- [ ] All three notes.md filled
-- [ ] Push branch: `git push -u origin projects/batch/analytics_scaffold_sep_2026`
-- [ ] Squash merge into main
-- [ ] Delete branch locally and remotely
+Three gaps to close, each in its own branch.
+
+---
+
+### Task A: Add missing solution folders (entries 0010-0018)
+
+`contributions.csv` has 18 entries. The `solutions/` folder only covers entries 0001-0009.
+Entries 0010-0018 have no solution folder or notes file.
+
+**Branch:** `community/microsoft_fabric/backfill_solutions_0010_0018` (to be created)
+
+| Sno | Title | Has Solution Folder |
+|-----|-------|---------------------|
+| 0010 | Calculate Distinct Count for Customer excluding names with GOL prefix | [ ] |
+| 0011 | Calculating three day weekly and monthly usage and average weekly usage | [ ] |
+| 0012 | Cohort analysis - count registrations and first use of service | [ ] |
+| 0013 | Percentage at column level by month dividing from a specific subcategory | [ ] |
+| 0014 | Return 0% only when the outcome is actually 0 and blank otherwise | [ ] |
+| 0015 | Adding Calculated Column with the latest Item (second answer) | [ ] |
+| 0016 | Calculating date difference in days within same column | [ ] |
+| 0017 | To show Prior Year values for only Current Fiscal Year | [ ] |
+| 0018 | Pulling most recent value and excluding blanks | [ ] |
+
+Each folder needs: `notes.md` with the DAX solution and explanation.
+
+---
+
+### Task B: Add .pbix reference files to all solution folders
+
+No solution folder currently has a `.pbix` file. Every entry should have a Power BI
+reference file so the DAX can be opened and tested in context.
+
+**Branch:** `community/microsoft_fabric/add_pbix_references` (to be created)
+
+- Add a `.pbix` reference file to each of the 18 solution folders (create folders for
+  0010-0018 first -- see Task A)
+- The `.pbix` per entry is a minimal file containing the sample data and the DAX measure
+  or column from the solution, so the answer can be verified interactively
+
+---
+
+### Task C: Add main tracker .pbix to community root
+
+A single master `.pbix` file at `community/microsoft_fabric/` that tracks all forum
+queries as they arrive -- one page or report tab per question answered.
+
+**Branch:** `community/microsoft_fabric/add_main_tracker_pbix` (to be created)
+
+- Source file lives on OneDrive -- copy it into the repo root of this folder
+- File name: `microsoft_fabric_community_tracker.pbix` (confirm exact name on copy)
+- Add to `.gitignore` if the file is too large to commit; document the OneDrive path in
+  `community/microsoft_fabric/README.md` instead
+
+---
+
+## Labs -- Backlog Tasks
+
+**Path:** `labs/` (to be created -- use `/new-lab` skill for each)
+**Branch prefix:** `labs/...` (one branch per lab)
+
+Planned labs for hands-on concept exploration through implementation.
+
+| # | Lab Slug | Topic | Status |
+|---|----------|-------|--------|
+| 01 | rag_fundamentals | Retrieval-Augmented Generation -- chunking, embedding, retrieval, generation | [ ] |
+| 02 | langgraph_ltm | LangGraph Long-Term Memory -- stateful agents, memory stores, persistence | [ ] |
+
+Each lab gets its own branch (`labs/{slug}`) and is scaffolded via `/new-lab` before work begins.
+Add further lab ideas to this table as they come up.

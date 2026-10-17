@@ -214,7 +214,7 @@ Only `seed.sql` is committed. Add `*.db` and `*.sqlite` to `data/.gitignore`.
 | `/write-readme` | Problem statement is ready -- generates or fills in the per-problem README.md |
 | `/evaluate-solution` | Solution is written -- runs examples, generates edge cases, checks correctness and complexity |
 | `/solve` | Problem is finished and correct -- runs the squash merge with correctly formatted commit message |
-| `/new-lab` | Starting a new AI/ML lab -- scaffolds branch, folder, README.md, notes.md, and entry-point files for single-phase or multi-phase projects |
+| `/new-lab` | Starting a new lab -- scaffolds branch, folder, README.md, notes.md, and entry-point files for single-phase or multi-phase projects |
 | `/raise-pr` | Branch is ready -- full PR lifecycle: create, assign, add to GitHub project, detect conflicts, await approval, merge, validate, delete branch |
 
 ### Always-loaded rules (`.claude/rules/`)

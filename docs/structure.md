@@ -200,9 +200,10 @@ microsoft_fabric/
 
 ## Labs folder (labs/)
 
-Learning and concept implementation projects. Self-contained mini-apps for exploring
-AI/ML concepts, frameworks, and techniques. May be single-phase or progressive
-(multiple phases building on each other). Not tied to any specific course or platform.
+Learning and concept implementation projects. Self-contained explorations of any topic
+worth understanding by building -- AI/ML pipelines, data engineering patterns, framework
+internals, system design, or anything else. May be single-phase or progressive (multiple
+phases building on each other). Not tied to any specific course or platform.
 
 ### Single-phase project
 
