@@ -65,11 +65,14 @@ problem_solving/
 │   │   └── some_course/
 │   └── misc/
 │       └── some_lost_challenge/
-└── community/
-    └── microsoft_fabric/
-        ├── README.md              <- contribution tracker
-        └── solutions/             <- code files for non-trivial answers
-            └── rolling_average.dax
+├── community/
+│   └── microsoft_fabric/
+│       ├── README.md              <- contribution tracker
+│       └── solutions/             <- code files for non-trivial answers
+│           └── rolling_average.dax
+└── labs/
+    └── {concept_area}/          <- rag | agents | memory | langgraph | etc.
+        └── {slug}/
 ```
 
 ---
@@ -84,6 +87,7 @@ problem_solving/
 | edna | no | weekly | `problems/edna/{year}/{w##_slug}/` |
 | misc | no | on demand | `problems/misc/{id}_{slug}/` |
 | projects | no | project set | `projects/{source}/{challenge}/{q##_slug}/` |
+| labs | no | project | `labs/{concept_area}/{slug}/` |
 
 ---
 
@@ -181,6 +185,46 @@ microsoft_fabric/
     ├── rolling_average.dax
     └── unpivot_headers.pq
 ```
+
+---
+
+## Labs folder (labs/)
+
+Learning and concept implementation projects. Self-contained mini-apps for exploring
+AI/ML concepts, frameworks, and techniques. May be single-phase or progressive
+(multiple phases building on each other). Not tied to any specific course or platform.
+
+### Single-phase project
+
+```
+labs/
+└── rag/
+    └── youtube_rag_chatbot/
+        ├── README.md
+        ├── notes.md
+        ├── main.py
+        └── data/              <- optional; only if local data is needed
+```
+
+### Multi-phase (progressive) project
+
+```
+labs/
+└── memory/
+    └── ltm_langgraph/
+        ├── README.md
+        ├── notes.md
+        ├── phase_01_trim_messages/
+        │   └── main.py
+        ├── phase_02_delete_messages/
+        │   └── main.py
+        └── phase_03_delete_and_summarize/
+            └── main.py
+```
+
+Phases are numbered sequentially: `phase_01_{slug}`, `phase_02_{slug}`, etc.
+Each phase has its own `main.py`. Shared utilities (if any) live at the project root.
+One branch covers the entire project -- not one branch per phase.
 
 ---
 
@@ -324,6 +368,89 @@ revisit:          # true | false
 
 Note: the `## Tricks / New Learnings` heading uses an emoji in the actual file --
 this is an established exception to the ASCII-only rule.
+
+---
+
+### README.md -- labs projects
+
+One README per lab project. Covers all phases if the project is progressive.
+
+```yaml
+---
+platform: labs
+concept_area:       # rag | agents | memory | langgraph | embeddings | etc.
+slug:               # snake_case e.g. youtube_rag_chatbot
+phases:             # null for single-phase; integer e.g. 3 for multi-phase
+link:               # reference url (youtube, blog, paper); empty string if none
+framework:          # list e.g. [langchain, langgraph] or [openai]
+date_started:       # YYYY-MM-DD
+date_completed:     # YYYY-MM-DD | null
+---
+```
+
+```markdown
+## Overview
+
+Brief description of what this lab implements and the concept it explores.
+
+## Reference
+
+[Title](link) -- note on how this differs from the reference, if at all.
+
+## Phases
+
+| # | Slug | Description |
+|---|------|-------------|
+| phase_01 | trim_messages | basic message trimming |
+| phase_02 | delete_messages | targeted deletion |
+
+(Omit the Phases section for single-phase projects.)
+
+## Key Concepts
+
+- concept one
+- concept two
+```
+
+---
+
+### notes.md -- labs projects
+
+```yaml
+---
+platform: labs
+concept_area:         # rag | agents | memory | langgraph | embeddings | etc.
+slug:                 # snake_case
+language:             # always a list e.g. [python]
+framework:            # always a list e.g. [langchain, langgraph]
+topics:               # always a list e.g. [rag, embeddings, vector_store]
+date_completed:       # YYYY-MM-DD
+revisit:              # true | false
+---
+```
+
+```markdown
+## Approach
+
+...how you thought about the implementation...
+
+## What I Learned
+
+...key concepts and techniques discovered...
+
+## What Tripped Me Up
+
+...
+
+## Tricks / New Learnings
+
+...specific to this lab...
+...anything broader goes to Obsidian with a back-reference to this lab path...
+
+## Revisit Notes
+
+...what to try differently or extend next time...
+```
 
 ---
 
