@@ -45,7 +45,7 @@ URL lives in its own column there).
 | My Solution Accepted | `yes` if the original poster accepted my response as the solution; `no` otherwise. |
 | Status | Blank when accepted. Otherwise: `marked as solution` (I marked my own response as accepted), `no accepted solution yet - solution available` (valid solution posted but OP has not accepted), `no accepted solution yet - valid solution pending` (solution still being worked out), `closed`. |
 | Tags | snake_case topic tags describing the techniques used. |
-| Ref. File | Relative path to the `.pbix` file if one exists locally; blank otherwise. |
+| Ref. File | Relative path to the `notes.md` for this contribution. Blank for tracker-only rows with no local write-up. The `notes.md` itself holds the relative path to the `.pbix` file if one exists. |
 
 </details>
 
@@ -54,7 +54,7 @@ URL lives in its own column there).
 
 | Sno | Publish Date | User | Category | Type | Title | My Solution Accepted | Status | Tags | Ref. File |
 |---|---|---|---|---|---|---|---|---|---|
-| 0001 | 2020-09-28 | bamba98 | DAX Commands and Tips | answer | [Select single cell from table to another table](https://community.fabric.microsoft.com/t5/DAX-Commands-and-Tips/Select-single-cell-from-table-to-another-table/m-p/1399492#M25732) | yes | | dax, calculated_measures | |
+| 0001 | 2020-09-28 | bamba98 | DAX Commands and Tips | answer | [Select single cell from table to another table](https://community.fabric.microsoft.com/t5/DAX-Commands-and-Tips/Select-single-cell-from-table-to-another-table/m-p/1399492#M25732) | yes | | dax, calculated_columns, filter, lookupvalue, containsstring | [notes](solutions/2020/0001_select_single_cell_from_table/notes.md) |
 | 0002 | 2024-04-12 | flower123 | Desktop | answer | [Percentage completed of tasks created](https://community.fabric.microsoft.com/t5/Desktop/Percentage-completed-of-tasks-created/m-p/3831797#M1237454) | yes | | dax, aggregations, calculated_measures | |
 | 0003 | 2024-04-12 | Sachintha | Desktop | answer | [How to calculate average of monthly averages](https://community.fabric.microsoft.com/t5/Desktop/How-to-calculate-average-of-monthly-averages/m-p/3831790#M1237452) | no | no accepted solution yet - solution available | dax, aggregations, time_intelligence | |
 | 0004 | 2024-04-11 | MichaelCatrysse | Desktop | answer | [When creating a relationship, data is no longer linked to a date in my graph](https://community.fabric.microsoft.com/t5/Desktop/When-creating-a-relationship-data-is-no-longer-linked-to-a-date/m-p/3831501#M1237384) | yes | | data_model, relationships | |

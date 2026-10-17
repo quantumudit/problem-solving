@@ -372,7 +372,14 @@ topics:             # always a list e.g. [window_functions, calculated_measures]
 ## Alternate Solutions
 
 ...when your answer was not accepted, or another valid approach is worth noting...
+
+## PBIX File
+
+none
 ```
+
+When a `.pbix` file is created for the contribution, replace `none` with the relative path:
+`solutions/{year}/{sno}_{slug}/solution.pbix`
 
 ---
 

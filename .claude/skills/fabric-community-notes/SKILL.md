@@ -96,6 +96,11 @@ Omit this section only if the solution is completely self-explanatory.
 Include only if other community members posted substantively different, valid solutions.
 Write "None in the thread." otherwise.
 
+### `## PBIX File`
+Always present. Write `none` when no `.pbix` file exists for this contribution.
+When one is created later, the relative path goes here:
+`solutions/{year}/{sno}_{slug}/solution.pbix`
+
 ### Frontmatter to update after reading the thread
 
 | Field | What to set |
