@@ -219,18 +219,23 @@ labs/
     └── ltm_langgraph/
         ├── README.md
         ├── notes.md
+        ├── data/                <- shared dataset used across all phases
         ├── phase_01_trim_messages/
         │   ├── main.py
         │   └── notebook.ipynb   <- optional; include when the phase benefits from it
         ├── phase_02_delete_messages/
         │   └── main.py
         └── phase_03_delete_and_summarize/
+            ├── data/            <- optional; phase-specific data when needed
             └── main.py
 ```
 
 Phases are numbered sequentially: `phase_01_{slug}`, `phase_02_{slug}`, etc.
-Each phase has its own `main.py` and/or `notebook.ipynb`. Shared utilities (if any)
-live at the project root. One branch covers the entire project -- not one branch per phase.
+Each phase has its own `main.py` and/or `notebook.ipynb`. Data that is shared across
+phases lives at the project root under `data/`. Phase-specific data (when a phase
+introduces new inputs) lives in a `data/` folder inside that phase. Shared utilities
+(if any) also live at the project root. One branch covers the entire project -- not
+one branch per phase.
 
 ---
 
