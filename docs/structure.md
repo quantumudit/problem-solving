@@ -65,19 +65,14 @@ problem_solving/
 │   │   └── some_course/
 │   └── misc/
 │       └── some_lost_challenge/
-└── community/
-    └── microsoft_fabric/
-        ├── README.md              <- contribution tracker
-        └── solutions/
-            └── {year}/
-                └── {sno}_{slug}/
-                    ├── notes.md
-                    └── solution.pbix
 ├── community/
 │   └── microsoft_fabric/
 │       ├── README.md              <- contribution tracker
-│       └── solutions/             <- code files for non-trivial answers
-│           └── rolling_average.dax
+│       └── solutions/
+│           └── {year}/
+│               └── {sno}_{slug}/
+│                   ├── notes.md
+│                   └── solution.pbix
 └── labs/
     └── {concept_area}/          <- rag | agents | memory | langgraph | etc.
         └── {slug}/
