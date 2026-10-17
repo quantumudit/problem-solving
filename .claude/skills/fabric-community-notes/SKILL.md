@@ -32,10 +32,13 @@ parse the HTML manually.
 
 ## Step 1 -- Run the extraction script
 
+HTML exports are always saved to `scratchpad/fabric-forum-refs/` in the repo root.
+If the user does not specify a file name, look there first.
+
 ```powershell
 python -I ".claude/skills/fabric-community-notes/scripts/extract_posts.py" `
-    "<html_file_path>" `
-    "<scratchpad_output_path>.txt"
+    "scratchpad/fabric-forum-refs/<filename>.html" `
+    "scratchpad/fabric-forum-refs/<filename>.txt"
 ```
 
 The script outputs `=== POST N | Author: username ===` blocks -- one per real post.
