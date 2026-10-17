@@ -21,7 +21,7 @@ the standard graduate-level reference for the field.
 
 ---
 
-### hands_on_ml_with_scikit_learn_and_tensorflow_book.pdf
+### hands_on_ml.pdf
 
 **Title:** Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow
 **Author:** Aurelien Geron
