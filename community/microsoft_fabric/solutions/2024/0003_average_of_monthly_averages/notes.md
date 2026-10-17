@@ -20,7 +20,7 @@ months, but the Matrix grand total column applied `OTAvg` to the entire dataset 
 total hours by total unique employees across all months = 68/4 = 17), rather than computing
 the average of the three monthly averages (5 + 8 + 7 = 20, divided by 3 = 6.67).
 
-[OP attached two screenshots showing the Matrix visual and the incorrect grand total behaviour]
+[The user attached two screenshots showing the Matrix visual and the incorrect grand total behaviour]
 
 ## My Solution
 
@@ -77,7 +77,7 @@ calculation the default subtotal would apply.
 ## Alternate Solutions
 
 `jgeddes` posted a simpler approach using `SUMMARIZE` and `AVERAGEX`, which was marked
-as the accepted solution by the OP:
+as the accepted solution by the user:
 
 ```dax
 Average of Average =

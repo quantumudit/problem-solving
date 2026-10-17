@@ -16,7 +16,7 @@ The user created a 1:1 relationship between the date columns of two tables so th
 show data from both tables in a single graph. After creating the relationship, one table's
 data was no longer correctly linked to dates in the visual.
 
-[OP attached a screenshot of the graph showing the broken date linkage]
+[The user attached a screenshot of the graph showing the broken date linkage]
 
 ## My Solution
 
@@ -38,7 +38,7 @@ slice by date without relationship overhead.
 
 ## Alternate Solutions
 
-None in the thread. OP confirmed the merge approach resolved the issue.
+None in the thread. The user confirmed the merge approach resolved the issue.
 
 ## PBIX File
 

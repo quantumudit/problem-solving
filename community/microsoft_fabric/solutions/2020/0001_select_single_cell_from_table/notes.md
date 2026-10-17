@@ -49,7 +49,7 @@ it does not return the matched value.
 
 ## Alternate Solutions
 
-None in the thread. Single-answer thread, solution accepted by OP.
+None in the thread. Single-answer thread, solution accepted by the user.
 
 ## PBIX File
 

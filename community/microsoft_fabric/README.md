@@ -19,7 +19,7 @@ Non-trivial contributions with a write-up or a `.pbix` file have a matching subf
 | Metric | Value |
 |---|---|
 | Total contributions | 18 |
-| Solutions accepted by OP | 13 |
+| Solutions accepted by question author | 13 |
 | Not yet accepted | 5 |
 | Last updated | 2026-10-17 |
 
@@ -43,7 +43,7 @@ URL lives in its own column there).
 | Type | Type of contribution: `answer` / `blog` / `report` / `tutorial`. |
 | Title | Title of the forum thread, linked to my specific answer post. |
 | My Solution Accepted | `yes` if the original poster accepted my response as the solution; `no` otherwise. |
-| Status | Blank when accepted. Otherwise: `marked as solution` (I marked my own response as accepted), `no accepted solution yet - solution available` (valid solution posted but OP has not accepted), `no accepted solution yet - valid solution pending` (solution still being worked out), `closed`. |
+| Status | Blank when accepted. Otherwise: `marked as solution` (I marked my own response as accepted), `no accepted solution yet - solution available` (valid solution posted but question author has not accepted), `no accepted solution yet - valid solution pending` (solution still being worked out), `closed`. |
 | Tags | snake_case topic tags describing the techniques used. |
 | Ref. File | Relative path to the `notes.md` for this contribution. Blank for tracker-only rows with no local write-up. The `notes.md` itself holds the relative path to the `.pbix` file if one exists. |
 
