@@ -345,3 +345,39 @@ Common violations to avoid:
   as part of the defined template -- this specific heading is exempt
 
 See the `script-writing-constraints` skill for the full prohibited character list.
+
+---
+
+## 13. Community Contributions
+
+### Subfolder naming
+
+When a contribution warrants local documentation (write-up, `.pbix` file, or external data),
+create a subfolder under `solutions/{year}/{sno}_{slug}/`.
+
+Rules:
+- `{year}`: the year you answered, not the year the original question was posted
+- `{sno}`: global serial number, zero-padded to 4 digits (`0001`, `0002`, ...); never resets per year
+- `{slug}`: snake_case summary of the topic title
+
+Example: `solutions/2024/0009_weekly_yoy_cumulative_totals/`
+
+### When to create a subfolder
+
+| Condition | Action |
+|---|---|
+| Simple one-liner DAX, well-documented in the thread | Tracker row only -- `Files: -` |
+| Detailed solution worth referencing later | Subfolder + `notes.md` |
+| Built or will build a `.pbix` file | Subfolder + `notes.md` + `solution.pbix` |
+| External data file needed | Subfolder + `notes.md` + `solution.pbix` + `data/` |
+
+### .pbix file naming
+
+| Case | File name |
+|---|---|
+| Single solution | `solution.pbix` |
+| Revised version | `solution_v2.pbix` |
+| Multiple distinct approaches | `solution_v2.pbix`, `solution_v3.pbix` |
+
+DAX-only solutions do not need a separate `.dax` file -- the DAX lives in `notes.md` code blocks.
+A `.pbix` is created only when the problem needs a working data model to demonstrate the solution.
