@@ -24,7 +24,7 @@ rewriting and fallback retrieval -- when the initial retrieval quality is insuff
 | # | Slug | Description |
 |---|------|-------------|
 | phase_01 | basic_rag | Baseline RAG pipeline -- document loading, chunking, embedding, retrieval, and generation |
-| phase_02 | corrective_rag | Corrective layer -- relevance grading, query rewriting, and fallback retrieval |
+| phase_02 | knowledge_refinement | Corrective layer -- relevance grading, query rewriting, and fallback retrieval |
 
 ## Key Concepts
 
