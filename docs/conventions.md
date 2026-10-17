@@ -30,6 +30,7 @@ Every branch represents one unit of work -- a single problem, or a full challeng
 | misc | `misc/{id}_{slug}` | `misc/0001_two_sum` |
 | projects | `projects/{source}/{challenge_name}` | `projects/data_with_danny/murder_mystery` |
 | community | `community/{name}/batch_{YYYY_MM}` | `community/microsoft_fabric/batch_2026_06` |
+| labs | `labs/{concept_area}/{slug}` | `labs/rag/youtube_rag_chatbot` |
 
 Rules:
 - `{difficulty}` always lowercase: `easy`, `medium`, `hard`
@@ -37,6 +38,7 @@ Rules:
 - `{slug}` always snake_case: `two_sum` not `twoSum` or `two-sum`
 - For projects, one branch covers the entire project set -- not per question
 - For community, one branch covers a batch of contributions (typically a month or quarter)
+- For labs, one branch covers the entire project including all phases -- not one branch per phase
 - Always branch from `main`; never commit solutions directly to `main`
 - Push the branch to remote immediately after creation -- every branch must exist on remote from day one
 - Push the branch to remote before running the squash merge -- remote must be up to date
@@ -174,6 +176,13 @@ table_ops, custom_functions, m_language, data_type_handling,
 merge_queries, append_queries
 ```
 
+**Labs / AI**
+```
+rag, agents, memory, embeddings, vector_store, graph_rag,
+multi_agent, tool_use, streaming, prompt_engineering,
+fine_tuning, evaluation
+```
+
 ---
 
 ## 8. Language Field Values
@@ -216,6 +225,7 @@ solve: {platform} {id} {slug} [{language}]
 | misc | `solve: misc 0001 two_sum [python]` |
 | projects | `solve: projects data_with_danny murder_mystery q01 find_the_murderer [sql]` |
 | community | `solve: community microsoft_fabric 2026_06` |
+| labs | `solve: labs rag youtube_rag_chatbot [langchain]` |
 
 With variations:
 ```

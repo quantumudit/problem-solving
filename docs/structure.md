@@ -73,6 +73,14 @@ problem_solving/
                 └── {sno}_{slug}/
                     ├── notes.md
                     └── solution.pbix
+├── community/
+│   └── microsoft_fabric/
+│       ├── README.md              <- contribution tracker
+│       └── solutions/             <- code files for non-trivial answers
+│           └── rolling_average.dax
+└── labs/
+    └── {concept_area}/          <- rag | agents | memory | langgraph | etc.
+        └── {slug}/
 ```
 
 ---
@@ -87,6 +95,7 @@ problem_solving/
 | edna | no | weekly | `problems/edna/{year}/{w##_slug}/` |
 | misc | no | on demand | `problems/misc/{id}_{slug}/` |
 | projects | no | project set | `projects/{source}/{challenge}/{q##_slug}/` |
+| labs | no | project | `labs/{concept_area}/{slug}/` |
 
 ---
 
@@ -191,6 +200,57 @@ microsoft_fabric/
             └── data/               <- optional, when external data is needed
                 └── sample.xlsx
 ```
+
+---
+
+## Labs folder (labs/)
+
+Learning and concept implementation projects. Self-contained mini-apps for exploring
+AI/ML concepts, frameworks, and techniques. May be single-phase or progressive
+(multiple phases building on each other). Not tied to any specific course or platform.
+
+### Single-phase project
+
+```
+labs/
+└── rag/
+    └── youtube_rag_chatbot/
+        ├── README.md
+        ├── notes.md
+        ├── main.py            <- script-based implementation
+        ├── notebook.ipynb     <- exploratory or notebook-based implementation
+        └── data/              <- optional; only if local data is needed
+```
+
+`main.py` and `notebook.ipynb` are not mutually exclusive -- a project may have one or both.
+Use `main.py` for clean, runnable implementations; use `notebook.ipynb` for exploratory work
+or step-by-step walkthroughs where cell output adds value.
+
+### Multi-phase (progressive) project
+
+```
+labs/
+└── memory/
+    └── ltm_langgraph/
+        ├── README.md
+        ├── notes.md
+        ├── data/                <- shared dataset used across all phases
+        ├── phase_01_trim_messages/
+        │   ├── main.py
+        │   └── notebook.ipynb   <- optional; include when the phase benefits from it
+        ├── phase_02_delete_messages/
+        │   └── main.py
+        └── phase_03_delete_and_summarize/
+            ├── data/            <- optional; phase-specific data when needed
+            └── main.py
+```
+
+Phases are numbered sequentially: `phase_01_{slug}`, `phase_02_{slug}`, etc.
+Each phase has its own `main.py` and/or `notebook.ipynb`. Data that is shared across
+phases lives at the project root under `data/`. Phase-specific data (when a phase
+introduces new inputs) lives in a `data/` folder inside that phase. Shared utilities
+(if any) also live at the project root. One branch covers the entire project -- not
+one branch per phase.
 
 ---
 
@@ -353,6 +413,20 @@ date_answered:      # YYYY-MM-DD
 accepted:           # true | false
 language:           # always a list e.g. [dax] or [pq]
 topics:             # always a list e.g. [window_functions, calculated_measures]
+### README.md -- labs projects
+
+One README per lab project. Covers all phases if the project is progressive.
+
+```yaml
+---
+platform: labs
+concept_area:       # rag | agents | memory | langgraph | embeddings | etc.
+slug:               # snake_case e.g. youtube_rag_chatbot
+phases:             # null for single-phase; integer e.g. 3 for multi-phase
+link:               # reference url (youtube, blog, paper); empty string if none
+framework:          # list e.g. [langchain, langgraph] or [openai]
+date_started:       # YYYY-MM-DD
+date_completed:     # YYYY-MM-DD | null
 ---
 ```
 
@@ -380,6 +454,68 @@ none
 
 When a `.pbix` file is created for the contribution, replace `none` with the relative path:
 `solutions/{year}/{sno}_{slug}/solution.pbix`
+## Overview
+
+Brief description of what this lab implements and the concept it explores.
+
+## Reference
+
+[Title](link) -- note on how this differs from the reference, if at all.
+
+## Phases
+
+| # | Slug | Description |
+|---|------|-------------|
+| phase_01 | trim_messages | basic message trimming |
+| phase_02 | delete_messages | targeted deletion |
+
+(Omit the Phases section for single-phase projects.)
+
+## Key Concepts
+
+- concept one
+- concept two
+```
+
+---
+
+### notes.md -- labs projects
+
+```yaml
+---
+platform: labs
+concept_area:         # rag | agents | memory | langgraph | embeddings | etc.
+slug:                 # snake_case
+language:             # always a list e.g. [python]
+framework:            # always a list e.g. [langchain, langgraph]
+topics:               # always a list e.g. [rag, embeddings, vector_store]
+date_completed:       # YYYY-MM-DD
+revisit:              # true | false
+---
+```
+
+```markdown
+## Approach
+
+...how you thought about the implementation...
+
+## What I Learned
+
+...key concepts and techniques discovered...
+
+## What Tripped Me Up
+
+...
+
+## Tricks / New Learnings
+
+...specific to this lab...
+...anything broader goes to Obsidian with a back-reference to this lab path...
+
+## Revisit Notes
+
+...what to try differently or extend next time...
+```
 
 ---
 
