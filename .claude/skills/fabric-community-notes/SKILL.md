@@ -146,8 +146,12 @@ When one is created later, the relative path goes here:
 **Images in posts:**
 The script replaces `<img>` tags with `[image]` or `[image: alt text]`. If an image is
 clearly important (a screenshot of the data model, the expected output, a visual of the
-problem), note it explicitly:
-> `[OP attached a screenshot of the data -- not available in the HTML export]`
+problem), note it with a short descriptive line. Use the appropriate voice:
+- Image in the user's post: `[The user shared a screenshot of the data model]`
+- Image in your (quantumudit's) post: `[A solution screenshot was shared in the thread]`
+- GIF demo from your post: `[A solution GIF was shared in the thread]`
+
+Do NOT add phrases like "not available in the HTML export" -- keep it simple and factual.
 
 **Quoted / nested messages:**
 The forum sometimes embeds quoted prior posts inside a reply. These show up as duplicated
