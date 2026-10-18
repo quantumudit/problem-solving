@@ -2,7 +2,7 @@
 platform: labs
 concept_area: rag
 slug: corrective_rag
-phases: 3
+phases: 4
 link: https://youtu.be/41XDn81nR5c
 framework: [langgraph, langchain, faiss, azure-openai]
 date_started: 2026-10-17
@@ -22,20 +22,22 @@ Implementation of corrective RAG with LangGraph. Explores how to build a RAG pip
 | # | Slug | Description |
 |---|------|-------------|
 | phase_01 | basic_rag | Baseline RAG pipeline -- document loading, chunking, embedding, retrieval, and generation |
-| phase_02 | knowledge_refinement | Corrective layer -- relevance grading, query rewriting, and fallback retrieval |
-| phase_03 | retrieval_evaluation | Evaluate retrieval quality using standard IR metrics (precision, recall, NDCG, MRR) |
+| phase_02 | knowledge_refinement | Knowledge refinement -- decompose retrieved chunks into sentence strips, filter for relevance, recompose |
+| phase_03 | retrieval_evaluation | Retrieval evaluation -- score each chunk, classify verdict (correct/incorrect/ambiguous), route conditionally |
+| phase_04 | web_fallback | Web fallback -- query rewriting and Tavily web search when internal retrieval verdict is `incorrect` |
 
 ## Key Concepts
 
 - Retrieval-Augmented Generation (RAG)
-- Document relevance grading
-- Query rewriting
-- LangGraph stateful graph execution
+- Document relevance grading and threshold-based verdict classification
+- Knowledge refinement -- sentence-level decomposition, filtration, recomposition
+- Query rewriting and web search fallback (Tavily)
+- LangGraph stateful graph execution with conditional routing
 - FAISS vector store with persistent storage
 
 ## Using the Marimo Notebooks
 
-Phase 02 uses [marimo](https://docs.marimo.io) -- a reactive Python notebook where cells
+Phases 02-04 use [marimo](https://docs.marimo.io) -- a reactive Python notebook where cells
 re-execute automatically when their dependencies change. Unlike Jupyter, marimo notebooks are plain `.py` files, making them git-friendly and free of hidden state.
 
 ### Installation
@@ -54,6 +56,7 @@ pip install marimo
 # from the lab root (replace with the target phase folder)
 marimo edit phase_02_knowledge_refinement/notebook.py
 marimo edit phase_03_retrieval_evaluation/notebook.py
+marimo edit phase_04_web_fallback/notebook.py
 
 # or via uv run (no global install needed)
 uv run marimo edit phase_02_knowledge_refinement/notebook.py
