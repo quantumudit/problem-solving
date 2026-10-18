@@ -63,6 +63,3 @@ projects/**/output/*.png
 projects/**/output/*.jpg
 projects/**/output/*.svg
 projects/**/output/*.html
-
-# Stale vector_store artifact -- created by old relative-path code; correct location is corrective_rag/vector_store/
-labs/rag/vector_store/
