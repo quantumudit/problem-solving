@@ -46,8 +46,8 @@ def _(mo):
 
     ### Example Setup
 
-    * **User Question (\\(q\\))**: **"What is gradient descent?"**
-    * **Raw Retrieved Document Chunk (\\(d_1\\))**:
+    * **User Question ($q$)**: **"What is gradient descent?"**
+    * **Raw Retrieved Document Chunk ($d_1$)**:
       > *"Gradient descent is an optimization algorithm used to minimize a loss function. It iteratively updates parameters in the direction of negative gradient. Neural networks are composed of layers of neurons with non-linear functions. Convolutional neural networks are particularly effective for image processing tasks."*
 
     **The Problem:** The first two sentences accurately describe gradient descent, but the last two sentences discuss neural network layers and CNNs. This noise occurred because fixed text chunking (e.g., 900 characters) captured trailing text from an adjacent paragraph.
@@ -59,31 +59,31 @@ def _(mo):
     ### The 3-Step Knowledge Refinement Process
 
     #### Step 1: Decomposition (Creating Sentence Strips)
-    The raw document \\(d_1\\) is split at sentence boundaries into individual **sentence strips** (\\(S_1, S_2, S_3, S_4\\)):
+    The raw document $d_1$ is split at sentence boundaries into individual **sentence strips** $(S_1, S_2, S_3, S_4)$:
 
-    * **\\(S_1\\)**: *"Gradient descent is an optimization algorithm used to minimize a loss function."*
-    * **\\(S_2\\)**: *"It iteratively updates parameters in the direction of negative gradient."*
-    * **\\(S_3\\)**: *"Neural networks are composed of layers of neurons with non-linear functions."*
-    * **\\(S_4\\)**: *"Convolutional neural networks are particularly effective for image processing tasks."*
+    * **$S_1$**: *"Gradient descent is an optimization algorithm used to minimize a loss function."*
+    * **$S_2$**: *"It iteratively updates parameters in the direction of negative gradient."*
+    * **$S_3$**: *"Neural networks are composed of layers of neurons with non-linear functions."*
+    * **$S_4$**: *"Convolutional neural networks are particularly effective for image processing tasks."*
 
     ---
 
     #### Step 2: Filtration (Scoring Each Strip)
-    Each sentence strip is evaluated against the query \\(q\\) using a strict relevance filter (such as a fine-tuned T5-Large model or an LLM):
+    Each sentence strip is evaluated against the query $q$ using a strict relevance filter (such as a fine-tuned T5-Large model or an LLM):
 
-    * **\\(S_1\\)** \\(\rightarrow\\) Relevant to gradient descent \\(\rightarrow\\) **Keep (`True`)**
-    * **\\(S_2\\)** \\(\rightarrow\\) Relevant to gradient descent \\(\rightarrow\\) **Keep (`True`)**
-    * **\\(S_3\\)** \\(\rightarrow\\) Irrelevant (general neural network architecture) \\(\rightarrow\\) **Discard (`False`)**
-    * **\\(S_4\\)** \\(\rightarrow\\) Irrelevant (CNN image processing) \\(\rightarrow\\) **Discard (`False`)**
+    * **$S_1$** $\rightarrow$ Relevant to gradient descent $\rightarrow$ **Keep (`True`)**
+    * **$S_2$** $\rightarrow$ Relevant to gradient descent $\rightarrow$ **Keep (`True`)**
+    * **$S_3$** $\rightarrow$ Irrelevant (general neural network architecture) $\rightarrow$ **Discard (`False`)**
+    * **$S_4$** $\rightarrow$ Irrelevant (CNN image processing) $\rightarrow$ **Discard (`False`)**
 
     > Note: The fine-tuned T5-Large model is used by the authors in the paper: [Corrective Retrieval Augmented Generation](https://arxiv.org/abs/2401.15884)
 
     ---
 
     #### Step 3: Re-combination (Refined Context)
-    The strips marked `keep = True` (\\(S_1\\) and \\(S_2\\)) are concatenated back together to create the final **refined document context**:
+    The strips marked `keep = True` ($S_1$ and $S_2$) are concatenated back together to create the final **refined document context**:
 
-    > **Refined \\(d_1\\) Context:**
+    > **Refined $d_1$ Context:**
     > *"Gradient descent is an optimization algorithm used to minimize a loss function. It iteratively updates parameters in the direction of negative gradient."*
 
     This clean, noise-free context is then passed to the LLM during answer generation, ensuring higher accuracy and preventing context pollution.
@@ -111,24 +111,34 @@ def _():
 
 @app.cell
 def _():
+    import json
+    from pathlib import Path
     from langchain_community.document_loaders import PyPDFLoader
+    from langchain_core.documents import Document
 
-    return (PyPDFLoader,)
+    return Document, Path, PyPDFLoader, json
 
 
 @app.cell
-def _(PyPDFLoader):
-    docs = (
-        PyPDFLoader("../data/deep_learning_book.pdf").load()
-        + PyPDFLoader("../data/hands_on_ml.pdf").load()
-        + PyPDFLoader("../data/pattern_recognition_and_ml_book.pdf").load()
-    )
+def _(Document, Path, PyPDFLoader, json):
+    _cache_path = Path("../cache/documents.json")
+
+    if _cache_path.exists():
+        docs = [Document(**item) for item in json.loads(_cache_path.read_text())]
+    else:
+        docs = (
+            PyPDFLoader("../data/deep_learning_book.pdf").load()
+            + PyPDFLoader("../data/hands_on_ml.pdf").load()
+            + PyPDFLoader("../data/pattern_recognition_and_ml_book.pdf").load()
+        )
+        _cache_path.parent.mkdir(parents=True, exist_ok=True)
+        _cache_path.write_text(json.dumps([doc.model_dump() for doc in docs]))
     return (docs,)
 
 
 @app.cell
-def _(docs):
-    print(f"Loaded {len(docs)} pages across 3 PDFs.")
+def _(docs, mo):
+    mo.callout(mo.md(f"Loaded **{len(docs)}** pages across 3 PDFs."), kind="info")
     return
 
 
@@ -179,8 +189,8 @@ def _(chunks):
 
 
 @app.cell
-def _(chunks):
-    print(f"Split into {len(chunks)} chunks (chunk_size=900, overlap=150).")
+def _(chunks, mo):
+    mo.callout(mo.md(f"Split into **{len(chunks)}** chunks (chunk_size=900, overlap=150)."), kind="info")
     return
 
 
@@ -359,14 +369,10 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## 7. Graph State and Nodes
+    ## 7. Graph State
 
-    Define the LangGraph state schema and the two node functions:
-
-    - `retrieve` -- fetches relevant chunks from the vector store for the given question
-    - `generate` -- constructs an answer from the retrieved chunks using the LLM
-
-    The prompt instructs the LLM to answer only from context, reducing hallucination on out-of-context questions.
+    Defines the shared data structure that LangGraph passes between every node in the pipeline.
+    All reads and writes happen through this typed dict -- it is the single source of truth at each step.
     """)
     return
 
@@ -374,21 +380,20 @@ def _(mo):
 @app.cell
 def _():
     from typing import TypedDict, List
-    from langchain_core.documents import Document
 
-    return Document, List, TypedDict
+    return List, TypedDict
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### 7a. Knowledge Refinement Graph State
+    ### State Schema
 
-    As compared to the traditional RAG state; the state of the RAG where knowledge refinement is incuded contains 3 additonal keys; such as:
+    Extends the traditional RAG state with three additional keys that track each stage of the refinement pipeline:
 
-    - `strips` : Output of decomposition (Sentence strips)
-    - `kept_strips`: After filtering (Kept sentences)
-    - `refined_context`: Recomposed internal knowledge (Joined kept_strips)
+    - `strips` -- all sentence strips produced by decomposing the retrieved chunks
+    - `kept_strips` -- the subset of strips the LLM judge marked as relevant to the question
+    - `refined_context` -- the final clean context: `kept_strips` joined into a single string, ready for the LLM
     """)
     return
 
@@ -409,9 +414,22 @@ def _(Document, List, TypedDict):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### 7b. Retrieve Node
+    ## 8. Nodes
 
-    The retrieve node logic stays the same as traditional RAG where; we simply retrieve the semantically similar documents from the vector stroe from the given user query
+    The three node functions that implement the knowledge-refined RAG pipeline.
+    Each reads from and writes to the shared `State` dict and executes in sequence:
+    `retrieve -> refine -> generate`.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### 8a. Retrieve Node
+
+    Unchanged from traditional RAG -- retrieves the top `k` semantically similar chunks from the vector store
+    for the given question. These raw chunks are passed to the `refine` node rather than directly to the LLM.
     """)
     return
 
@@ -427,9 +445,11 @@ def _(retriever):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### 7c. Refine Node
+    ### 8b. Refine Node
 
-    This is a new node that's been introduced as a part of knowledge refinement.
+    The core of this phase. Unlike traditional RAG which passes raw retrieved chunks straight to the LLM,
+    the `refine` node applies the 3-step knowledge refinement pipeline before generation:
+    decompose into sentence strips, filter each strip for relevance, recompose into a clean context block.
     """)
     return
 
@@ -437,7 +457,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    #### 7c.1 Sentence Level Decomposition
+    #### 8b.1 Sentence Level Decomposition
 
     This is the Step-1 (Decomposition) of the knowledge refinement pipeline — breaking a raw retrieved document chunk into individual sentence strips.
     """)
@@ -500,9 +520,13 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    #### 7c.2 Sentence Filteration
+    #### 8b.2 Sentence Filtration
 
-    This is the Step-2 (Filteration) of the knowledge refinement pipeline — keeping only the relevant sentence strips. Here we use an LLM as the judge to keep or, drop the sentences based on its relevance to the asked question.
+    Step 2 of the pipeline. Each sentence strip is evaluated individually against the user question using
+    an LLM as a strict relevance judge. The judge returns a structured `KeepDecision` -- a Pydantic model
+    with a single boolean field: `keep=True` to retain the strip, `keep=False` to discard it.
+
+    Using `with_structured_output` ensures the LLM always returns a parseable response rather than free text.
     """)
     return
 
@@ -554,23 +578,30 @@ def _(KeepDecision, filter_template, llm):
 
 
 @app.cell
-def _(filter_chain, sentence_strips):
-    sample_q = "Explain me about the bias-variance trade-off"
-    print(f"Question: {sample_q}\n\n")
-    for s in sentence_strips:
-        result = filter_chain.invoke({"question": sample_q , "sentence": s})
-        print(f"Sentence: {s}")
-        print(result)
-        print("*"*70)
+def _(filter_chain, mo, sentence_strips):
+    sample_q = "Explain the bias-variance trade-off"
+    rows = [
+        {
+            "Strip": s,
+            "Decision": "Keep" if filter_chain.invoke({"question": sample_q, "sentence": s}).keep else "Discard",
+        }
+        for s in sentence_strips
+    ]
+    mo.vstack([
+        mo.md(f"**Question:** _{sample_q}_"),
+        mo.ui.table(rows),
+    ])
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    #### 7c.2 Recomposition
+    #### Assembling the `refine` Node
 
-    This is the Step-3 (Recomposition) of the knowledge refinement pipeline — Gluing togather the relevant sentence strips to create a meaningful context for the LLM to answer the user question.
+    Step 3 -- and the `refine` node function itself. Combines all three steps: decompose the retrieved
+    chunks into strips, invoke the filter chain on each strip, then join the kept strips into a single
+    `refined_context` string that gets passed downstream to the `generate` node.
     """)
     return
 
@@ -593,7 +624,7 @@ def _(decompose_to_sentences, filter_chain):
         for s in strips:
             if filter_chain.invoke({"question": q, "sentence": s}).keep:
                 kept.append(s)
-    
+
         # Step-3: Recompose: glue kept strips back togather (internal knowledge)
         refined_context = "\n".join(kept).strip()
 
@@ -602,7 +633,7 @@ def _(decompose_to_sentences, filter_chain):
             "kept_strips": kept,
             "refined_context": refined_context
         }
-    
+
 
     return (refine,)
 
@@ -610,9 +641,11 @@ def _(decompose_to_sentences, filter_chain):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### 7d. Generate Node
+    ### 8c. Generate Node
 
-    The generate node logic stays the same as traditional RAG however; here we provide the refined context to the LLM that we recieve from the refine node.
+    Same structure as in traditional RAG, but instead of raw retrieved chunks it receives the `refined_context`
+    produced by the `refine` node -- a compact, noise-free string containing only the relevant sentences.
+    The system prompt is also updated to reflect the ML tutor role and the refined input.
     """)
     return
 
@@ -645,7 +678,9 @@ def _(llm, template):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The three sequential nodes, i.e., `retrieve`, `refine` and `generate` implement the full knowledge-refined RAG loop: pull context, refine it and then synthesize. All the functions read from and write to the shared `State` dict that LangGraph passes between nodes.
+    `retrieve`, `refine`, and `generate` together implement the full knowledge-refined RAG loop: pull context,
+    clean it, then synthesize. Each function reads from and writes to the shared `State` dict that LangGraph
+    passes between nodes.
     """)
     return
 
@@ -653,7 +688,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## 8. Build the Graph
+    ## 9. Build the Graph
 
     Assemble the nodes into a LangGraph `StateGraph` and compile it.
     The execution flow is linear: `START -> retrieve -> refine -> generate -> END`.
@@ -705,9 +740,10 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## 9. Run the Pipeline
+    ## 10. Run the Pipeline
 
-    Three test queries that walk through the pipeline's behavior across different question types.
+    Enter a question and run the pipeline to see the full knowledge-refined RAG loop in action.
+    The output shows the final answer, the refined context passed to the LLM, and the sentence strips that were kept after filtration.
     """)
     return
 
@@ -716,41 +752,181 @@ def _(mo):
 def _(graph):
     def process_response(q: str):
         input_state = {
-            "question": q, 
-            "docs": [], 
+            "question": q,
+            "docs": [],
             "strips": [],
             "kept_strips": [],
             "refined_context": "",
-            "answer": ""
+            "answer": "",
         }
-        response = graph.invoke(input_state)
-        return response
+        return graph.invoke(input_state)
 
     return (process_response,)
 
 
 @app.cell
-def _(process_response):
-    q = "Explain the bias-variance trade-off"
-    resp = process_response(q)
-    print(resp["answer"])
+def _(mo):
+    query_input = mo.ui.text_area(
+        value="Explain the bias-variance trade-off",
+        label="Your question",
+        full_width=True,
+    )
+    run_btn = mo.ui.run_button(label="Run pipeline")
+    mo.vstack([query_input, run_btn])
+    return query_input, run_btn
+
+
+@app.cell
+def _(mo, process_response, query_input, run_btn):
+    mo.stop(not run_btn.value)
+    resp = process_response(query_input.value)
     return (resp,)
 
 
-@app.cell
-def _(resp):
-    print(resp["refined_context"])
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md("""
+    ### Answer
+    """)
     return
 
 
 @app.cell
-def _(resp):
-    print(resp["kept_strips"])
+def _(mo, resp):
+    mo.callout(mo.md(resp["answer"]), kind="success")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Explore Retrieved Documents
+
+    The `k=4` raw chunks retrieved from the vector store -- before any refinement.
+    Expand each to inspect the raw content passed into the `refine` node.
+    """)
     return
 
 
 @app.cell
-def _():
+def _(mo, resp):
+    raw_context = "\n\n".join(d.page_content for d in resp["docs"])
+    mo.vstack([
+        mo.accordion({
+            f"Doc {i + 1}": mo.md(d.page_content)
+            for i, d in enumerate(resp["docs"])
+        }),
+        mo.callout(
+            mo.md(
+                f"**Total raw context:** {len(raw_context):,} characters"
+                f" across {len(resp['docs'])} chunks."
+            ),
+            kind="info",
+        ),
+    ])
+    return (raw_context,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Strips Analysis
+
+    Every sentence strip produced by decomposing the raw context, annotated with its keep/discard
+    status after the LLM relevance filter. Strips present in `kept_strips` are marked **Kept**;
+    the rest are **Discarded**.
+    """)
+    return
+
+
+@app.cell
+def _(mo, resp):
+    kept_set = set(resp["kept_strips"])
+    strip_rows = [
+        {"Strip": s, "Status": "Kept" if s in kept_set else "Discarded"}
+        for s in resp["strips"]
+    ]
+    _table = mo.ui.table(strip_rows)
+    _table
+    return
+
+
+@app.cell
+def _(mo, resp):
+    import matplotlib.pyplot as plt
+
+    total_strips = len(resp["strips"])
+    kept_strips_n = len(resp["kept_strips"])
+    kept_pct = round(kept_strips_n / total_strips * 100, 1) if total_strips > 0 else 0.0
+
+    fig_strips, ax_strips = plt.subplots(figsize=(4, 3.2))
+    ax_strips.bar(
+        ["Total Strips", "Kept Strips"],
+        [total_strips, kept_strips_n],
+        color=["#4C78A8", "#54A24B"],
+    )
+    ax_strips.set_ylabel("Number of Strips")
+    ax_strips.set_title(f"{kept_strips_n}/{total_strips} strips kept ({kept_pct}% useful)")
+    ax_strips.spines["top"].set_visible(False)
+    ax_strips.spines["right"].set_visible(False)
+    plt.tight_layout()
+
+    _strip_stats = mo.callout(
+        mo.md(
+            f"**{kept_strips_n} of {total_strips} strips** were relevant to the query"
+            f" -- **{kept_pct}% useful**, {100 - kept_pct}% discarded as noise."
+        ),
+        kind="info",
+    )
+    _display = mo.vstack([_strip_stats, fig_strips])
+    _display
+    return (plt,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Refined Context
+
+    The clean, noise-free context produced after the 3-step refinement --
+    the only text the LLM sees when generating the answer.
+    """)
+    return
+
+
+@app.cell
+def _(mo, resp):
+    mo.callout(mo.md(resp["refined_context"]), kind="info")
+    return
+
+
+@app.cell
+def _(mo, plt, raw_context, resp):
+    refined_len = len(resp["refined_context"])
+    raw_len = len(raw_context)
+    reduction_pct = round((1 - refined_len / raw_len) * 100, 1) if raw_len > 0 else 0.0
+
+    fig_ctx, ax_ctx = plt.subplots(figsize=(4, 3.2))
+    ax_ctx.bar(
+        ["Raw Context", "Refined Context"],
+        [raw_len, refined_len],
+        color=["#E45756", "#54A24B"],
+    )
+    ax_ctx.set_ylabel("Character count")
+    ax_ctx.set_title(f"Context size: {reduction_pct}% reduction after refinement")
+    ax_ctx.spines["top"].set_visible(False)
+    ax_ctx.spines["right"].set_visible(False)
+    plt.tight_layout()
+
+    _stats = mo.callout(
+        mo.md(
+            f"**Refined:** {refined_len:,} chars -- "
+            f"**{reduction_pct}% reduction** from raw context ({raw_len:,} chars)."
+        ),
+        kind="success",
+    )
+    _display = mo.vstack([_stats, fig_ctx])
+    _display
     return
 
 
