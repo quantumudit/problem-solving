@@ -96,7 +96,9 @@ def _(mo):
     mo.md(r"""
     ## 1. Load Documents
 
-    Load the three ML/DL textbooks from the `../data/` directory using `PyPDFLoader`.
+    Load the three ML/DL textbooks using `PyPDFLoader`. Pages are cached to
+    `cache/documents.json` on the first run -- subsequent runs skip the expensive PDF
+    parsing step and deserialize directly from the cache.
     """)
     return
 
@@ -104,32 +106,35 @@ def _(mo):
 @app.cell
 def _():
     import warnings
+    from pathlib import Path
 
     warnings.filterwarnings("ignore", category=DeprecationWarning)
-    return
+    lab_root = Path(__file__).parent.parent
+    return (lab_root,)
 
 
 @app.cell
 def _():
     import json
-    from pathlib import Path
+
     from langchain_community.document_loaders import PyPDFLoader
     from langchain_core.documents import Document
 
-    return Document, Path, PyPDFLoader, json
+    return Document, PyPDFLoader, json
 
 
 @app.cell
-def _(Document, Path, PyPDFLoader, json):
-    _cache_path = Path("../cache/documents.json")
+def _(Document, PyPDFLoader, json, lab_root):
+    _cache_path = lab_root / "cache" / "documents.json"
 
     if _cache_path.exists():
         docs = [Document(**item) for item in json.loads(_cache_path.read_text())]
     else:
+        _data = lab_root / "data"
         docs = (
-            PyPDFLoader("../data/deep_learning_book.pdf").load()
-            + PyPDFLoader("../data/hands_on_ml.pdf").load()
-            + PyPDFLoader("../data/pattern_recognition_and_ml_book.pdf").load()
+            PyPDFLoader(str(_data / "deep_learning_book.pdf")).load()
+            + PyPDFLoader(str(_data / "hands_on_ml.pdf")).load()
+            + PyPDFLoader(str(_data / "pattern_recognition_and_ml_book.pdf")).load()
         )
         _cache_path.parent.mkdir(parents=True, exist_ok=True)
         _cache_path.write_text(json.dumps([doc.model_dump() for doc in docs]))
@@ -145,8 +150,9 @@ def _(docs, mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Each PDF page is loaded as a `Document` object carrying the raw text and source metadata.
-    The three books together form the knowledge base the retriever will search over.
+    Each PDF page becomes a `Document` object with raw text and source metadata (`source`, `page`).
+    The three books -- Goodfellow et al., Geron, and Bishop -- together form the knowledge base.
+    All subsequent steps (chunking, embedding, retrieval) operate on this collection.
     """)
     return
 
@@ -156,8 +162,10 @@ def _(mo):
     mo.md(r"""
     ## 2. Chunk Documents
 
-    Split the loaded documents into smaller overlapping chunks for embedding.
-    A chunk size of 900 characters with 150-character overlap balances context richness and retrieval precision.
+    Split the loaded documents into smaller overlapping windows for embedding. Full pages are
+    too long to embed meaningfully -- chunking gives the retriever finer-grained units to match
+    against a query. A chunk size of 900 characters with 150-character overlap keeps each chunk
+    self-contained while preserving context at boundaries.
     """)
     return
 
@@ -197,7 +205,8 @@ def _(chunks, mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Each chunk is a fixed-size window of text with slight overlap to preserve context at boundaries. These chunks are the unit of embedding -- what gets indexed in the vector store.
+    Each chunk is the atomic unit that gets embedded and indexed. A Unicode cleaning pass
+    strips surrogates introduced by PDF extraction to prevent encoding errors downstream.
     """)
     return
 
@@ -207,8 +216,10 @@ def _(mo):
     mo.md(r"""
     ## 3. Embeddings
 
-    Set up the Azure OpenAI embeddings model (`text-embedding-3-large`).
-    Credentials are read from `.env` via `python-dotenv`.
+    Set up the Azure OpenAI embeddings model (`text-embedding-3-large`). Credentials
+    (`AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`) are read from `.env` via `python-dotenv`.
+    `check_embedding_ctx_length=False` disables the client-side length guard -- the Azure deployment
+    handles truncation server-side, so the extra check would raise false errors on longer chunks.
     """)
     return
 
@@ -263,7 +274,7 @@ def _(mo):
     ## 4. Vector Store
 
     Build or load a FAISS index from the embedded chunks.
-    If a persisted index already exists in `../vector_store/`, it is loaded to avoid re-embedding on every run.
+    If a persisted index already exists in `vector_store/`, it is loaded to avoid re-embedding on every run.
     """)
     return
 
@@ -276,27 +287,23 @@ def _():
 
 
 @app.cell
-def _(FAISS, chunks, embeddings, os):
-    VECTOR_STORE_PATH = "../vector_store"
+def _(FAISS, chunks, embeddings, lab_root):
+    _vector_store_path = lab_root / "vector_store"
 
-    faiss_index_exists = os.path.isfile(
-        os.path.join(VECTOR_STORE_PATH, "index.faiss")
-    )
-
-    if faiss_index_exists:
+    if (_vector_store_path / "index.faiss").is_file():
         vector_store = FAISS.load_local(
-            VECTOR_STORE_PATH, embeddings, allow_dangerous_deserialization=True
+            str(_vector_store_path), embeddings, allow_dangerous_deserialization=True
         )
     else:
         vector_store = FAISS.from_documents(chunks, embeddings)
-        vector_store.save_local(VECTOR_STORE_PATH)
+        vector_store.save_local(str(_vector_store_path))
     return (vector_store,)
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The FAISS index is now ready. On first run it embeds all chunks and persists the index to `../vector_store/`;
+    The FAISS index is now ready. On first run it embeds all chunks and persists the index to `vector_store/`;
     subsequent runs skip re-embedding and load the saved index directly -- saving significant time and cost.
     """)
     return
@@ -335,7 +342,9 @@ def _(mo):
     mo.md(r"""
     ## 6. Language Model
 
-    Instantiate the Azure OpenAI chat model used to generate answers from retrieved context.
+    Instantiate the Azure OpenAI chat model (`gpt-6-luna`) used across two roles in this
+    pipeline: the relevance filter (keep/discard sentence strips) and the final answer generator.
+    A single shared instance keeps the setup simple and ensures consistent behavior across both invocations.
     """)
     return
 
@@ -360,8 +369,9 @@ def _(ChatOpenAI, api_key, base_url):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The LLM handles the generation step -- it reads the retrieved context and composes a grounded answer.
-    The same instance is reused across all invocations of the graph.
+    The same LLM instance serves two distinct roles in this pipeline: filtering sentence strips
+    (via `filter_chain`) and generating the final answer (via `template | llm`). Reusing one
+    instance avoids redundant initialization and ensures consistent model behavior across both invocation types.
     """)
     return
 
@@ -377,25 +387,33 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    from typing import TypedDict, List
-
-    return List, TypedDict
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     ### State Schema
 
-    Extends the traditional RAG state with three additional keys that track each stage of the refinement pipeline:
+    The shared typed dictionary that LangGraph passes between every node. Each field is
+    either written by one node and read by the next, or populated at the start and carried
+    through unchanged.
 
-    - `strips` -- all sentence strips produced by decomposing the retrieved chunks
+    **Base RAG fields:**
+    - `question` -- the user's input query
+    - `docs` -- raw chunks returned by the retriever
+    - `answer` -- final generated answer
+
+    **Knowledge refinement fields (new in phase_02):**
+    - `strips` -- all sentence strips produced by decomposing the raw retrieved context
     - `kept_strips` -- the subset of strips the LLM judge marked as relevant to the question
     - `refined_context` -- the final clean context: `kept_strips` joined into a single string, ready for the LLM
     """)
     return
+
+
+@app.cell
+def _():
+    from typing import TypedDict, List
+
+    return List, TypedDict
 
 
 @app.cell
@@ -416,9 +434,13 @@ def _(mo):
     mo.md(r"""
     ## 8. Nodes
 
-    The three node functions that implement the knowledge-refined RAG pipeline.
-    Each reads from and writes to the shared `State` dict and executes in sequence:
-    `retrieve -> refine -> generate`.
+    Three node functions implement the knowledge-refined RAG pipeline. Each reads from and
+    writes to the shared `State` dict. Unlike phase_01 which passes raw chunks directly to
+    the LLM, this pipeline inserts a refinement step between retrieval and generation:
+
+    - **`retrieve`** -- fetch the top-k chunks from the vector store
+    - **`refine`** -- decompose raw chunks into sentence strips, filter for relevance, recompose
+    - **`generate`** -- synthesize an answer from the refined (noise-free) context
     """)
     return
 
@@ -449,7 +471,8 @@ def _(mo):
 
     The core of this phase. Unlike traditional RAG which passes raw retrieved chunks straight to the LLM,
     the `refine` node applies the 3-step knowledge refinement pipeline before generation:
-    decompose into sentence strips, filter each strip for relevance, recompose into a clean context block.
+    decompose all retrieved chunks into sentence strips, filter each strip for relevance against the query,
+    then recompose the kept strips into a clean context block passed to `generate`.
     """)
     return
 
@@ -459,7 +482,8 @@ def _(mo):
     mo.md(r"""
     #### 8b.1 Sentence Level Decomposition
 
-    This is the Step-1 (Decomposition) of the knowledge refinement pipeline — breaking a raw retrieved document chunk into individual sentence strips.
+    Step-1 of the knowledge refinement pipeline -- breaking raw retrieved document chunks
+    into individual sentence strips.
     """)
     return
 
@@ -510,9 +534,9 @@ def _(mo):
 
     1. **Normalize whitespace:** `re.sub(r"\s+", " ", text).strip()` collapses all newlines, tabs, and multiple spaces into single spaces. PDFs often have erratic whitespace from layout extraction, so this cleans that up before splitting.
     2. **Split on sentence boundaries:** `re.split(r"(?<=[.!?])\s+", text)` splits wherever whitespace follows a `.`, `!`, or `?`. The lookbehind `(?<=[.!?])` says *"split here only if the character before was sentence-ending punctuation"*, so it doesn't split mid-sentence on random whitespace.
-    3. **Filter short fragments:** ` if len(s) > 20` drops anything shorter than 20 characters. This removes noise like lone section headers, page numbers, or partial lines that survived the split but carry no useful content.
+    3. **Filter short fragments:** `if len(s) > 20` drops anything shorter than 20 characters. This removes noise like lone section headers, page numbers, or partial lines that survived the split but carry no useful content.
 
-    The output is a `List[str]` of sentence strips — $S1, S2, S3, \dots$ — which are then passed one by one to the filtration step to decide which ones are relevant to the user query.
+    The output is a `List[str]` of sentence strips -- $S_1, S_2, S_3, \dots$ -- which are then passed one by one to the filtration step to decide which ones are relevant to the user query.
     """)
     return
 
@@ -522,11 +546,12 @@ def _(mo):
     mo.md(r"""
     #### 8b.2 Sentence Filtration
 
-    Step 2 of the pipeline. Each sentence strip is evaluated individually against the user question using
-    an LLM as a strict relevance judge. The judge returns a structured `KeepDecision` -- a Pydantic model
-    with a single boolean field: `keep=True` to retain the strip, `keep=False` to discard it.
+    Step 2 of the pipeline. Each sentence strip is evaluated individually against the user question
+    using an LLM as a strict relevance judge returning a structured `KeepDecision` -- `keep=True`
+    to retain the strip, `keep=False` to discard it.
 
-    Using `with_structured_output` ensures the LLM always returns a parseable response rather than free text.
+    `with_structured_output(KeepDecision)` ensures the LLM always returns a parseable boolean
+    response rather than free text, making the decision deterministic and easy to act on.
     """)
     return
 
@@ -599,9 +624,9 @@ def _(mo):
     mo.md(r"""
     #### Assembling the `refine` Node
 
-    Step 3 -- and the `refine` node function itself. Combines all three steps: decompose the retrieved
+    Step 3 -- and the `refine` node function itself. Combines all three steps: decompose all retrieved
     chunks into strips, invoke the filter chain on each strip, then join the kept strips into a single
-    `refined_context` string that gets passed downstream to the `generate` node.
+    `refined_context` string passed downstream to the `generate` node.
     """)
     return
 
@@ -690,8 +715,15 @@ def _(mo):
     mo.md(r"""
     ## 9. Build the Graph
 
-    Assemble the nodes into a LangGraph `StateGraph` and compile it.
-    The execution flow is linear: `START -> retrieve -> refine -> generate -> END`.
+    Assemble the nodes into a LangGraph `StateGraph` and compile it. Unlike phase_03 which
+    has conditional branching based on retrieval quality, this graph is a straight linear pipeline:
+
+    ```
+    START -> retrieve -> refine -> generate -> END
+    ```
+
+    Every invocation runs all three nodes in order -- there is no routing or conditional logic.
+    The refinement step always runs, regardless of how relevant the retrieved chunks are.
     """)
     return
 
@@ -732,7 +764,9 @@ def _(graph):
 def _(mo):
     mo.md(r"""
     The compiled graph is a runnable pipeline. Calling `graph.invoke(state)` triggers the full
-    `retrieve -> refine -> generate` flow and returns the updated state with `answer` populated.
+    `retrieve -> refine -> generate` sequence and returns the updated state with `strips`,
+    `kept_strips`, `refined_context`, and `answer` all populated. Every question runs the
+    complete pipeline -- there are no shortcuts or fallback paths.
     """)
     return
 
@@ -742,8 +776,15 @@ def _(mo):
     mo.md(r"""
     ## 10. Run the Pipeline
 
-    Enter a question and run the pipeline to see the full knowledge-refined RAG loop in action.
-    The output shows the final answer, the refined context passed to the LLM, and the sentence strips that were kept after filtration.
+    Enter a question and click **Run pipeline** to invoke the graph end-to-end.
+
+    **Try these to observe different refinement behaviors:**
+
+    | Question | What to observe |
+    |---|---|
+    | "Explain the bias-variance trade-off" | Well-covered across all three books -- retrieval is strong and refinement keeps most strips. Clean, focused refined context with modest noise reduction. |
+    | "What are attention mechanisms and why are they important in current scenario?" | Partially covered (DL book touches attention, but modern Transformer context is out of scope for these 2016-era books). Refinement discards more strips, producing a shorter but more focused context. |
+    | "What are the major AI news from last week?" | No retrieved chunk is relevant to recent news -- the filtration step discards almost all strips. The refined context will be near-empty and the LLM will say it doesn't know based on the provided books. |
     """)
     return
 
@@ -832,9 +873,9 @@ def _(mo):
     mo.md(r"""
     ### Strips Analysis
 
-    Every sentence strip produced by decomposing the raw context, annotated with its keep/discard
-    status after the LLM relevance filter. Strips present in `kept_strips` are marked **Kept**;
-    the rest are **Discarded**.
+    Every sentence strip produced by decomposing the **raw context** (all `k=4` retrieved chunks
+    joined), annotated with its keep/discard status after the LLM relevance filter. Strips present
+    in `kept_strips` are marked **Kept**; the rest are **Discarded**.
     """)
     return
 
@@ -888,8 +929,9 @@ def _(mo):
     mo.md(r"""
     ### Refined Context
 
-    The clean, noise-free context produced after the 3-step refinement --
-    the only text the LLM sees when generating the answer.
+    The clean, noise-free context produced by the 3-step knowledge refinement -- the only
+    text the LLM receives when generating the final answer. The bar chart below shows how
+    much context was trimmed: raw retrieval vs. post-refinement character count.
     """)
     return
 
