@@ -52,11 +52,11 @@ pip install marimo
 
 ```bash
 # from the lab root (replace with the target phase folder)
-marimo edit phase_02_knowledge_refinement/marimo.py
-marimo edit phase_03_retrieval_evaluation/marimo.py
+marimo edit phase_02_knowledge_refinement/notebook.py
+marimo edit phase_03_retrieval_evaluation/notebook.py
 
 # or via uv run (no global install needed)
-uv run marimo edit phase_02_knowledge_refinement/marimo.py
+uv run marimo edit phase_02_knowledge_refinement/notebook.py
 ```
 
 `marimo edit <filename>` opens the notebook in the browser for interactive editing.
