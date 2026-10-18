@@ -38,8 +38,19 @@ Implementation of corrective RAG with LangGraph. Explores how to build a RAG pip
 
 ## Using the Marimo Notebooks
 
-Phases 02-04 use [marimo](https://docs.marimo.io) -- a reactive Python notebook where cells
+All phases use [marimo](https://docs.marimo.io) -- a reactive Python notebook where cells
 re-execute automatically when their dependencies change. Unlike Jupyter, marimo notebooks are plain `.py` files, making them git-friendly and free of hidden state.
+
+Notebooks live in the `notebooks/` folder:
+
+```
+notebooks/
+├── phase_01_basic_rag.py
+├── phase_02_knowledge_refinement.py
+├── phase_03_retrieval_evaluation.py
+├── phase_04_web_fallback.py
+└── phase_05_query_rewriting.py
+```
 
 ### Installation
 
@@ -54,14 +65,15 @@ pip install marimo
 ### Running a notebook
 
 ```bash
-# from the lab root (replace with the target phase folder)
-marimo edit phase_02_knowledge_refinement/notebook.py
-marimo edit phase_03_retrieval_evaluation/notebook.py
-marimo edit phase_04_web_fallback/notebook.py
-marimo edit phase_05_query_rewriting/notebook.py
+# from the lab root
+marimo edit notebooks/phase_01_basic_rag.py
+marimo edit notebooks/phase_02_knowledge_refinement.py
+marimo edit notebooks/phase_03_retrieval_evaluation.py
+marimo edit notebooks/phase_04_web_fallback.py
+marimo edit notebooks/phase_05_query_rewriting.py
 
 # or via uv run (no global install needed)
-uv run marimo edit phase_02_knowledge_refinement/notebook.py
+uv run marimo edit notebooks/phase_01_basic_rag.py
 ```
 
 `marimo edit <filename>` opens the notebook in the browser for interactive editing.
