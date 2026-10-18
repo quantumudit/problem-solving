@@ -45,6 +45,7 @@ scratchpad/*
 .agents/
 .codex/
 AGENTS.md
+skills-lock.json
 
 # OS
 .DS_Store
