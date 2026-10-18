@@ -2,7 +2,7 @@
 platform: labs
 concept_area: rag
 slug: corrective_rag
-phases: 4
+phases: 5
 link: https://youtu.be/41XDn81nR5c
 framework: [langgraph, langchain, faiss, azure-openai]
 date_started: 2026-10-17
@@ -24,7 +24,8 @@ Implementation of corrective RAG with LangGraph. Explores how to build a RAG pip
 | phase_01 | basic_rag | Baseline RAG pipeline -- document loading, chunking, embedding, retrieval, and generation |
 | phase_02 | knowledge_refinement | Knowledge refinement -- decompose retrieved chunks into sentence strips, filter for relevance, recompose |
 | phase_03 | retrieval_evaluation | Retrieval evaluation -- score each chunk, classify verdict (correct/incorrect/ambiguous), route conditionally |
-| phase_04 | web_fallback | Web fallback -- query rewriting and Tavily web search when internal retrieval verdict is `incorrect` |
+| phase_04 | web_fallback | Web fallback -- Tavily web search when internal retrieval verdict is `incorrect` |
+| phase_05 | query_rewriting | Query rewriting -- LLM rewrites the user query before web search to improve retrieval on the `incorrect` path |
 
 ## Key Concepts
 
@@ -57,6 +58,7 @@ pip install marimo
 marimo edit phase_02_knowledge_refinement/notebook.py
 marimo edit phase_03_retrieval_evaluation/notebook.py
 marimo edit phase_04_web_fallback/notebook.py
+marimo edit phase_05_query_rewriting/notebook.py
 
 # or via uv run (no global install needed)
 uv run marimo edit phase_02_knowledge_refinement/notebook.py
