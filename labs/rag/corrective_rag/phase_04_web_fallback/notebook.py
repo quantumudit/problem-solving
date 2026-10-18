@@ -14,7 +14,7 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Web Fallback
+    # Web Fallback Route
 
     ## What Was Built So Far
 
@@ -731,7 +731,7 @@ def _(mo):
 def _(decompose_to_sentences, filter_chain):
     def refine(state):
         q = state["question"]
-    
+
 
         if state["verdict"] == "correct":
             context = "\n\n".join(d.page_content for d in state["good_docs"]).strip()
@@ -1057,6 +1057,18 @@ def _(mo, resp):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    ## 11. Analysis
+
+    Inspect the intermediate state produced by the pipeline run above -- retrieved documents,
+    web search results (if triggered), sentence strips, and context size across each stage.
+    All sections below are read-only views of `resp`; re-running section 10 refreshes them.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     ### Explore Web Documents
 
     Web results fetched by Tavily when the verdict was `incorrect`. Each result shows the
@@ -1222,7 +1234,7 @@ def _(mo, resp):
     _strip_stats = mo.callout(
         mo.md(
             f"**{kept_strips_n} of {total_strips} strips** were relevant to the query"
-            f" -- **{kept_pct}% useful**, {100 - kept_pct}% discarded as noise."
+            f" -- **{kept_pct}% useful**, {round(100 - kept_pct, 2)}% discarded as noise."
         ),
         kind="info",
     )
