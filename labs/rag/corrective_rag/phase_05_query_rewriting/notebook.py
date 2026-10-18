@@ -14,38 +14,46 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Web Fallback Route
+    # Web Fallback with Query Rewriting
 
     ## What Was Built So Far
 
-    Across the first three phases, the corrective RAG pipeline was assembled step by step:
+    Across the first four phases, the corrective RAG pipeline was assembled step by step:
 
     - **phase_01 (basic_rag)**: Baseline pipeline -- retrieve top-k chunks from a FAISS vector store, pass them raw to an LLM, generate an answer. No quality checks, no filtering.
     - **phase_02 (knowledge_refinement)**: Added a 3-step refinement pass between retrieval and generation -- decompose chunks into sentence strips, filter each strip for relevance, recompose into a noise-free `refined_context`.
     - **phase_03 (retrieval_evaluation)**: Added an LLM-based retrieval evaluator before refinement. Each chunk is scored $[0.0, 1.0]$ and the pipeline branches on the overall verdict: `correct` proceeds to `refine -> generate`; `incorrect` and `ambiguous` short-circuited with fallback messages.
+    - **phase_04 (web_fallback)**: Replaced the `incorrect` dead-end with a real corrective action -- Tavily web search fetches live results when internal retrieval fails; raw web snippets pass through the same `refine` pipeline for a grounded, noise-free answer.
 
-    The `incorrect` path was a dead end -- when internal retrieval completely failed, the pipeline returned a canned failure message instead of trying to answer the question.
-
-    ---
-
-    ## Phase 04: Web Fallback for the `incorrect` Path
-
-    This phase replaces the `fail` node with a real corrective action. When all retrieved chunks score below `LOWER_TH` and the verdict is `incorrect`, the pipeline now:
-
-    1. **Rewrites the query** (implicit in the Tavily call) and executes a **web search** via the Tavily API.
-    2. Converts the top web results into standard `Document` objects stored in `web_docs`.
-    3. Passes `web_docs` through the existing **Knowledge Refinement** pipeline (`refine` node) to strip peripheral noise from web snippets.
-    4. Passes the clean `refined_context` to `generate` for a grounded, hallucination-resistant answer.
-
-    The `ambiguous` path still short-circuits -- that extension (merging `good_docs` with web results) is left for a future phase.
+    Phase_04 closed the `incorrect` dead-end, but passed the raw user question directly to Tavily. Conversational, vague, or recency-implied queries (e.g., `"recent AI news"`) produce noisy, off-target web results when sent unmodified to a search API.
 
     ---
 
-    ## Why Refine Web Results?
+    ## Phase 05: Introduction to Query Rewriting
 
-    Web search APIs like Tavily return snippets and page contents that frequently contain noise -- adjacent news topics, search metadata, promotional filler, and off-topic commentary. Sending raw web text directly to the LLM pollutes the context and risks hallucination. The same 3-step refinement applied to internal `good_docs` in phase_03 is reused here on `web_docs`, ensuring the LLM always receives a clean, question-relevant context regardless of the knowledge source.
+    ### The Problem with Direct Web Queries
 
-    ---
+    * **Raw User Queries are Flawed**: Prompts from users are often conversational, vague, under-specified, or missing essential search keywords and time constraints (e.g., a user asking `"recent AI news"` or `"Who was the screenwriter for Death of a Batman"`).
+    * **Search Engine Keyword Gap**: Search engines (like Tavily or Google) perform best when given short, keyword-dense, explicitly framed queries. Passing raw, conversational user prompts directly into a search API returns noisy, off-target, or low-quality web snippets.
+
+    ### LLM-Powered Query Rewritter
+
+    Since the user prompts are rarely search-engine-ready; we introduce a dedicated **LLM-powered Query Rewriter node** before performing any web search.
+
+    We provide some specific instruction to the LLM in order to make the raw user query; search-engine-ready. The instruction includes:
+
+    * **Keyword Focus**: Strip conversational filler and retain core search terms.
+    * **Recency Constraints**: If a prompt implies recency (e.g., *"recent AI news"*), automatically append explicit date ranges like `"last 30 days"`.
+    * **No Answering**: Explicitly instructs the LLM **not** to answer the question, only to rewrite it for search engine optimization.
+
+    **Examples**:
+    * **User Prompt**: `"recent AI news"` $\rightarrow$ **Rewritten Web Query**: `"recent AI news last 30 days"`.
+    * **User Prompt**: `"Who was the screenwriter for Death of a Batman"` $\rightarrow$ **Rewritten Web Query**: `"Death of a Batman screenwriter wikipedia"`.
+
+
+    In this case, instead of sending the user query directly to `web_search` node; we provided the search-engine optimized `web_query` to the node.
+
+    The rest of the workflow remains the same post the `web_search` node
     """)
     return
 
@@ -301,11 +309,12 @@ def _(mo):
     mo.md(r"""
     ## 6. Language Model
 
-    Instantiate the Azure OpenAI chat model (`gpt-6-luna`) used across three roles in this
-    pipeline: the retrieval evaluator (scoring chunks), the relevance filter (keep/discard
-    sentence strips for either internal or web context), and the final answer generator.
-    A single shared instance keeps the setup simple and ensures consistent behavior across
-    all three invocations regardless of which knowledge source is active.
+    Instantiate the Azure OpenAI chat model (`gpt-6-luna`) used across four roles in this
+    pipeline: the retrieval evaluator (scoring chunks), the query rewriter (producing a
+    search-engine-optimized `web_query`), the relevance filter (keep/discard sentence strips
+    for either internal or web context), and the final answer generator. A single shared
+    instance keeps the setup simple and ensures consistent behavior across all four
+    invocations regardless of which knowledge source is active.
     """)
     return
 
@@ -330,10 +339,11 @@ def _(ChatOpenAI, api_key, base_url):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    The same LLM instance serves three distinct roles in this pipeline: scoring retrieved chunks
-    (via `doceval_chain`), filtering sentence strips (via `filter_chain`), and generating the final
-    answer (via `template | llm`). Reusing one instance avoids redundant initialization and ensures
-    consistent model behavior across all three invocation types.
+    The same LLM instance serves four distinct roles in this pipeline: scoring retrieved chunks
+    (via `doceval_chain`), rewriting the user query for web search (via `rewritter_chain`),
+    filtering sentence strips (via `filter_chain`), and generating the final answer (via
+    `template | llm`). Reusing one instance avoids redundant initialization and ensures
+    consistent model behavior across all four invocation types.
     """)
     return
 
@@ -390,15 +400,18 @@ def _(mo):
     - `kept_strips` -- strips the LLM judge marked as relevant
     - `refined_context` -- kept strips joined into a clean string for the generator
 
-    **Retrieval evaluation fields** (new in phase_03):
+    **Retrieval evaluation fields** (same as phase_03):
     - `good_docs` -- chunks that scored above `LOWER_TH`; used as input to the refine node
     - `verdict` -- overall routing decision: `correct` / `incorrect` / `ambiguous`
     - `reason` -- one-line explanation of the verdict
     - `doc_scores` -- per-chunk relevance scores in the same order as `docs`
     - `doc_reasons` -- per-chunk reason strings explaining each score
 
-    **Web fallback fields (new in phase_04):**
+    **Web fallback field** (same in phase_04):
     - `web_docs` -- `Document` objects returned by the Tavily web search; populated only on the `incorrect` path
+
+    **Web Query field (new in phase_05)**:
+    - `web_query` -- A search-engine optmized user query
     """)
     return
 
@@ -423,6 +436,7 @@ def _(Document, List, TypedDict):
         strips: List[str]
         kept_strips: List[str]
         refined_context: str
+        web_query: str
         web_docs: List[Document]
         answer: str
 
@@ -439,7 +453,8 @@ def _(mo):
 
     - **`retrieve`** -- fetch the top-k chunks from the vector store
     - **`eval_doc`** -- score each chunk and assign a verdict; routes the graph conditionally
-    - **`web_search`** -- query Tavily for live web results when verdict is `incorrect` *(replaces `fail` from phase_03)*
+    - **`query_rewritter`** -- rewrite the user query into a search-engine-optimized `web_query` before fetching web results *(new in phase_05)*
+    - **`web_search`** -- query Tavily with `web_query` for live web results when verdict is `incorrect`
     - **`refine`** -- decompose context into strips, filter for relevance, recompose; operates on `good_docs` for `correct`, `web_docs` for `incorrect`
     - **`generate`** -- synthesize an answer from the refined context *(correct and incorrect paths)*
     - **`ambiguous`** -- short-circuits with a partial-match message when no chunk clears `UPPER_TH`
@@ -762,11 +777,69 @@ def _(decompose_to_sentences, filter_chain):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### 8d. Web Search Node
+    ### 8d. Query Rewriter Node
 
-    Triggered only on the `incorrect` path. Uses the **Tavily API** to search the web for
-    the user's original question and converts the top results into `Document` objects stored
-    in `web_docs`. Each document carries the result's `title` and `url` as metadata alongside
+    New in phase_05. Triggered on the `incorrect` path, immediately before the web search.
+    Receives `state["question"]` and invokes `rewritter_chain` to produce a search-engine-
+    optimized `web_query` stored back in the state:
+
+    - Strips conversational filler and retains core search keywords.
+    - Adds explicit recency constraints when the question implies freshness
+      (e.g., `"recent AI news"` -> `"recent AI news last 30 days"`).
+    - Never answers the question -- the output is a rewritten query string only.
+
+    The rewritten `web_query` is then consumed by the `web_search` node instead of the raw
+    `question`, improving result relevance on the `incorrect` path.
+    """)
+    return
+
+
+@app.cell
+def _(BaseModel, Field):
+    class WebQuery(BaseModel):
+        query: str = Field(..., description="search-engine ready optimized query")
+
+
+    return (WebQuery,)
+
+
+@app.cell
+def _(ChatPromptTemplate, WebQuery, llm):
+    rewritter_instruction = """Rewrite the user question into a web search query composed of keywords.
+    Rules:
+    - Keep it short (6-14 words).
+    - If the question implies reecency (e.g., recent/latest/last week/last month); add a constraint like (last 30 days).
+    - Do NOT answer the question.
+    - Return JSON with a single key: query
+    """
+
+    rewritter_template = ChatPromptTemplate.from_messages([
+        ("system", rewritter_instruction),
+        ("human", "Question: {question}")
+    ])
+
+    rewritter_chain = rewritter_template | llm.with_structured_output(WebQuery)
+    return (rewritter_chain,)
+
+
+@app.cell
+def _(rewritter_chain):
+    def query_rewritter(state):
+        response = rewritter_chain.invoke({"question": state["question"]})
+        return {"web_query": response.query}
+
+    return (query_rewritter,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### 8e. Web Search Node
+
+    Triggered only on the `incorrect` path, after `query_rewritter`. Uses the **Tavily API**
+    to search the web with the rewritten `web_query` (falling back to the raw `question` if
+    `web_query` is empty) and converts the top results into `Document` objects stored in
+    `web_docs`. Each document carries the result's `title` and `url` as metadata alongside
     the full text `content`, making the source traceable in the exploration view.
     """)
     return
@@ -795,7 +868,7 @@ def _(TavilySearch, os):
 @app.cell
 def _(Document, tavily):
     def web_search(state):
-        q = state["question"]
+        q = state.get("web_query") or state["question"] # fallback to user question if empty
         response = tavily.invoke({"query": q})
 
         web_docs = []
@@ -813,7 +886,7 @@ def _(Document, tavily):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### 8e. Generate Node
+    ### 8f. Generate Node
 
     Same structure as in traditional RAG, but receives the `refined_context` produced by the
     `refine` node -- a compact, noise-free string containing only the relevant sentences,
@@ -850,10 +923,10 @@ def _(llm, template):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    `retrieve`, `eval_doc`, `web_search`, `refine`, and `generate` together implement the full
-    corrective RAG loop: pull context, evaluate it, fetch from the web if needed, refine what
-    remains, then synthesize. Each function reads from and writes to the shared `State` dict
-    that LangGraph passes between nodes.
+    `retrieve`, `eval_doc`, `query_rewritter`, `web_search`, `refine`, and `generate` together
+    implement the full corrective RAG loop: pull context, evaluate it, rewrite the query and
+    fetch from the web if needed, refine what remains, then synthesize. Each function reads from
+    and writes to the shared `State` dict that LangGraph passes between nodes.
     """)
     return
 
@@ -861,13 +934,13 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### 8f. Routing & Fallback Node
+    ### 8g. Routing & Fallback Node
 
     The `route` function reads `state["verdict"]` and returns the name of the next node to run.
     LangGraph uses this as the edge condition for `add_conditional_edges`.
 
     - `correct` -> `refine` (uses `good_docs`)
-    - `incorrect` -> `web_search` -> `refine` (uses `web_docs`) -> `generate`
+    - `incorrect` -> `query_rewritter` -> `web_search` -> `refine` (uses `web_docs`) -> `generate`
     - `ambiguous` -> `ambiguous_node` (short-circuit; returns a partial-match message)
 
     `ambiguous_node` is the only remaining pure fallback in this phase. In a full C-RAG
@@ -887,7 +960,7 @@ def route(state):
     if state["verdict"] == 'correct':
         return "refine"
     elif state["verdict"] == "incorrect":
-        return "web_search"
+        return "query_rewritter"
     else:
         return "ambiguous"
 
@@ -902,14 +975,14 @@ def _(mo):
 
     ```
     START -> retrieve -> eval_doc --(correct)---> refine -> generate -> END
-                                  --(incorrect)--> web_search -> refine -> generate -> END
+                                  --(incorrect)--> query_rewritter -> web_search -> refine -> generate -> END
                                   --(ambiguous)--> ambiguous -> END
     ```
 
-    The key difference from phase_03 is the `incorrect` path: instead of terminating at
-    `fail`, it now continues through `web_search -> refine -> generate`, producing a real answer
-    from external knowledge. `add_conditional_edges` wires the `route` function to the three
-    possible next nodes.
+    The key difference from phase_04 is the `incorrect` path: instead of routing directly to
+    `web_search`, it now passes through `query_rewritter` first -- the LLM rewrites the raw
+    user question into a search-engine-optimized `web_query` before Tavily is called.
+    `add_conditional_edges` wires the `route` function to the three possible next nodes.
     """)
     return
 
@@ -929,6 +1002,7 @@ def _(
     StateGraph,
     eval_doc,
     generate,
+    query_rewritter,
     refine,
     retrieve,
     web_search,
@@ -937,9 +1011,10 @@ def _(
 
     builder.add_node("retrieve", retrieve)
     builder.add_node("eval_doc", eval_doc)
+    builder.add_node("query_rewritter", query_rewritter)
+    builder.add_node("web_search", web_search)
     builder.add_node("refine", refine)
     builder.add_node("generate", generate)
-    builder.add_node("web_search", web_search)
     builder.add_node("ambiguous", ambiguous_node)
 
     builder.add_edge(START, "retrieve")
@@ -947,9 +1022,10 @@ def _(
 
     builder.add_conditional_edges(
         "eval_doc", route,
-        {"refine":"refine", "web_search": "web_search", "ambiguous": "ambiguous"}
+        {"refine":"refine", "query_rewritter": "query_rewritter", "ambiguous": "ambiguous"}
     )
 
+    builder.add_edge("query_rewritter", "web_search")
     builder.add_edge("web_search", "refine")
     builder.add_edge("refine", "generate")
     builder.add_edge("generate", END)
@@ -990,7 +1066,7 @@ def _(mo):
     |---|---|---|
     | "Explain the bias-variance trade-off" | `correct` | Internal retrieval succeeds -- `good_docs` are refined and used for generation. Web Docs section will be empty. |
     | "What are attention mechanisms and why are they important in current scenario?" | `ambiguous` | Mixed relevance -- some chunks pass `LOWER_TH` but none exceed `UPPER_TH`. Routes to `ambiguous` node; no refinement or generation runs. |
-    | "What are the major AI news from last week?" | `incorrect` | Internal retrieval fails completely. Routes to `web_search` -> `refine` -> `generate`. Web Docs section populates with Tavily results. |
+    | "What are the latest major AI news?" | `incorrect` | Internal retrieval fails completely. Routes to `query_rewritter` -> `web_search` -> `refine` -> `generate`. Query Rewriting section shows the original vs rewritten query; Web Docs section populates with Tavily results. |
 
     > **Note:** Strip analysis and refined context are populated for both `correct` and `incorrect`
     > verdicts (both paths run `refine`). For `ambiguous`, the `refine` node is skipped -- strips
@@ -1014,6 +1090,7 @@ def _(graph):
             "strips": [],
             "kept_strips": [],
             "refined_context": "",
+            "web_query": "",
             "answer": "",
         }
         return graph.invoke(input_state)
@@ -1059,10 +1136,59 @@ def _(mo):
     mo.md(r"""
     ## 11. Analysis
 
-    Inspect the intermediate state produced by the pipeline run above -- retrieved documents,
-    web search results (if triggered), sentence strips, and context size across each stage.
-    All sections below are read-only views of `resp`; re-running section 10 refreshes them.
+    Inspect the intermediate state produced by the pipeline run above -- query rewriting (on the
+    `incorrect` path), retrieved documents, web search results (if triggered), sentence strips,
+    and context size across each stage. All sections below are read-only views of `resp`;
+    re-running section 10 refreshes them.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Query Rewriting
+
+    Compares the original user question with the search-engine-optimized `web_query` produced
+    by the `query_rewritter` node. Only populated on the `incorrect` path -- the rewriter runs
+    before Tavily is called. On `correct` and `ambiguous` paths, `web_query` remains empty.
+    """)
+    return
+
+
+@app.cell
+def _(mo, resp):
+    original_q = resp.get("question", "")
+    rewritten_q = resp.get("web_query", "")
+    if not rewritten_q:
+        _display = mo.callout(
+            mo.md("Query rewriting was not triggered -- verdict was not `incorrect`."),
+            kind="neutral",
+        )
+    else:
+        _display = mo.vstack([
+            mo.hstack([
+                mo.stat(
+                    label="Original Question",
+                    value=original_q,
+                ),
+                mo.stat(
+                    label="Rewritten Web Query",
+                    value=rewritten_q,
+                ),
+            ]),
+            mo.callout(
+                mo.md(
+                    f"**Original:** `{original_q}`  \n"
+                    f"**Rewritten:** `{rewritten_q}`  \n"
+                    f"Length: {len(original_q)} chars -> {len(rewritten_q)} chars"
+                    f" ({'+' if len(rewritten_q) >= len(original_q) else ''}"
+                    f"{len(rewritten_q) - len(original_q)} chars)."
+                ),
+                kind="info",
+            ),
+        ])
+    _display
     return
 
 
