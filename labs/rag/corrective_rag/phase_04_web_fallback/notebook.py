@@ -110,7 +110,8 @@ def _(docs, mo):
 def _(mo):
     mo.md(r"""
     Each PDF page becomes a `Document` object with raw text and source metadata (`source`, `page`).
-    The three books -- Goodfellow et al., Geron, and Bishop -- together form the knowledge base.
+    The three books -- *Deep Learning* (Goodfellow et al.), *Hands-On Machine Learning* (Geron),
+    and *Pattern Recognition and Machine Learning* (Bishop) -- together form the knowledge base.
     All subsequent steps (chunking, embedding, retrieval) operate on this collection.
     """)
     return
