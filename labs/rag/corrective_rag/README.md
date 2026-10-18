@@ -45,11 +45,11 @@ Notebooks live in the `notebooks/` folder:
 
 ```
 notebooks/
-├── phase_01_basic_rag.py
-├── phase_02_knowledge_refinement.py
-├── phase_03_retrieval_evaluation.py
-├── phase_04_web_fallback.py
-└── phase_05_query_rewriting.py
+├── p01_basic_rag.py
+├── p02_knowledge_refinement.py
+├── p03_retrieval_evaluation.py
+├── p04_web_fallback.py
+└── p05_query_rewriting.py
 ```
 
 ### Installation
@@ -66,14 +66,14 @@ pip install marimo
 
 ```bash
 # from the lab root
-marimo edit notebooks/phase_01_basic_rag.py
-marimo edit notebooks/phase_02_knowledge_refinement.py
-marimo edit notebooks/phase_03_retrieval_evaluation.py
-marimo edit notebooks/phase_04_web_fallback.py
-marimo edit notebooks/phase_05_query_rewriting.py
+marimo edit notebooks/p01_basic_rag.py
+marimo edit notebooks/p02_knowledge_refinement.py
+marimo edit notebooks/p03_retrieval_evaluation.py
+marimo edit notebooks/p04_web_fallback.py
+marimo edit notebooks/p05_query_rewriting.py
 
 # or via uv run (no global install needed)
-uv run marimo edit notebooks/phase_01_basic_rag.py
+uv run marimo edit notebooks/p01_basic_rag.py
 ```
 
 `marimo edit <filename>` opens the notebook in the browser for interactive editing.
