@@ -16,6 +16,16 @@ def _(mo):
     mo.md(r"""
     # Knowledge Refinement
 
+    ## What Was Built So Far
+
+    In phase_01, the baseline RAG pipeline was assembled:
+
+    - **phase_01 (basic_rag)**: Baseline pipeline -- retrieve top-k chunks from a FAISS vector store, pass them raw to an LLM, generate an answer. No quality checks, no filtering.
+
+    The baseline pipeline trusts whatever the vector store returns. When retrieved chunks contain a mix of relevant and off-topic text -- a natural side-effect of fixed-size text chunking -- the LLM receives noisy context, reducing the quality of the generated answer.
+
+    ---
+
     ## Why Knowledge Refinement Needed?
 
     When documents are stored in vector databases, text splitting/chunking is usually performed based on fixed character counts (e.g., 900 characters) rather than semantic topic boundaries.

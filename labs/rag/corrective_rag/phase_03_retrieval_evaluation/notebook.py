@@ -16,6 +16,17 @@ def _(mo):
     mo.md(r"""
     # Retrieval Evaluation
 
+    ## What Was Built So Far
+
+    Across the first two phases, the corrective RAG pipeline was assembled step by step:
+
+    - **phase_01 (basic_rag)**: Baseline pipeline -- retrieve top-k chunks from a FAISS vector store, pass them raw to an LLM, generate an answer. No quality checks, no filtering.
+    - **phase_02 (knowledge_refinement)**: Added a 3-step refinement pass between retrieval and generation -- decompose chunks into sentence strips, filter each strip for relevance, recompose into a noise-free `refined_context`.
+
+    Both phases trust that internal retrieval always returns relevant content. When a user asks a question outside the scope of the vector database, nearest-neighbor search still returns chunks -- forcing the LLM to hallucinate or answer from wrong context. Neither phase has a mechanism to detect or handle retrieval failure.
+
+    ---
+
     ## Core Purpose of Retrieval Evaluation
 
     In traditional RAG, the LLM blindly trusts whatever chunks the vector database returns. When a user asks a question outside the scope of the vector database, nearest-neighbor vector search still returns chunks (e.g., returning *Random Forest* documents for a query on *Transformers*), forcing the LLM to either hallucinate or answer from wrong context.
