@@ -12,6 +12,7 @@ All files are gitignored; only this README is tracked.
 **Title:** Deep Learning
 **Authors:** Ian Goodfellow, Yoshua Bengio, Aaron Courville
 **Publisher:** MIT Press (2016)
+**Download:** https://github.com/campusx-official/corrective-rag/blob/main/documents/book2.pdf
 
 The foundational textbook on deep learning. Covers the mathematical prerequisites
 (linear algebra, probability, optimization) through core architectures (feedforward
@@ -26,6 +27,7 @@ the standard graduate-level reference for the field.
 **Title:** Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow
 **Author:** Aurelien Geron
 **Publisher:** O'Reilly Media (2nd ed. 2019 / 3rd ed. 2022)
+**Download:** https://github.com/campusx-official/corrective-rag/blob/main/documents/book3.pdf
 
 Practical, code-first introduction to machine learning and deep learning. Part 1
 covers classical ML with scikit-learn (regression, classification, SVMs, trees,
@@ -40,6 +42,7 @@ end-to-end worked examples -- the go-to book for applied ML practitioners.
 **Title:** Pattern Recognition and Machine Learning
 **Author:** Christopher M. Bishop
 **Publisher:** Springer (2006)
+**Download:** https://github.com/campusx-official/corrective-rag/blob/main/documents/book1.pdf
 
 A thorough Bayesian treatment of machine learning. Covers probabilistic graphical
 models, mixture models and EM, kernel methods, sparse models, and approximate
