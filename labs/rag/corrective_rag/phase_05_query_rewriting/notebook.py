@@ -474,8 +474,8 @@ def _(mo):
 
 
 @app.cell
-def _(retriever):
-    def retrieve(state):
+def _(State, retriever):
+    def retrieve(state: State) -> dict:
         return {"docs": retriever.invoke(state["question"])}
 
     return (retrieve,)
@@ -521,10 +521,16 @@ def _():
 @app.cell
 def _(BaseModel, Field):
     class DocEvalScore(BaseModel):
-        score: float = Field(...,
-            description="Evaluation score", ge=0.0, le=1.0
+        score: float = Field(
+            ...,
+            ge=0.0,
+            le=1.0,
+            description="Relevance score for the retrieved chunk in [0.0, 1.0]; 1.0 = fully answers the question, 0.0 = completely irrelevant.",
         )
-        reason: str = Field(..., description="Reason behind giving the score")
+        reason: str = Field(
+            ...,
+            description="One-line explanation for the assigned score.",
+        )
 
     return (DocEvalScore,)
 
@@ -580,8 +586,8 @@ def _(mo):
 
 
 @app.cell
-def _(LOWER_TH, UPPER_TH, doceval_chain):
-    def eval_doc(state):
+def _(LOWER_TH, State, UPPER_TH, doceval_chain):
+    def eval_doc(state: State) -> dict:
         q = state["question"]
 
         scores = []
@@ -704,7 +710,8 @@ def _(mo):
 def _(BaseModel, Field):
     class KeepDecision(BaseModel):
         keep: bool = Field(
-            description="Whether the item should be retained (True) or discarded (False)."
+            ...,
+            description="True to retain the sentence strip as relevant to the question; False to discard it.",
         )
 
     return (KeepDecision,)
@@ -743,8 +750,8 @@ def _(mo):
 
 
 @app.cell
-def _(decompose_to_sentences, filter_chain):
-    def refine(state):
+def _(State, decompose_to_sentences, filter_chain):
+    def refine(state: State) -> dict:
         q = state["question"]
 
 
@@ -797,7 +804,10 @@ def _(mo):
 @app.cell
 def _(BaseModel, Field):
     class WebQuery(BaseModel):
-        query: str = Field(..., description="search-engine ready optimized query")
+        query: str = Field(
+            ...,
+            description="Short keyword-dense search query (6-14 words) optimized for a web search engine; do not answer the question.",
+        )
 
 
     return (WebQuery,)
@@ -823,8 +833,8 @@ def _(ChatPromptTemplate, WebQuery, llm):
 
 
 @app.cell
-def _(rewritter_chain):
-    def query_rewritter(state):
+def _(State, rewritter_chain):
+    def query_rewritter(state: State) -> dict:
         response = rewritter_chain.invoke({"question": state["question"]})
         return {"web_query": response.query}
 
@@ -866,8 +876,8 @@ def _(TavilySearch, os):
 
 
 @app.cell
-def _(Document, tavily):
-    def web_search(state):
+def _(Document, State, tavily):
+    def web_search(state: State) -> dict:
         q = state.get("web_query") or state["question"] # fallback to user question if empty
         response = tavily.invoke({"query": q})
 
@@ -908,8 +918,8 @@ def _(ChatPromptTemplate):
 
 
 @app.cell
-def _(llm, template):
-    def generate(state):
+def _(State, llm, template):
+    def generate(state: State) -> dict:
         chain = template | llm
         response = chain.invoke({
             "question": state["question"],
@@ -950,13 +960,16 @@ def _(mo):
     return
 
 
-@app.function
-def ambiguous_node(state):
-    return {"answer": f"Ambiguous: {state["reason"]} "}
+@app.cell
+def _(State):
+    def ambiguous_node(state: State) -> dict:
+        return {"answer": f"Ambiguous: {state['reason']} "}
+
+    return (ambiguous_node,)
 
 
 @app.function
-def route(state):
+def route(state: "State") -> str:
     if state["verdict"] == 'correct':
         return "refine"
     elif state["verdict"] == "incorrect":
@@ -1000,6 +1013,7 @@ def _(
     START,
     State,
     StateGraph,
+    ambiguous_node,
     eval_doc,
     generate,
     query_rewritter,
