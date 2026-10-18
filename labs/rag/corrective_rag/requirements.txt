@@ -6,3 +6,5 @@ langgraph
 python-dotenv
 pypdf
 faiss-cpu
+pydantic
+marimo
