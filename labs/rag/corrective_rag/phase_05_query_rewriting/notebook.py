@@ -407,11 +407,11 @@ def _(mo):
     - `doc_scores` -- per-chunk relevance scores in the same order as `docs`
     - `doc_reasons` -- per-chunk reason strings explaining each score
 
-    **Web fallback field** (same in phase_04):
+    **Web fallback field** (same as phase_04):
     - `web_docs` -- `Document` objects returned by the Tavily web search; populated only on the `incorrect` path
 
     **Web Query field (new in phase_05)**:
-    - `web_query` -- A search-engine optmized user query
+    - `web_query` -- A search-engine optimized user query
     """)
     return
 
@@ -969,7 +969,7 @@ def _(State):
 
 
 @app.function
-def route(state: "State") -> str:
+def route(state: State) -> str:
     if state["verdict"] == 'correct':
         return "refine"
     elif state["verdict"] == "incorrect":

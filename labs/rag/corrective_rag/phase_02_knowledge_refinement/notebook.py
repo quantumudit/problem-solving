@@ -396,7 +396,7 @@ def _(mo):
     either written by one node and read by the next, or populated at the start and carried
     through unchanged.
 
-    **Base RAG fields:**
+    **Base RAG fields (same as phase_01):**
     - `question` -- the user's input query
     - `docs` -- raw chunks returned by the retriever
     - `answer` -- final generated answer
@@ -457,8 +457,8 @@ def _(mo):
 
 
 @app.cell
-def _(retriever):
-    def retrieve(state):
+def _(State, retriever):
+    def retrieve(state: State) -> dict:
         return {"docs": retriever.invoke(state["question"])}
 
     return (retrieve,)
@@ -567,7 +567,8 @@ def _():
 def _(BaseModel, Field):
     class KeepDecision(BaseModel):
         keep: bool = Field(
-            description="Whether the item should be retained (True) or discarded (False)."
+            ...,
+            description="True to retain the sentence strip as relevant to the question; False to discard it.",
         )
 
     return (KeepDecision,)
@@ -632,8 +633,8 @@ def _(mo):
 
 
 @app.cell
-def _(decompose_to_sentences, filter_chain):
-    def refine(state):
+def _(State, decompose_to_sentences, filter_chain):
+    def refine(state: State) -> dict:
         q = state["question"]
         docs = state["docs"]
 
@@ -650,7 +651,7 @@ def _(decompose_to_sentences, filter_chain):
             if filter_chain.invoke({"question": q, "sentence": s}).keep:
                 kept.append(s)
 
-        # Step-3: Recompose: glue kept strips back togather (internal knowledge)
+        # Step-3: Recompose: glue kept strips back together (internal knowledge)
         refined_context = "\n".join(kept).strip()
 
         return {
@@ -678,7 +679,7 @@ def _(mo):
 @app.cell
 def _(ChatPromptTemplate):
     sys_msg = """You are a helpful ML tutor. Answer ONLY using the provided refined context.
-    If the context is empty or, insufficient, simply say: "I don't know based on the provided books."
+    If the context is empty or insufficient, simply say: "I don't know based on the provided books."
     """
     # Prompt template with role-based messages
     template = ChatPromptTemplate.from_messages(
@@ -691,8 +692,8 @@ def _(ChatPromptTemplate):
 
 
 @app.cell
-def _(llm, template):
-    def generate(state):
+def _(State, llm, template):
+    def generate(state: State) -> dict:
         chain = template | llm
         response = chain.invoke({"question": state["question"], "refined_context": state["refined_context"]})
         return {"answer": response.content}
@@ -715,8 +716,8 @@ def _(mo):
     mo.md(r"""
     ## 9. Build the Graph
 
-    Assemble the nodes into a LangGraph `StateGraph` and compile it. Unlike phase_03 which
-    has conditional branching based on retrieval quality, this graph is a straight linear pipeline:
+    Assemble the nodes into a LangGraph `StateGraph` and compile it. Unlike later phases which
+    add conditional branching based on retrieval quality, this graph is a straight linear pipeline:
 
     ```
     START -> retrieve -> refine -> generate -> END
@@ -784,7 +785,7 @@ def _(mo):
     |---|---|
     | "Explain the bias-variance trade-off" | Well-covered across all three books -- retrieval is strong and refinement keeps most strips. Clean, focused refined context with modest noise reduction. |
     | "What are attention mechanisms and why are they important in current scenario?" | Partially covered (DL book touches attention, but modern Transformer context is out of scope for these 2016-era books). Refinement discards more strips, producing a shorter but more focused context. |
-    | "What are the major AI news from last week?" | No retrieved chunk is relevant to recent news -- the filtration step discards almost all strips. The refined context will be near-empty and the LLM will say it doesn't know based on the provided books. |
+    | "What are the latest major AI news?" | No retrieved chunk is relevant to recent news -- the filtration step discards almost all strips. The refined context will be near-empty and the LLM will say it doesn't know based on the provided books. |
     """)
     return
 
@@ -822,6 +823,18 @@ def _(mo, process_response, query_input, run_btn):
     mo.stop(not run_btn.value)
     resp = process_response(query_input.value)
     return (resp,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## 11. Analysis
+
+    Inspect the intermediate state produced by the pipeline run above -- retrieved documents,
+    sentence strips, and context size across each stage. All sections below are read-only views
+    of `resp`; re-running section 10 refreshes them.
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -915,7 +928,7 @@ def _(mo, resp):
     _strip_stats = mo.callout(
         mo.md(
             f"**{kept_strips_n} of {total_strips} strips** were relevant to the query"
-            f" -- **{kept_pct}% useful**, {100 - kept_pct}% discarded as noise."
+            f" -- **{kept_pct}% useful**, {round(100 - kept_pct, 2)}% discarded as noise."
         ),
         kind="info",
     )
