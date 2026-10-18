@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="200" viewBox="0 0 1200 200">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0"   stop-color="#060d14"/>
+      <stop offset="0.5" stop-color="#0d1f2d"/>
+      <stop offset="1"   stop-color="#060d14"/>
+    </linearGradient>
+
+    <!-- radial vignette to keep center dark and readable -->
+    <radialGradient id="vignette" cx="50%" cy="50%" r="60%">
+      <stop offset="0%"   stop-color="#0d1f2d" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#060d14" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- glow for nodes -->
+    <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- glow for text -->
+    <filter id="textGlow" x="-5%" y="-40%" width="110%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- gradient fill for text -->
+    <linearGradient id="textGrad" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#7de8e0"/>
+      <stop offset="50%"  stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#7de8e0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="200" fill="url(#bgGrad)" rx="10"/>
+
+  <!-- ======= LEFT GRAPH DECORATION ======= -->
+  <!-- edges first, drawn under nodes -->
+  <line x1="82"  y1="77"  x2="197" y2="53"  stroke="#1cc8be" stroke-width="0.8" opacity="0.25"/>
+  <line x1="82"  y1="85"  x2="197" y2="147" stroke="#e8973e" stroke-width="0.8" opacity="0.25"/>
+  <line x1="205" y1="53"  x2="298" y2="95"  stroke="#1cc8be" stroke-width="0.8" opacity="0.25"/>
+  <line x1="205" y1="147" x2="298" y2="106" stroke="#e8973e" stroke-width="0.8" opacity="0.25"/>
+  <line x1="306" y1="100" x2="380" y2="100" stroke="#1cc8be" stroke-width="0.8" opacity="0.15" stroke-dasharray="4 4"/>
+
+  <!-- node: Retrieve -->
+  <circle cx="80"  cy="81"  r="22" fill="#1cc8be" opacity="0.05"/>
+  <circle cx="80"  cy="81"  r="12" fill="#1cc8be" opacity="0.12"/>
+  <circle cx="80"  cy="81"  r="5"  fill="#1cc8be" opacity="1"    filter="url(#nodeGlow)"/>
+
+  <!-- node: Evaluate -->
+  <circle cx="200" cy="50"  r="18" fill="#1cc8be" opacity="0.05"/>
+  <circle cx="200" cy="50"  r="9"  fill="#1cc8be" opacity="0.12"/>
+  <circle cx="200" cy="50"  r="4"  fill="#1cc8be" opacity="0.9"  filter="url(#nodeGlow)"/>
+
+  <!-- node: Correct (amber, the corrective branch) -->
+  <circle cx="200" cy="150" r="18" fill="#e8973e" opacity="0.05"/>
+  <circle cx="200" cy="150" r="9"  fill="#e8973e" opacity="0.12"/>
+  <circle cx="200" cy="150" r="4"  fill="#e8973e" opacity="0.9"  filter="url(#nodeGlow)"/>
+
+  <!-- node: Route -->
+  <circle cx="302" cy="100" r="18" fill="#1cc8be" opacity="0.05"/>
+  <circle cx="302" cy="100" r="9"  fill="#1cc8be" opacity="0.12"/>
+  <circle cx="302" cy="100" r="4"  fill="#1cc8be" opacity="0.9"  filter="url(#nodeGlow)"/>
+
+  <!-- ======= RIGHT GRAPH DECORATION (mirrored) ======= -->
+  <line x1="1118" y1="77"  x2="1003" y2="53"  stroke="#1cc8be" stroke-width="0.8" opacity="0.25"/>
+  <line x1="1118" y1="85"  x2="1003" y2="147" stroke="#e8973e" stroke-width="0.8" opacity="0.25"/>
+  <line x1="995"  y1="53"  x2="902"  y2="95"  stroke="#1cc8be" stroke-width="0.8" opacity="0.25"/>
+  <line x1="995"  y1="147" x2="902"  y2="106" stroke="#e8973e" stroke-width="0.8" opacity="0.25"/>
+  <line x1="894"  y1="100" x2="820"  y2="100" stroke="#1cc8be" stroke-width="0.8" opacity="0.15" stroke-dasharray="4 4"/>
+
+  <!-- node: Generate -->
+  <circle cx="1120" cy="81"  r="22" fill="#1cc8be" opacity="0.05"/>
+  <circle cx="1120" cy="81"  r="12" fill="#1cc8be" opacity="0.12"/>
+  <circle cx="1120" cy="81"  r="5"  fill="#1cc8be" opacity="1"    filter="url(#nodeGlow)"/>
+
+  <!-- node: Rewrite -->
+  <circle cx="1000" cy="50"  r="18" fill="#1cc8be" opacity="0.05"/>
+  <circle cx="1000" cy="50"  r="9"  fill="#1cc8be" opacity="0.12"/>
+  <circle cx="1000" cy="50"  r="4"  fill="#1cc8be" opacity="0.9"  filter="url(#nodeGlow)"/>
+
+  <!-- node: Fallback (amber) -->
+  <circle cx="1000" cy="150" r="18" fill="#e8973e" opacity="0.05"/>
+  <circle cx="1000" cy="150" r="9"  fill="#e8973e" opacity="0.12"/>
+  <circle cx="1000" cy="150" r="4"  fill="#e8973e" opacity="0.9"  filter="url(#nodeGlow)"/>
+
+  <!-- node: Route -->
+  <circle cx="898"  cy="100" r="18" fill="#1cc8be" opacity="0.05"/>
+  <circle cx="898"  cy="100" r="9"  fill="#1cc8be" opacity="0.12"/>
+  <circle cx="898"  cy="100" r="4"  fill="#1cc8be" opacity="0.9"  filter="url(#nodeGlow)"/>
+
+  <!-- Vignette overlay: keeps center readable -->
+  <rect width="1200" height="200" fill="url(#vignette)" rx="10"/>
+
+  <!-- ======= MAIN TEXT ======= -->
+  <text
+    x="600" y="106"
+    font-family="'Arial Black', 'Arial Bold', Arial, sans-serif"
+    font-size="66"
+    font-weight="900"
+    fill="url(#textGrad)"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    letter-spacing="4"
+    filter="url(#textGlow)">Corrective RAG</text>
+</svg>
