@@ -167,7 +167,10 @@ TAVILY_API_KEY=<your-tavily-api-key>
 ### Running
 
 ```bash
-# from the lab root
+# open the marimo workspace -- lists all notebooks in the current folder
+marimo edit
+
+# open a specific notebook directly
 marimo edit notebooks/p01_basic_rag.py
 marimo edit notebooks/p02_knowledge_refinement.py
 marimo edit notebooks/p03_retrieval_evaluation.py
@@ -176,10 +179,15 @@ marimo edit notebooks/p05_query_rewriting.py
 marimo edit notebooks/p06_ambiguity_handling.py
 
 # or via uv run (no global install needed)
+uv run marimo edit
 uv run marimo edit notebooks/p01_basic_rag.py
 ```
 
-`marimo edit <filename>` opens the notebook in the browser for interactive editing.
+Running `marimo edit` without a filename from the `corrective_rag/` root opens the marimo
+workspace at `http://localhost:2718/` -- a file browser that lists all notebooks in the folder
+so you can pick and open any phase without typing the full path.
+
+`marimo edit <filename>` opens that specific notebook directly in the browser.
 
 ### VS Code
 
