@@ -132,50 +132,29 @@ document pools through the graph transparently -- no extra edges or routing logi
 
 ## What I Learned
 
-- **LangGraph pattern**: `State` TypedDict + node functions (`state: State -> dict`) +
-  `add_conditional_edges` is a clean, composable pattern. Nodes stay pure; routing logic lives
-  in a separate `route` function returned from a `@app.cell` (not `@app.function`).
+- **Query rewriting is optional and swappable**: The `query_rewritter` node adds one LLM call
+  on every `incorrect` or `ambiguous` path execution. In latency-sensitive or cost-constrained
+  systems this step can be skipped entirely -- passing the raw user query directly to `web_search`
+  is a valid fallback. Alternatively, the rewriter LLM can be replaced with a smaller, focused
+  model (the original C-RAG paper uses a fine-tuned T5-Large) to reduce cost while keeping the
+  rewriting quality benefit.
 
-- **Threshold-based verdict classification**: Two thresholds (LOWER_TH, UPPER_TH) create a
-  clean three-zone scoring system. The verdict determines the pipeline branch; `good_docs`
-  filtering is applied independently and always.
+- **LangGraph state eliminates the need for an `ambiguous` graph route**: Both `incorrect` and
+  `ambiguous` verdicts end up executing the same `query_rewritter -> web_search -> refine ->
+  generate` path. Because LangGraph state is carried through every node in the execution path,
+  `good_docs` (populated by `eval_doc` regardless of verdict) is still present in `state` when
+  `refine` eventually runs. The `refine` node reads `state["verdict"]` and picks the right pool:
+  `good_docs` for correct, `web_docs` for incorrect, `good_docs + web_docs` for ambiguous.
+  No extra node, no extra conditional edge -- the merge logic lives inside `refine` and the
+  graph stays structurally simple.
 
-- **Refinement is source-agnostic**: The decompose-filter-recompose pipeline does not care
-  whether its input comes from FAISS, Tavily, or a merged pool. Passing different document
-  sources through the same `refine` node is the key design insight of the whole lab.
-
-- **Query rewriting is cheap and high-leverage**: One additional LLM call before Tavily search
-  consistently improves result quality on the `incorrect` path. The rewriter prompt needs to
-  be explicit: keyword focus, recency handling, no answering.
-
-- **Context merge for ambiguous**: Concatenating `good_docs + web_docs` before refinement
-  gives the LLM both internal domain knowledge and external coverage, producing more complete
-  answers than either source alone.
-
-- **marimo reactive cells**: `mo.stop()` gates expensive cells (graph runs, API calls) behind
-  a run button. `mo.stat()` + `mo.callout()` make verdict and reason immediately readable.
-  `mo.hstack()` / `mo.vstack()` compose multi-panel analysis views cleanly.
-
----
-
-## What Tripped Me Up
-
-- **`route` must be a `@app.cell`, not `@app.function`**: marimo functions defined with
-  `@app.function` are not reactive cells -- they do not participate in the dependency graph.
-  The `route` function needs to be returned from a `@app.cell` so it is available as a
-  reactive dependency to the graph-building cell.
-
-- **`ambiguous_node` removal in p06**: The ambiguous path was initially wired as a separate
-  node in the graph. Removing it required updating both the node list and the conditional edge
-  map -- it's easy to miss one of the two.
-
-- **`--` inside SVG XML comments**: The `--` sequence is invalid inside XML comments
-  (`<!-- ... -->`). This broke `xml.etree.ElementTree` parsing silently -- the error pointed
-  to the wrong line. Always use a comma or space instead of `--` inside SVG comment text.
-
-- **shields.io badge icons**: Not all technology names map to a simple-icons.org slug. Azure
-  OpenAI has no icon; marimo has no icon. Workarounds: use `gitbook` for marimo,
-  `langchaincorporate` for LangGraph. The only reliable check is simpleicons.org.
+- **marimo does not allow redefining the same variable across cells**: In marimo, a cell's
+  return values are exported into the notebook's reactive DAG as globally scoped names. If two
+  cells both return the same variable name, marimo raises a `MultipleDefinitionError` at load
+  time. This is unlike Jupyter where re-running a cell silently overwrites the previous value.
+  The fix is to use underscore-prefixed names (`_var`) for intermediate values that should stay
+  cell-local and not be exported. Any variable that needs to be shared with downstream cells
+  must be returned with a unique name across the entire notebook.
 
 ---
 
@@ -196,11 +175,4 @@ document pools through the graph transparently -- no extra edges or routing logi
   workspace file browser at `http://localhost:2718/` listing all notebooks in the folder.
   Faster than typing the full path for each phase.
 
-- **Two-threshold verdict design**: Using `UPPER_TH` and `LOWER_TH` as module-level constants
-  makes threshold tuning a single-line change. The original C-RAG paper used a fine-tuned
-  T5-Large model for scoring; an LLM prompt works for prototyping at higher cost per call.
-
----
-
-## Revisit Notes
 

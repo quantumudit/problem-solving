@@ -78,6 +78,8 @@ corrective_rag/
 |   |-- pattern_recognition_and_ml_book.pdf
 |   |-- README.md
 |-- notebooks/
+|   |-- layouts/
+|   |   |-- p06_ambiguity_handling.grid.json
 |   |-- p01_basic_rag.py
 |   |-- p02_knowledge_refinement.py
 |   |-- p03_retrieval_evaluation.py
@@ -106,6 +108,7 @@ corrective_rag/
 | `cache/documents.json` | Serialized `Document` objects from PDF loading -- auto-generated on first run, avoids re-parsing PDFs across sessions |
 | `data/` | Source PDFs forming the RAG knowledge base (gitignored) -- see `data/README.md` for download links |
 | `notebooks/` | marimo notebooks, one per phase -- open with `marimo edit notebooks/<file>.py` |
+| `notebooks/layouts/` | marimo grid layout files -- define the web app cell arrangement for notebooks opened with `marimo run` |
 | `vector_store/` | Persisted FAISS index (`index.faiss`, `index.pkl`) -- built once in p01 and reused across all phases |
 | `.env.example` | Template for required environment variables -- copy to `.env` and fill in credentials |
 | `notes.md` | Lab-level notes covering concepts, observations, and implementation details |
@@ -191,8 +194,7 @@ so you can pick and open any phase without typing the full path.
 
 ### VS Code
 
-The [marimo VS Code extension](https://marketplace.visualstudio.com/items?itemName=marimo-team.vscode-marimo)
-adds an embedded notebook view, cell execution, and variable explorer directly inside the editor.
+The [marimo VS Code extension](https://marketplace.visualstudio.com/items?itemName=marimo-team.vscode-marimo) adds an embedded notebook view, cell execution, and variable explorer directly inside the editor.
 
 Search for `marimo-team.vscode-marimo` in the Extensions panel.
 
