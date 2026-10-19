@@ -60,6 +60,8 @@ advanced_rag/
 |-- notebooks/
 |   |-- layouts/
 |   |-- p01_bm25_retrieval.py
+|   |-- p02_ensemble_retrieval.py
+|   |-- p03_reranking.py
 |-- vector_store/
 |   |-- .gitkeep
 |-- .env.example
@@ -96,6 +98,8 @@ advanced_rag/
 | # | Notebook | Slug | What it adds |
 |---|---|---|---|
 | 01 | [p01_bm25_retrieval.py](notebooks/p01_bm25_retrieval.py) | bm25_retrieval | TBD |
+| 02 | [p02_ensemble_retrieval.py](notebooks/p02_ensemble_retrieval.py) | ensemble_retrieval | TBD |
+| 03 | [p03_reranking.py](notebooks/p03_reranking.py) | reranking | TBD |
 
 ### Key Concepts
 
