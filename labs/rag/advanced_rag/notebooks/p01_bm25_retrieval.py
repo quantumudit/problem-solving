@@ -113,7 +113,7 @@ def _(Document, PyPDFLoader, json, lab_root):
         docs = [Document(**item) for item in json.loads(_cache_path.read_text())]
     else:
         _data = lab_root / "data"
-        docs = PyPDFLoader(str(_data / "rag-for-nlp-paper.pdf")).load()
+        docs = PyPDFLoader(str(_data / "rag_for_nlp_paper.pdf")).load()
         _cache_path.parent.mkdir(parents=True, exist_ok=True)
         _cache_path.write_text(json.dumps([doc.model_dump() for doc in docs]))
     return (docs,)
