@@ -55,8 +55,6 @@ advanced_rag/
 |   |-- .gitkeep
 |-- data/
 |   |-- README.md
-|-- index/
-|   |-- .gitkeep
 |-- notebooks/
 |   |-- layouts/
 |   |-- p01_bm25_retrieval.py
@@ -81,7 +79,6 @@ advanced_rag/
 | `assets/` | Static images used in this README |
 | `cache/` | Serialized document objects -- auto-generated on first run, avoids re-parsing across sessions |
 | `data/` | Source documents forming the RAG knowledge base (gitignored) -- see `data/README.md` |
-| `index/` | Persistent index artifacts (gitignored) |
 | `notebooks/` | marimo notebooks, one per phase -- open with `marimo edit notebooks/<file>.py` |
 | `notebooks/layouts/` | marimo grid layout files for `marimo run` |
 | `vector_store/` | Persisted Chroma vector store (gitignored) |

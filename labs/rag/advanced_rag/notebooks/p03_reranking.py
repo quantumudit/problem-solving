@@ -101,7 +101,7 @@ def _(mo):
     mo.md(r"""
     ## 1. Load Documents
 
-    Load the RAG paper using `PyPDFLoader`. Pages are cached to `cache/documents.json`
+    Load the RAG paper using `PyPDFLoader`. Pages are cached to `cache/rag_paper.json`
     on the first run -- subsequent runs skip the expensive PDF parsing step and
     deserialize directly from the cache.
     """)
@@ -130,7 +130,7 @@ def _():
 
 @app.cell
 def _(Document, PyPDFLoader, json, lab_root):
-    _cache_path = lab_root / "cache" / "documents.json"
+    _cache_path = lab_root / "cache" / "rag_paper.json"
 
     if _cache_path.exists():
         docs = [Document(**item) for item in json.loads(_cache_path.read_text())]
@@ -328,8 +328,8 @@ def _(mo):
     #### Vector Store
 
     Build or load a FAISS index from the embedded chunks. If a persisted index already
-    exists in `vector_store/`, it is loaded to avoid re-embedding on every run -- saving
-    significant time and API cost.
+    exists in `vector_store/faiss/rag_paper/`, it is loaded to avoid re-embedding on every
+    run -- saving significant time and API cost.
     """)
     return
 
@@ -343,7 +343,7 @@ def _():
 
 @app.cell
 def _(FAISS, chunks, embeddings, lab_root):
-    _vector_store_path = lab_root / "vector_store"
+    _vector_store_path = lab_root / "vector_store" / "faiss" / "rag_paper"
 
     if (_vector_store_path / "index.faiss").is_file():
         vector_store = FAISS.load_local(
@@ -351,6 +351,7 @@ def _(FAISS, chunks, embeddings, lab_root):
         )
     else:
         vector_store = FAISS.from_documents(chunks, embeddings)
+        _vector_store_path.mkdir(parents=True, exist_ok=True)
         vector_store.save_local(str(_vector_store_path))
     return (vector_store,)
 
