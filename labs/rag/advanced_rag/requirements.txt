@@ -9,3 +9,4 @@ pydantic
 marimo
 matplotlib
 rank_bm25
+langchain-cohere
