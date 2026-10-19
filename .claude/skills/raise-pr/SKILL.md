@@ -24,7 +24,7 @@ branch deletion.
 - **base branch:** `main`
 - **merge method:** `squash` (always -- keeps main history clean)
 - **assignee:** `quantumudit` (always -- solo developer)
-- **GitHub project:** "Data & Coding Challenge Tracker"
+- **GitHub project:** "🧠 Data & Coding Challenge Tracker"
 
 ## Tool split
 
@@ -82,6 +82,7 @@ Solo-developer repo. Keep descriptions short:
 - `## Summary` with bullet points covering what changed and why
 - No test plan, no checklist, no reviewer section
 - Derive the title from the branch name and `git log --oneline origin/main..HEAD`
+- **Never** include a "🤖 Generated with Claude Code" line or any AI attribution footer in the body
 
 ---
 
@@ -102,13 +103,42 @@ Capture the PR `number` and `html_url` from the response.
 
 ---
 
-## Step 6 -- Assign the PR
+## Step 6 -- Assign the PR and apply labels
 
-The MCP create tool has no assignees field, so use gh CLI:
+The MCP create tool has no assignees or labels fields, so use gh CLI.
+
+### Assign
 
 ```bash
-gh pr edit <number> --assignee quantumudit
+gh pr edit <number> --add-assignee quantumudit
 ```
+
+### Apply labels
+
+First list available labels to find the right ones:
+
+```bash
+gh label list --repo quantumudit/problem-solving --json name,description
+```
+
+Pick labels appropriate to the branch type and content:
+
+| Branch prefix | Suggested labels |
+|---|---|
+| `labs/` | `lab`, `enhancement` (or closest match) |
+| `projects/` | `project`, `enhancement` |
+| `community/` | `community` |
+| `problems/leetcode/` | `leetcode`, `dsa` |
+| `problems/stratascratch/` | `stratascratch`, `sql` or `pandas` |
+| `problems/excelbi/` | `excelbi` |
+
+Apply them:
+
+```bash
+gh pr edit <number> --add-label "label-name"
+```
+
+If no label fits, skip silently -- do not create new labels.
 
 ---
 
@@ -133,7 +163,7 @@ Tell the user:
 gh project list --owner quantumudit --format json
 ```
 
-Find the entry whose title contains "Data & Coding Challenge Tracker". Note its `number`
+Find the entry whose title contains "🧠 Data & Coding Challenge Tracker". Note its `number`
 and `id`.
 
 ### Add the PR to the project
