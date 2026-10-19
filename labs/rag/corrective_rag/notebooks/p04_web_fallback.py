@@ -1075,10 +1075,36 @@ def _(mo):
     mo.md(r"""
     ## 11. Analysis
 
-    Inspect the intermediate state produced by the pipeline run above -- retrieved documents,
-    web search results (if triggered), sentence strips, and context size across each stage.
-    All sections below are read-only views of `resp`; re-running section 10 refreshes them.
+    Inspect the intermediate state produced by the pipeline run above -- verdict and reason,
+    retrieved documents, web search results (if triggered), sentence strips, and context size
+    across each stage. All sections below are read-only views of `resp`; re-running section 10
+    refreshes them.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Verdict & Reason
+
+    The retrieval evaluator's overall decision for this run -- the `verdict` string and the
+    `reason` explaining which threshold condition was met. The verdict determines which pipeline
+    path ran; the reason reflects the aggregate scoring across all retrieved chunks.
+    """)
+    return
+
+
+@app.cell
+def _(mo, resp):
+    _verdict = resp.get("verdict", "")
+    _reason = resp.get("reason", "")
+    _kind_map = {"correct": "success", "incorrect": "danger", "ambiguous": "warn"}
+    _kind = _kind_map.get(_verdict, "neutral")
+    mo.vstack([
+        mo.stat(label="Verdict", value=_verdict.upper() if _verdict else "N/A"),
+        mo.callout(mo.md(f"**Reason:** {_reason}"), kind=_kind),
+    ])
     return
 
 
