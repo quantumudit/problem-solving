@@ -8,3 +8,4 @@ pypdf
 pydantic
 marimo
 matplotlib
+rank_bm25

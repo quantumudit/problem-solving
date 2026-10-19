@@ -59,7 +59,7 @@ advanced_rag/
 |   |-- .gitkeep
 |-- notebooks/
 |   |-- layouts/
-|   |-- p01_phase_01.py
+|   |-- p01_bm25_retrieval.py
 |-- vector_store/
 |   |-- .gitkeep
 |-- .env.example
@@ -95,7 +95,7 @@ advanced_rag/
 
 | # | Notebook | Slug | What it adds |
 |---|---|---|---|
-| 01 | [p01_phase_01.py](notebooks/p01_phase_01.py) | phase_01 | TBD |
+| 01 | [p01_bm25_retrieval.py](notebooks/p01_bm25_retrieval.py) | bm25_retrieval | TBD |
 
 ### Key Concepts
 

@@ -24,6 +24,7 @@ dependencies = [
     "pypdf>=6.21.1",
     "python-dotenv>=1.2.4",
     "pyyaml>=6.0.3",
+    "rank-bm25>=0.2.2",
     "rich>=15.0.0",
     "ruff>=0.15.16",
     "seaborn>=0.13.2",
