@@ -13,6 +13,7 @@ wheels/
 # Secrets and credentials
 .env
 .env.*
+!.env.example
 *.key
 *.pem
 *.p12
@@ -44,6 +45,7 @@ scratchpad/*
 .agents/
 .codex/
 AGENTS.md
+skills-lock.json
 
 # OS
 .DS_Store

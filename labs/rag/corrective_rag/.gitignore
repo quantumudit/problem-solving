@@ -1,0 +1,7 @@
+data/*
+!data/.gitkeep
+!data/README.md
+vector_store/*
+!vector_store/.gitkeep
+cache/*
+!cache/.gitkeep
