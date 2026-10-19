@@ -1,0 +1,10 @@
+langchain-core
+langchain-text-splitters
+langchain-openai
+langchain-community
+langgraph
+python-dotenv
+pypdf
+pydantic
+marimo
+matplotlib
