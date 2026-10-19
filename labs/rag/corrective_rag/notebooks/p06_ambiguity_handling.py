@@ -763,7 +763,7 @@ def _(State, decompose_to_sentences, filter_chain):
             docs = state["web_docs"]
         else:
             docs = state["good_docs"] + state["web_docs"]
-    
+
         context = "\n\n".join(d.page_content for d in docs).strip()
 
         # Step-1: Decomposition
