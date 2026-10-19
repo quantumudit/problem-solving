@@ -14,7 +14,7 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    # Web Fallback with Query Rewriting
+    # Handling Ambiguity
 
     ## What Was Built So Far
 
@@ -24,36 +24,36 @@ def _(mo):
     - **phase_02 (knowledge_refinement)**: Added a 3-step refinement pass between retrieval and generation -- decompose chunks into sentence strips, filter each strip for relevance, recompose into a noise-free `refined_context`.
     - **phase_03 (retrieval_evaluation)**: Added an LLM-based retrieval evaluator before refinement. Each chunk is scored $[0.0, 1.0]$ and the pipeline branches on the overall verdict: `correct` proceeds to `refine -> generate`; `incorrect` and `ambiguous` short-circuited with fallback messages.
     - **phase_04 (web_fallback)**: Replaced the `incorrect` dead-end with a real corrective action -- Tavily web search fetches live results when internal retrieval fails; raw web snippets pass through the same `refine` pipeline for a grounded, noise-free answer.
+    - **phase_05 (query_rewriting)**: Replaced direct Tavily calls with an LLM-powered `query_rewritter` node -- vague or conversational user queries are rewritten into keyword-dense, search-engine-optimized queries before `web_search` is called on the `incorrect` path.
 
-    Phase_04 closed the `incorrect` dead-end, but passed the raw user question directly to Tavily. Conversational, vague, or recency-implied queries (e.g., `"recent AI news"`) produce noisy, off-target web results when sent unmodified to a search API.
+    Phase_05 improved web fallback quality but left the `ambiguous` verdict as a dead-end -- routed to a short-circuit `ambiguous_node` that returned a fallback message with no refinement or generation. Any question partially covered by internal documents produced no grounded answer.
 
     ---
 
-    ## Phase 05: Introduction to Query Rewriting
+    ## Phase 06: Handling Ambiguous Knowledge
 
-    ### The Problem with Direct Web Queries
+    ### Definition of Ambiguous Verdict
 
-    * **Raw User Queries are Flawed**: Prompts from users are often conversational, vague, under-specified, or missing essential search keywords and time constraints (e.g., a user asking `"recent AI news"` or `"Who was the screenwriter for Death of a Batman"`).
-    * **Search Engine Keyword Gap**: Search engines (like Tavily or Google) perform best when given short, keyword-dense, explicitly framed queries. Passing raw, conversational user prompts directly into a search API returns noisy, off-target, or low-quality web snippets.
+    In C-RAG's Retrieval Evaluator stage, an **ambiguous verdict** occurs when internal vector store documents provide relevant details for part of a query, but fail to cover the prompt completely.
 
-    ### LLM-Powered Query Rewritter
+    #### Quantitative Threshold Condition
 
-    Since the user prompts are rarely search-engine-ready; we introduce a dedicated **LLM-powered Query Rewriter node** before performing any web search.
+    - No single chunk scores above the Upper Threshold ($\text{Score} < 0.7$).
+    - At the same time, at least one chunk (or all retrieved chunks) scores above the Lower Threshold ($\text{Score} \ge 0.3$), placing them in `good_docs`.
 
-    We provide some specific instruction to the LLM in order to make the raw user query; search-engine-ready. The instruction includes:
+    #### Semantic Meaning
 
-    * **Keyword Focus**: Strip conversational filler and retain core search terms.
-    * **Recency Constraints**: If a prompt implies recency (e.g., *"recent AI news"*), automatically append explicit date ranges like `"last 30 days"`.
-    * **No Answering**: Explicitly instructs the LLM **not** to answer the question, only to rewrite it for search engine optimization.
+    The internal documents are not strong enough on their own to produce a fully authoritative answer, but they are far too valuable to be completely discarded.
 
-    **Examples**:
-    * **User Prompt**: `"recent AI news"` $\rightarrow$ **Rewritten Web Query**: `"recent AI news last 30 days"`.
-    * **User Prompt**: `"Who was the screenwriter for Death of a Batman"` $\rightarrow$ **Rewritten Web Query**: `"Death of a Batman screenwriter wikipedia"`.
+    ### Context Merge: Solution for Ambiguous Verdict
 
+    In traditional RAG or basic search fallbacks, systems either rely exclusively on internal documents or throw them away entirely in favor of a web search. Corrective RAG avoids this binary choice.
 
-    In this case, instead of sending the user query directly to `web_search` node; we provided the search-engine optimized `web_query` to the node.
+    - **Preserve Internal Truth:** Keep all internal good_docs ($\text{Score} \ge 0.3$) to retain authoritative domain/company knowledge.
+    - **Fill Knowledge Gaps Externally:** Execute a web search to retrieve missing external information (`web_docs`).
+    - **Synthesize:** Combine internal knowledge (`good_docs`) with external knowledge (`web_docs`) into a single merged pool, run it through Knowledge Refinement, and generate a comprehensive answer.
 
-    The rest of the workflow remains the same post the `web_search` node
+    ---
     """)
     return
 
@@ -408,10 +408,8 @@ def _(mo):
     - `doc_scores` -- per-chunk relevance scores in the same order as `docs`
     - `doc_reasons` -- per-chunk reason strings explaining each score
 
-    **Web fallback field** (same as phase_04):
+    **Web fallback & Web Query fields** (same as phase_04 & phase_05):
     - `web_docs` -- `Document` objects returned by the Tavily web search; populated only on the `incorrect` path
-
-    **Web Query field (new in phase_05)**:
     - `web_query` -- A search-engine optimized user query
     """)
     return
@@ -455,10 +453,9 @@ def _(mo):
     - **`retrieve`** -- fetch the top-k chunks from the vector store
     - **`eval_doc`** -- score each chunk and assign a verdict; routes the graph conditionally
     - **`query_rewritter`** -- rewrite the user query into a search-engine-optimized `web_query` before fetching web results *(new in phase_05)*
-    - **`web_search`** -- query Tavily with `web_query` for live web results when verdict is `incorrect`
-    - **`refine`** -- decompose context into strips, filter for relevance, recompose; operates on `good_docs` for `correct`, `web_docs` for `incorrect`
-    - **`generate`** -- synthesize an answer from the refined context *(correct and incorrect paths)*
-    - **`ambiguous`** -- short-circuits with a partial-match message when no chunk clears `UPPER_TH`
+    - **`web_search`** -- query Tavily with `web_query` for live web results when verdict is `incorrect` or `ambiguous`
+    - **`refine`** -- decompose context into strips, filter for relevance, recompose; operates on `good_docs` for `correct`, `web_docs` for `incorrect`, and `good_docs` + `web_docs` merged for `ambiguous`
+    - **`generate`** -- synthesize an answer from the refined context *(all three verdict paths)*
     """)
     return
 
@@ -492,8 +489,8 @@ def _(mo):
     After scoring all chunks, the node decides the overall verdict and routes the graph:
 
     - `correct` -- at least one chunk scored $> 0.7$; proceed to `refine` (using `good_docs`)
-    - `incorrect` -- all chunks scored $< 0.3$; route to `web_search`, then `refine` (using `web_docs`), then `generate`
-    - `ambiguous` -- mixed signals (some chunks pass `LOWER_TH` but none reach `UPPER_TH`); short-circuit to `ambiguous`
+    - `incorrect` -- all chunks scored $< 0.3$; route to `query_rewritter` -> `web_search` -> `refine` (using `web_docs`) -> `generate`
+    - `ambiguous` -- mixed signals (some chunks pass `LOWER_TH` but none reach `UPPER_TH`); route to `query_rewritter` -> `web_search` -> `refine` (merges `good_docs` + `web_docs`) -> `generate`
 
     Regardless of verdict, only chunks scoring $> 0.3$ are kept in `good_docs` for downstream use.
     """)
@@ -640,13 +637,14 @@ def _(mo):
     mo.md(r"""
     ### 8c. Refine Node
 
-    The knowledge refinement stage, now handling two different knowledge sources depending on
+    The knowledge refinement stage, now handling three different knowledge sources depending on
     which path the graph took:
 
     - **`correct` path**: refines `good_docs` -- the internal chunks that cleared `LOWER_TH`.
     - **`incorrect` path**: refines `web_docs` -- the raw web search results fetched by Tavily.
+    - **`ambiguous` path**: refines `good_docs` + `web_docs` merged -- combines internal partial knowledge with external coverage.
 
-    In both cases the same 3-step pipeline runs: decompose into sentence strips, filter each
+    In all cases the same 3-step pipeline runs: decompose into sentence strips, filter each
     strip for relevance against the query, recompose kept strips into `refined_context`.
     """)
     return
@@ -742,10 +740,14 @@ def _(mo):
     mo.md(r"""
     #### Assembling the `refine` Node
 
-    Step 3 -- and the `refine` node function itself. The only change from phase_03 is the
-    context source: the node checks `state["verdict"]` and joins `good_docs` on the `correct`
-    path or `web_docs` on the `incorrect` path. Everything downstream -- decomposition,
-    filtration, recomposition -- is identical regardless of source.
+    previously the node checks `state["verdict"]` and joins
+    - `good_docs` on the `correct` path
+    - `web_docs` on the `incorrect` path.
+
+    To handle the ambiguous verdict the only change we have to make is:
+    - `good_docs` + `web_docs` on the `ambiguous` path
+
+    Everything downstream -- decomposition, filtration, recomposition -- is identical regardless of source.
     """)
     return
 
@@ -755,11 +757,14 @@ def _(State, decompose_to_sentences, filter_chain):
     def refine(state: State) -> dict:
         q = state["question"]
 
-
-        if state["verdict"] == "correct":
-            context = "\n\n".join(d.page_content for d in state["good_docs"]).strip()
+        if state.get("verdict") == "correct":
+            docs = state["good_docs"]
+        elif state.get("verdict") == "incorrect":
+            docs = state["web_docs"]
         else:
-            context = "\n\n".join(d.page_content for d in state["web_docs"]).strip()
+            docs = state["good_docs"] + state["web_docs"]
+    
+        context = "\n\n".join(d.page_content for d in docs).strip()
 
         # Step-1: Decomposition
         strips = decompose_to_sentences(context)
@@ -945,38 +950,32 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ### 8g. Routing & Fallback Node
+    ### 8g. Routing Logic
 
     The `route` function reads `state["verdict"]` and returns the name of the next node to run.
     LangGraph uses this as the edge condition for `add_conditional_edges`.
 
     - `correct` -> `refine` (uses `good_docs`)
-    - `incorrect` -> `query_rewritter` -> `web_search` -> `refine` (uses `web_docs`) -> `generate`
-    - `ambiguous` -> `ambiguous_node` (short-circuit; returns a partial-match message)
+    - `incorrect` / `ambiguous` -> `query_rewritter` -> `web_search` -> `refine` -> `generate`
 
-    `ambiguous_node` is the only remaining pure fallback in this phase. In a full C-RAG
-    implementation the `ambiguous` path would merge `good_docs` with web results before
-    refining -- that extension is left for a future phase.
+    The `ambiguous` verdict gets auto-handled since all the magic happens in the `refine` node; since it uses:
+    - `web_docs` : if the verdict is `incorrect`
+    - `good_docs` + `web_docs` : if the verdict is `ambiguous`
+
+    > Thanks to the state handling feature of Langgraph that we don't have to create a separate 3 graph route to handle the `ambiguous` verdict; only two routes; one for the `correct` verdict and one for the rest.
     """)
     return
 
 
 @app.cell
 def _(State):
-    def ambiguous_node(state: State) -> dict:
-        return {"answer": f"Ambiguous: {state['reason']} "}
+    def route(state: State) -> str:
+        if state["verdict"] == 'correct':
+            return "refine"
+        else:
+            return "query_rewritter"
 
-    return (ambiguous_node,)
-
-
-@app.function
-def route(state: State) -> str:
-    if state["verdict"] == 'correct':
-        return "refine"
-    elif state["verdict"] == "incorrect":
-        return "query_rewritter"
-    else:
-        return "ambiguous"
+    return (route,)
 
 
 @app.cell(hide_code=True)
@@ -985,18 +984,18 @@ def _(mo):
     ## 9. Build the Graph
 
     Assemble the nodes into a LangGraph `StateGraph` and compile it. The graph has a
-    conditional branch at `eval_doc` that routes to one of three paths based on the verdict:
+    conditional branch at `eval_doc` that routes to one of two paths based on the verdict:
 
     ```
     START -> retrieve -> eval_doc --(correct)---> refine -> generate -> END
-                                  --(incorrect)--> query_rewritter -> web_search -> refine -> generate -> END
-                                  --(ambiguous)--> ambiguous -> END
+                                  --(incorrect / ambiguous)--> query_rewritter -> web_search -> refine -> generate -> END
     ```
 
-    The key difference from phase_04 is the `incorrect` path: instead of routing directly to
-    `web_search`, it now passes through `query_rewritter` first -- the LLM rewrites the raw
-    user question into a search-engine-optimized `web_query` before Tavily is called.
-    `add_conditional_edges` wires the `route` function to the three possible next nodes.
+    The key difference from phase_05 is the `ambiguous` path: instead of routing to a dead-end
+    `ambiguous_node`, it now joins the `incorrect` path through `query_rewritter` -> `web_search`.
+    The `refine` node then merges `good_docs` + `web_docs` for `ambiguous` verdicts, while using
+    only `web_docs` for `incorrect`. `add_conditional_edges` wires the `route` function to two
+    possible next nodes.
     """)
     return
 
@@ -1014,12 +1013,12 @@ def _(
     START,
     State,
     StateGraph,
-    ambiguous_node,
     eval_doc,
     generate,
     query_rewritter,
     refine,
     retrieve,
+    route,
     web_search,
 ):
     builder = StateGraph(State)
@@ -1030,21 +1029,19 @@ def _(
     builder.add_node("web_search", web_search)
     builder.add_node("refine", refine)
     builder.add_node("generate", generate)
-    builder.add_node("ambiguous", ambiguous_node)
 
     builder.add_edge(START, "retrieve")
     builder.add_edge("retrieve", "eval_doc")
 
     builder.add_conditional_edges(
         "eval_doc", route,
-        {"refine":"refine", "query_rewritter": "query_rewritter", "ambiguous": "ambiguous"}
+        {"refine":"refine", "query_rewritter": "query_rewritter"}
     )
 
     builder.add_edge("query_rewritter", "web_search")
     builder.add_edge("web_search", "refine")
     builder.add_edge("refine", "generate")
     builder.add_edge("generate", END)
-    builder.add_edge("ambiguous", END)
 
     graph = builder.compile()
     return (graph,)
@@ -1061,9 +1058,9 @@ def _(mo):
     mo.md(r"""
     The compiled graph encodes the full corrective RAG pipeline with conditional routing.
     `graph.invoke(state)` always runs `retrieve` and `eval_doc`; the path after that depends
-    on the verdict. Both `correct` and `incorrect` paths run `refine` and `generate` -- the
-    difference is the context source (`good_docs` vs `web_docs`). Only `ambiguous` short-circuits
-    without generating a grounded answer.
+    on the verdict. All three verdict paths run `refine` and `generate` -- the difference is
+    the context source: `good_docs` for `correct`, `web_docs` for `incorrect`, and
+    `good_docs` + `web_docs` merged for `ambiguous`.
     """)
     return
 
@@ -1080,12 +1077,12 @@ def _(mo):
     | Question | Expected verdict | What to observe |
     |---|---|---|
     | "Explain the bias-variance trade-off" | `correct` | Internal retrieval succeeds -- `good_docs` are refined and used for generation. Web Docs section will be empty. |
-    | "What are attention mechanisms and why are they important in current scenario?" | `ambiguous` | Mixed relevance -- some chunks pass `LOWER_TH` but none exceed `UPPER_TH`. Routes to `ambiguous` node; no refinement or generation runs. |
+    | "What are attention mechanisms and why are they important in current scenario?" | `ambiguous` | Mixed relevance -- some chunks pass `LOWER_TH` but none exceed `UPPER_TH`. Routes to `query_rewritter` -> `web_search` -> `refine` (merges `good_docs` + `web_docs`) -> `generate`. |
     | "What are the latest major AI news?" | `incorrect` | Internal retrieval fails completely. Routes to `query_rewritter` -> `web_search` -> `refine` -> `generate`. Query Rewriting section shows the original vs rewritten query; Web Docs section populates with Tavily results. |
 
-    > **Note:** Strip analysis and refined context are populated for both `correct` and `incorrect`
-    > verdicts (both paths run `refine`). For `ambiguous`, the `refine` node is skipped -- strips
-    > and refined context remain empty and those sections will show no data.
+    > **Note:** Strip analysis and refined context are populated for all three verdicts -- `refine`
+    > runs on every path. The context source differs: `good_docs` for `correct`, `web_docs` for
+    > `incorrect`, and `good_docs` + `web_docs` merged for `ambiguous`.
     """)
     return
 
@@ -1151,11 +1148,36 @@ def _(mo):
     mo.md(r"""
     ## 11. Analysis
 
-    Inspect the intermediate state produced by the pipeline run above -- query rewriting (on the
-    `incorrect` path), retrieved documents, web search results (if triggered), sentence strips,
-    and context size across each stage. All sections below are read-only views of `resp`;
-    re-running section 10 refreshes them.
+    Inspect the intermediate state produced by the pipeline run above -- verdict and reason, query
+    rewriting (on the `incorrect` and `ambiguous` paths), retrieved documents, web search results,
+    sentence strips, and context size across each stage. All sections below are read-only views of
+    `resp`; re-running section 10 refreshes them.
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Verdict & Reason
+
+    The retrieval evaluator's overall decision for this run -- the `verdict` string and the
+    `reason` explaining which threshold condition was met. The verdict determines which pipeline
+    path ran; the reason reflects the aggregate scoring across all retrieved chunks.
+    """)
+    return
+
+
+@app.cell
+def _(mo, resp):
+    _verdict = resp.get("verdict", "")
+    _reason = resp.get("reason", "")
+    _kind_map = {"correct": "success", "incorrect": "danger", "ambiguous": "warn"}
+    _kind = _kind_map.get(_verdict, "neutral")
+    mo.vstack([
+        mo.stat(label="Verdict", value=_verdict.upper() if _verdict else "N/A"),
+        mo.callout(mo.md(f"**Reason:** {_reason}"), kind=_kind),
+    ])
     return
 
 
@@ -1165,8 +1187,9 @@ def _(mo):
     ### Query Rewriting
 
     Compares the original user question with the search-engine-optimized `web_query` produced
-    by the `query_rewritter` node. Only populated on the `incorrect` path -- the rewriter runs
-    before Tavily is called. On `correct` and `ambiguous` paths, `web_query` remains empty.
+    by the `query_rewritter` node. Populated on both `incorrect` and `ambiguous` paths -- both
+    route through `query_rewritter` before Tavily is called. On the `correct` path, `web_query`
+    remains empty.
     """)
     return
 
@@ -1177,7 +1200,7 @@ def _(mo, resp):
     rewritten_q = resp.get("web_query", "")
     if not rewritten_q:
         _display = mo.callout(
-            mo.md("Query rewriting was not triggered -- verdict was not `incorrect`."),
+            mo.md("Query rewriting was not triggered -- verdict was `correct`."),
             kind="neutral",
         )
     else:
@@ -1212,9 +1235,9 @@ def _(mo):
     mo.md(r"""
     ### Explore Web Documents
 
-    Web results fetched by Tavily when the verdict was `incorrect`. Each result shows the
-    title, source URL, and raw content snippet as returned by the API -- before any refinement.
-    Only populated on the `incorrect` path; empty for `correct` and `ambiguous` verdicts.
+    Web results fetched by Tavily when the verdict was `incorrect` or `ambiguous`. Each result
+    shows the title, source URL, and raw content snippet as returned by the API -- before any
+    refinement. Populated on both `incorrect` and `ambiguous` paths; empty for `correct`.
     """)
     return
 
@@ -1224,7 +1247,7 @@ def _(mo, resp):
     web_context = "\n\n".join(d.page_content for d in resp["web_docs"])
     if not resp["web_docs"]:
         _display = mo.callout(
-            mo.md("No web search was triggered -- verdict was not `incorrect`."),
+            mo.md("No web search was triggered -- verdict was `correct`."),
             kind="neutral",
         )
     else:
@@ -1333,7 +1356,8 @@ def _(mo):
     - **correct** -- strips are decomposed from `good_docs` (internally retrieved chunks above
       the lower threshold)
     - **incorrect** -- strips are decomposed from `web_docs` (Tavily web search results)
-    - **ambiguous** -- `refine` is skipped; this table will be empty
+    - **ambiguous** -- strips are decomposed from the merged pool: `good_docs` + `web_docs`
+      combined, giving the refiner both internal knowledge and external coverage to work from
 
     Strips present in `kept_strips` are marked **Kept**; the rest are **Discarded**.
     """)
@@ -1390,14 +1414,17 @@ def _(mo):
     ### Refined Context
 
     The clean, noise-free context produced by the `refine` node -- the only text the LLM
-    receives when generating the final answer. The bar chart below shows how context size
-    shrinks across the pipeline; the stages shown depend on which path was taken:
+    receives when generating the final answer. The charts below show how context size evolves
+    across the pipeline; the layout depends on which path was taken:
 
     - **correct path** -- Raw retrieval -> Good context (eval filter) -> Refined context
-      (sentence filter). Three bars; both filters reduce noise.
+      (sentence filter). Single chart; both filters reduce noise progressively.
     - **incorrect path** -- Raw retrieval (failed internally) -> Web context (Tavily) ->
-      Refined context (sentence filter). Three bars; web context replaces good context.
-    - **ambiguous path** -- `refine` is skipped; refined context is empty.
+      Refined context (sentence filter). Single chart; web context replaces internal context.
+    - **ambiguous path** -- Three charts showing the full merge pipeline:
+      (1) Raw -> Good docs: how many internal chunks survived evaluation.
+      (2) Good docs vs Web docs: relative size of each source.
+      (3) Good + Web combined -> Refined: how much noise the sentence filter removed.
     """)
     return
 
@@ -1415,13 +1442,47 @@ def _(good_context, mo, plt, raw_context, resp, web_context):
     raw_len = len(raw_context)
 
     if verdict == "ambiguous":
-        _display = mo.callout(
+        good_len = len(good_context)
+        web_len = len(web_context)
+        _combined_docs = resp["good_docs"] + resp["web_docs"]
+        combined_len = len("\n\n".join(d.page_content for d in _combined_docs))
+
+        eval_reduction_pct = round((1 - good_len / raw_len) * 100, 1) if raw_len > 0 else 0.0
+        refine_reduction_pct = round((1 - refined_len / combined_len) * 100, 1) if combined_len > 0 else 0.0
+
+        fig1, ax1 = plt.subplots(figsize=(4, 3.2))
+        ax1.bar(["Raw Context", "Good Context"], [raw_len, good_len], color=["#E45756", "#F8A05C"])
+        ax1.set_ylabel("Characters")
+        ax1.set_title("Eval filter: raw -> good docs")
+        ax1.spines["top"].set_visible(False)
+        ax1.spines["right"].set_visible(False)
+        plt.tight_layout()
+
+        fig2, ax2 = plt.subplots(figsize=(4, 3.2))
+        ax2.bar(["Good Docs", "Web Docs"], [good_len, web_len], color=["#F8A05C", "#4C78A8"])
+        ax2.set_ylabel("Characters")
+        ax2.set_title("Source mix: internal + web")
+        ax2.spines["top"].set_visible(False)
+        ax2.spines["right"].set_visible(False)
+        plt.tight_layout()
+
+        fig3, ax3 = plt.subplots(figsize=(4, 3.2))
+        ax3.bar(["Good + Web", "Refined Context"], [combined_len, refined_len], color=["#72B7B2", "#54A24B"])
+        ax3.set_ylabel("Characters")
+        ax3.set_title("Refinement: merged -> refined")
+        ax3.spines["top"].set_visible(False)
+        ax3.spines["right"].set_visible(False)
+        plt.tight_layout()
+
+        _stats = mo.callout(
             mo.md(
-                "Verdict was **ambiguous** -- `refine` was skipped."
-                " No refined context to compare."
+                f"**Raw:** {raw_len:,} chars -> **Good docs:** {good_len:,} chars (-{eval_reduction_pct}% via eval). "
+                f"**Web docs:** {web_len:,} chars via Tavily. "
+                f"**Combined:** {combined_len:,} chars -> **Refined:** {refined_len:,} chars (-{refine_reduction_pct}% via refinement)."
             ),
-            kind="neutral",
+            kind="info",
         )
+        _display = mo.vstack([_stats, mo.hstack([fig1, fig2, fig3])])
     elif verdict == "correct":
         good_len = len(good_context)
         eval_reduction_pct = round((1 - good_len / raw_len) * 100, 1) if raw_len > 0 else 0.0
