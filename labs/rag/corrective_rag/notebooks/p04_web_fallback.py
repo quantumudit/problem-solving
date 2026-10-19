@@ -139,9 +139,7 @@ def _():
 
 @app.cell
 def _(RecursiveCharacterTextSplitter, docs):
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=900, chunk_overlap=150
-    )
+    splitter = RecursiveCharacterTextSplitter(chunk_size=900, chunk_overlap=150)
     chunks = splitter.split_documents(docs)
     return (chunks,)
 
@@ -150,15 +148,16 @@ def _(RecursiveCharacterTextSplitter, docs):
 def _(chunks):
     # Clean the chunk texts to avoid any UnicodeEncodeError (surrogates from PDF extraction)
     for d in chunks:
-        d.page_content = d.page_content.encode("utf-8", "ignore").decode(
-            "utf-8", "ignore"
-        )
+        d.page_content = d.page_content.encode("utf-8", "ignore").decode("utf-8", "ignore")
     return
 
 
 @app.cell
 def _(chunks, mo):
-    mo.callout(mo.md(f"Split into **{len(chunks)}** chunks (chunk_size=900, overlap=150)."), kind="info")
+    mo.callout(
+        mo.md(f"Split into **{len(chunks)}** chunks (chunk_size=900, overlap=150)."),
+        kind="info",
+    )
     return
 
 
@@ -282,9 +281,7 @@ def _(mo):
 
 @app.cell
 def _(vector_store):
-    retriever = vector_store.as_retriever(
-        search_type="similarity", search_kwargs={"k": 4}
-    )
+    retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 4})
     return (retriever,)
 
 
@@ -543,10 +540,12 @@ def _(ChatPromptTemplate):
     """
 
     # Prompt template with role-based message to filter sentence strips
-    doceval_template = ChatPromptTemplate.from_messages([
-        ("system", doceval_sys_msg),
-        ("human", "Question: {question}\n\nDocument Chunk:\n{chunk}")
-    ])
+    doceval_template = ChatPromptTemplate.from_messages(
+        [
+            ("system", doceval_sys_msg),
+            ("human", "Question: {question}\n\nDocument Chunk:\n{chunk}"),
+        ]
+    )
     return (doceval_template,)
 
 
@@ -709,10 +708,12 @@ def _(ChatPromptTemplate):
     Return keep=true only if the sentence directly helps answer the question.
     Use ONLY the sentence. Output JSON only.
     """
-    filter_template = ChatPromptTemplate.from_messages([
-        ("system", filter_sys_msg),
-        ("human", "Question: {question}\n\nSentence:\n{sentence}"),
-    ])
+    filter_template = ChatPromptTemplate.from_messages(
+        [
+            ("system", filter_sys_msg),
+            ("human", "Question: {question}\n\nSentence:\n{sentence}"),
+        ]
+    )
     return (filter_template,)
 
 
@@ -739,7 +740,6 @@ def _(mo):
 def _(State, decompose_to_sentences, filter_chain):
     def refine(state: State) -> dict:
         q = state["question"]
-
 
         if state["verdict"] == "correct":
             context = "\n\n".join(d.page_content for d in state["good_docs"]).strip()
@@ -792,10 +792,7 @@ def _(TavilySearch, os):
     tavily_key = os.getenv("TAVILY_API_KEY")
 
     tavily = TavilySearch(
-        name="web_search", 
-        max_results=5, 
-        topic="general", 
-        api_key=tavily_key
+        name="web_search", max_results=5, topic="general", api_key=tavily_key
     )
     return (tavily,)
 
@@ -812,7 +809,9 @@ def _(Document, State, tavily):
             url = r.get("url", "")
             content = r.get("content", "") or r.get("snippet", "")
             text = f"TITLE: {title}\nURL: {url}\nCONTENT: {content}"
-            web_docs.append(Document(page_content=text, metadata={"url":url, "title": title}))
+            web_docs.append(
+                Document(page_content=text, metadata={"url": url, "title": title})
+            )
         return {"web_docs": web_docs}
 
     return (web_search,)
@@ -835,10 +834,12 @@ def _(ChatPromptTemplate):
     sys_msg = """You are a helpful ML tutor. Answer ONLY using the provided refined context.
     If the context is empty or insufficient, simply say: "I don't know based on the provided books."
     """
-    template = ChatPromptTemplate.from_messages([
-        ("system", sys_msg),
-        ("human", "Question: {question}\n\nRefined Context:\n{refined_context}"),
-    ])
+    template = ChatPromptTemplate.from_messages(
+        [
+            ("system", sys_msg),
+            ("human", "Question: {question}\n\nRefined Context:\n{refined_context}"),
+        ]
+    )
     return (template,)
 
 
@@ -846,10 +847,12 @@ def _(ChatPromptTemplate):
 def _(State, llm, template):
     def generate(state: State) -> dict:
         chain = template | llm
-        response = chain.invoke({
-            "question": state["question"],
-            "refined_context": state["refined_context"],
-        })
+        response = chain.invoke(
+            {
+                "question": state["question"],
+                "refined_context": state["refined_context"],
+            }
+        )
         return {"answer": response.content}
 
     return (generate,)
@@ -896,7 +899,7 @@ def _(State):
 @app.cell
 def _(State):
     def route(state: State) -> str:
-        if state["verdict"] == 'correct':
+        if state["verdict"] == "correct":
             return "refine"
         elif state["verdict"] == "incorrect":
             return "web_search"
@@ -962,8 +965,9 @@ def _(
     builder.add_edge("retrieve", "eval_doc")
 
     builder.add_conditional_edges(
-        "eval_doc", route,
-        {"refine":"refine", "web_search": "web_search", "ambiguous": "ambiguous"}
+        "eval_doc",
+        route,
+        {"refine": "refine", "web_search": "web_search", "ambiguous": "ambiguous"},
     )
 
     builder.add_edge("web_search", "refine")
@@ -1101,10 +1105,12 @@ def _(mo, resp):
     _reason = resp.get("reason", "")
     _kind_map = {"correct": "success", "incorrect": "danger", "ambiguous": "warn"}
     _kind = _kind_map.get(_verdict, "neutral")
-    mo.vstack([
-        mo.stat(label="Verdict", value=_verdict.upper() if _verdict else "N/A"),
-        mo.callout(mo.md(f"**Reason:** {_reason}"), kind=_kind),
-    ])
+    mo.vstack(
+        [
+            mo.stat(label="Verdict", value=_verdict.upper() if _verdict else "N/A"),
+            mo.callout(mo.md(f"**Reason:** {_reason}"), kind=_kind),
+        ]
+    )
     return
 
 
@@ -1129,19 +1135,25 @@ def _(mo, resp):
             kind="neutral",
         )
     else:
-        _display = mo.vstack([
-            mo.accordion({
-                f"Web Result {i + 1} -- {d.metadata.get('title', '')}": mo.md(d.page_content)
-                for i, d in enumerate(resp["web_docs"])
-            }),
-            mo.callout(
-                mo.md(
-                    f"**{len(resp['web_docs'])} web results** fetched via Tavily."
-                    f" Total web context: {len(web_context):,} characters."
+        _display = mo.vstack(
+            [
+                mo.accordion(
+                    {
+                        f"Web Result {i + 1} -- {d.metadata.get('title', '')}": mo.md(
+                            d.page_content
+                        )
+                        for i, d in enumerate(resp["web_docs"])
+                    }
                 ),
-                kind="warn",
-            ),
-        ])
+                mo.callout(
+                    mo.md(
+                        f"**{len(resp['web_docs'])} web results** fetched via Tavily."
+                        f" Total web context: {len(web_context):,} characters."
+                    ),
+                    kind="warn",
+                ),
+            ]
+        )
     _display
     return (web_context,)
 
@@ -1160,19 +1172,20 @@ def _(mo):
 @app.cell
 def _(mo, resp):
     raw_context = "\n\n".join(d.page_content for d in resp["docs"])
-    mo.vstack([
-        mo.accordion({
-            f"Doc {i + 1}": mo.md(d.page_content)
-            for i, d in enumerate(resp["docs"])
-        }),
-        mo.callout(
-            mo.md(
-                f"**Total raw context:** {len(raw_context):,} characters"
-                f" across {len(resp['docs'])} chunks."
+    mo.vstack(
+        [
+            mo.accordion(
+                {f"Doc {i + 1}": mo.md(d.page_content) for i, d in enumerate(resp["docs"])}
             ),
-            kind="info",
-        ),
-    ])
+            mo.callout(
+                mo.md(
+                    f"**Total raw context:** {len(raw_context):,} characters"
+                    f" across {len(resp['docs'])} chunks."
+                ),
+                kind="info",
+            ),
+        ]
+    )
     return (raw_context,)
 
 
@@ -1195,7 +1208,9 @@ def _(mo, raw_context, resp):
     chunk_rows = [
         {
             "Chunk": f"Doc {i + 1}",
-            "Score": round(resp["doc_scores"][i], 3) if i < len(resp["doc_scores"]) else "N/A",
+            "Score": round(resp["doc_scores"][i], 3)
+            if i < len(resp["doc_scores"])
+            else "N/A",
             "Good Doc?": "Yes" if d.page_content in good_pages else "No",
             "Reason": resp["doc_reasons"][i] if i < len(resp["doc_reasons"]) else "",
         }
@@ -1207,7 +1222,9 @@ def _(mo, raw_context, resp):
     good_pct = round(good_docs_n / total_docs * 100, 1) if total_docs > 0 else 0.0
     raw_chars = len(raw_context)
     good_chars = len(good_context)
-    char_reduction_pct = round((1 - good_chars / raw_chars) * 100, 1) if raw_chars > 0 else 0.0
+    char_reduction_pct = (
+        round((1 - good_chars / raw_chars) * 100, 1) if raw_chars > 0 else 0.0
+    )
 
     _stats = mo.callout(
         mo.md(
@@ -1325,9 +1342,15 @@ def _(good_context, mo, plt, raw_context, resp, web_context):
         )
     elif verdict == "correct":
         good_len = len(good_context)
-        eval_reduction_pct = round((1 - good_len / raw_len) * 100, 1) if raw_len > 0 else 0.0
-        refine_reduction_pct = round((1 - refined_len / good_len) * 100, 1) if good_len > 0 else 0.0
-        total_reduction_pct = round((1 - refined_len / raw_len) * 100, 1) if raw_len > 0 else 0.0
+        eval_reduction_pct = (
+            round((1 - good_len / raw_len) * 100, 1) if raw_len > 0 else 0.0
+        )
+        refine_reduction_pct = (
+            round((1 - refined_len / good_len) * 100, 1) if good_len > 0 else 0.0
+        )
+        total_reduction_pct = (
+            round((1 - refined_len / raw_len) * 100, 1) if raw_len > 0 else 0.0
+        )
 
         fig_ctx, ax_ctx = plt.subplots(figsize=(5, 3.5))
         ax_ctx.bar(
@@ -1353,7 +1376,9 @@ def _(good_context, mo, plt, raw_context, resp, web_context):
         _display = mo.vstack([_stats, fig_ctx])
     else:
         web_len = len(web_context)
-        refine_reduction_pct = round((1 - refined_len / web_len) * 100, 1) if web_len > 0 else 0.0
+        refine_reduction_pct = (
+            round((1 - refined_len / web_len) * 100, 1) if web_len > 0 else 0.0
+        )
 
         fig_ctx, ax_ctx = plt.subplots(figsize=(5, 3.5))
         ax_ctx.bar(
