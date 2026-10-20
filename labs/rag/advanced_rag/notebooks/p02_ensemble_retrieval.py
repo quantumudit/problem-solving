@@ -178,10 +178,10 @@ def _(RecursiveCharacterTextSplitter, docs):
 @app.cell
 def _(chunks):
     # Strip surrogates introduced by PDF extraction to prevent encoding errors downstream.
-    for d in chunks:
-        d.page_content = d.page_content.encode("utf-8", "ignore").decode(
-            "utf-8", "ignore"
-        )
+    # Add unique chunk_id to each Document metadata
+    for i, d in enumerate(chunks):
+        d.metadata["chunk_id"] = i
+        d.page_content = d.page_content.encode("utf-8", "ignore").decode("utf-8", "ignore")
     return
 
 
