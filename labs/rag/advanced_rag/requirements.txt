@@ -10,3 +10,6 @@ rank_bm25
 langchain-cohere
 pydantic
 matplotlib
+flashrank
+altair
+pandas
