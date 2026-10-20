@@ -74,7 +74,7 @@ def _(mo):
     ## 1. Load Documents
 
     Load the four Sherlock Holmes books using `DirectoryLoader` with `TextLoader`. Documents
-    are cached to `cache/sherlock_holmes.json` on the first run -- subsequent runs skip the
+    are cached to `cache/documents/sherlock_holmes.json` on the first run -- subsequent runs skip the
     loading step and deserialize directly from the cache.
     """)
     return
@@ -102,7 +102,7 @@ def _():
 
 @app.cell
 def _(DirectoryLoader, Document, TextLoader, json, lab_root):
-    _cache_path = lab_root / "cache" / "sherlock_holmes.json"
+    _cache_path = lab_root / "cache" / "documents" / "sherlock_holmes.json"
 
     if _cache_path.exists():
         docs = [Document(**item) for item in json.loads(_cache_path.read_text(encoding="utf-8"))]

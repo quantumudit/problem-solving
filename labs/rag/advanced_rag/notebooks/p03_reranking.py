@@ -101,7 +101,7 @@ def _(mo):
     mo.md(r"""
     ## 1. Load Documents
 
-    Load the RAG paper using `PyPDFLoader`. Pages are cached to `cache/rag_paper.json`
+    Load the RAG paper using `PyPDFLoader`. Pages are cached to `cache/documents/rag_paper.json`
     on the first run -- subsequent runs skip the expensive PDF parsing step and
     deserialize directly from the cache.
     """)
@@ -130,7 +130,7 @@ def _():
 
 @app.cell
 def _(Document, PyPDFLoader, json, lab_root):
-    _cache_path = lab_root / "cache" / "rag_paper.json"
+    _cache_path = lab_root / "cache" / "documents" / "rag_paper.json"
 
     if _cache_path.exists():
         docs = [Document(**item) for item in json.loads(_cache_path.read_text())]
