@@ -1,7 +1,8 @@
 data/*
 !data/.gitkeep
 !data/README.md
-vector_store/*
-!vector_store/.gitkeep
+vectorstore/*
+!vectorstore/.gitkeep
+notebooks/__marimo__/
 cache/*
 !cache/.gitkeep

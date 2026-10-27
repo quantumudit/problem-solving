@@ -67,7 +67,7 @@ advanced_rag/
 |   |-- p03_reranking.py
 |   |-- p04_flash_reranker.py
 |   |-- p05_rag_fusion.py
-|-- vector_store/
+|-- vectorstore/
 |   |-- faiss/
 |   |-- .gitkeep
 |-- .env.example
@@ -91,7 +91,7 @@ advanced_rag/
 | `data/` | Source documents forming the RAG knowledge base (gitignored) -- see `data/README.md` |
 | `notebooks/` | marimo notebooks, one per phase -- open with `marimo edit notebooks/<file>.py` |
 | `notebooks/layouts/` | marimo grid layout files for `marimo run` |
-| `vector_store/` | Persisted vector stores (gitignored), organised as `vector_store/{backend}/{slug}/` -- e.g. `faiss/rag_paper/`, `faiss/sherlock_holmes/`. The slug matches the document cache file, so notebooks working on the same collection share one index |
+| `vectorstore/` | Persisted vector stores (gitignored), organised as `vectorstore/{backend}/{slug}/` -- e.g. `faiss/rag_paper/`, `faiss/sherlock_holmes/`. The slug matches the document cache file, so notebooks working on the same collection share one index |
 | `.env.example` | Template for required environment variables |
 | `notes.md` | Lab-level notes covering concepts, observations, and implementation details |
 | `requirements.txt` | Python dependencies for this lab |
@@ -110,9 +110,9 @@ advanced_rag/
 | 04 | [p04_flash_reranker.py](notebooks/p04_flash_reranker.py) | flash_reranker | TBD |
 | 05 | [p05_rag_fusion.py](notebooks/p05_rag_fusion.py) | rag_fusion | TBD |
 
-Phases 01-04 use the RAG paper (`cache/documents/rag_paper.json`, `vector_store/faiss/rag_paper/`);
+Phases 01-04 use the RAG paper (`cache/documents/rag_paper.json`, `vectorstore/faiss/rag_paper/`);
 phase 05 uses the Sherlock Holmes books (`cache/documents/sherlock_holmes.json`,
-`vector_store/faiss/sherlock_holmes/`).
+`vectorstore/faiss/sherlock_holmes/`).
 
 ### Key Concepts
 

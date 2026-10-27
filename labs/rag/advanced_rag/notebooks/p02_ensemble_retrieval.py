@@ -313,7 +313,7 @@ def _(mo):
     #### Vector Store
 
     Build or load a FAISS index from the embedded chunks. If a persisted index already
-    exists in `vector_store/faiss/rag_paper/`, it is loaded to avoid re-embedding on every
+    exists in `vectorstore/faiss/rag_paper/`, it is loaded to avoid re-embedding on every
     run -- saving significant time and API cost.
     """)
     return
@@ -328,7 +328,7 @@ def _():
 
 @app.cell
 def _(FAISS, chunks, embeddings, lab_root):
-    _vector_store_path = lab_root / "vector_store" / "faiss" / "rag_paper"
+    _vector_store_path = lab_root / "vectorstore" / "faiss" / "rag_paper"
 
     if (_vector_store_path / "index.faiss").is_file():
         vector_store = FAISS.load_local(
