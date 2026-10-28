@@ -13,3 +13,4 @@ matplotlib
 flashrank
 altair
 pandas
+faiss-cpu
