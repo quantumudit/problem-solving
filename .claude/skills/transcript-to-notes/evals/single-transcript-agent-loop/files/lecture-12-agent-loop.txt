@@ -1,0 +1,23 @@
+00:00:03
+Hi everyone, welcome back. In this lecture we are going to talk about the agent loop, and I know you've been waiting for this one, so let's jump right in. Before I forget, if you're enjoying the course please leave a review, it really helps.
+
+00:00:21
+So what is an agent really? An agent is just an LLM running in a loop with access to tools. That's it. The model gets a goal, it decides whether to call a tool or to answer, we run the tool, we feed the result back to the model, and we repeat until the model says it's done. Okay? So the loop is think, act, observe.
+
+00:00:58
+Now there are two big patterns people use. The first is called react, R E A C T, which stands for reason and act. In react the model decides one step at a time. It thinks, picks a tool, sees the result, and then thinks again. The advantage is that it is very flexible, it can change its mind when a tool result surprises it. The downside is that it can wander. It can loop forever, and it costs more because every step is a full model call with the whole history.
+
+00:01:44
+The second pattern is plan and execute. Here the model first writes a whole plan, a list of steps, up front. Then a separate executor goes through the steps one by one, and maybe a cheaper model does the executing. The plus side is it's cheaper and more predictable, and you can show the plan to a human to approve. The minus is that it's rigid, if step two fails the plan might be wrong and you need a re-planning step.
+
+00:02:30
+So when do you pick which? If the task is open ended, like debugging some unknown error, go with react. If the task is well understood, like generate a weekly report from three known data sources, plan and execute is usually better.
+
+00:03:02
+Let me show you how the loop looks in code. So on screen I've got a function called run agent, it takes the user goal and a list of tools, it keeps a messages list, and inside a while loop it calls the model, checks if the response has tool calls, and if it does it runs each tool and appends the results as tool messages. If there are no tool calls it returns the final text. I've also added a max steps guard, I set it to ten, so that we never loop forever. I'll put the full file in the resources section.
+
+00:04:10
+One important thing, the tools themselves are described to the model using a json schema, name, description and parameters. The description matters a lot, it's basically the prompt for when to use the tool. Bad description, bad tool use. Lang graph, which we'll cover in the next section, basically lets you draw this loop as a graph of nodes and edges instead of a while loop.
+
+00:04:55
+Common mistakes. One, no step limit. Two, returning huge tool outputs which blow up the context window. Three, vague tool descriptions. Okay, that's it for this lecture, see you in the next one.

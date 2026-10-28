@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: folder-with-user-notes-and-code
+expected_outcome: |
+  One consolidated markdown note organized by concept (chunking, retrieval, hybrid search, reranking) with tables for chunking strategies and similarity metrics, a mermaid retrieval flow, the user's code included verbatim, and the user's gotchas merged in.

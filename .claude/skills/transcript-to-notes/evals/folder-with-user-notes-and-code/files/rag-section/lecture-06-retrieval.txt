@@ -1,0 +1,11 @@
+Okay so we have chunks and embeddings stored in a vector database. Now retrieval. The flow is, the user asks a question, we embed the question with the same embedding model, we search the vector store for the top k nearest chunks, we stuff those chunks into the prompt, and the llm answers using only that context.
+
+How do we measure nearness? Cosine similarity is the most common. It compares the angle between vectors and ignores magnitude. Dot product also works and is faster, and for normalized vectors it is the same ranking as cosine. Euclidean distance looks at straight line distance, and is less common for text.
+
+Choosing k. If k is too small you miss relevant info, if it's too large you add noise and burn tokens. Start with four or five and tune it.
+
+A very common upgrade is hybrid search, where you combine keyword search, usually bm25, with vector search. Vector search is great at meaning, but it can miss exact things like product codes or error numbers. Keyword search catches those. You merge the two ranked lists, often with reciprocal rank fusion.
+
+Another upgrade is reranking. You retrieve maybe twenty candidates cheaply, then a cross encoder model rescores each candidate against the query, and you keep the best four. It's slower but much more accurate.
+
+Final tip, if the answers are bad, debug retrieval first. Print the retrieved chunks. Most of the time the llm is fine and the retrieval is the problem.

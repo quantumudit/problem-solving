@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: single-transcript-agent-loop
+expected_outcome: |
+  A concept-organized markdown note covering the agent loop, ReAct vs plan-and-execute as a table, a mermaid loop diagram, tool schemas and common mistakes, with no summary block, emojis or em-dashes. The run-agent code is only described, so it is not invented and the user is asked for it.

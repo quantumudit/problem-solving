@@ -1,0 +1,9 @@
+Welcome back. Now that we know what embeddings are, let's talk about chunking, because in a rag pipeline the quality of your chunks decides the quality of your answers more than people think.
+
+Why chunk at all? Two reasons. First, embedding models have a max input length. Second, if you embed a whole forty page pdf as one vector, the vector is a blurry average of everything, so retrieval is poor.
+
+There are three common strategies. Fixed size chunking just cuts every N characters or tokens. It's simple and fast, but it happily cuts a sentence in half. Recursive character splitting tries a list of separators in order, so first double newlines, then single newlines, then spaces, and it only falls to the next separator when the chunk is still too big. This keeps paragraphs together when it can. And semantic chunking uses embeddings to find the points where the topic changes and splits there. It gives the most coherent chunks but it's slower and costs embedding calls at ingestion time.
+
+Chunk size matters. Small chunks, say two hundred tokens, give precise retrieval but may lose context. Big chunks, say a thousand tokens, keep context but dilute the match. A good starting point is around five hundred tokens with an overlap of about ten to twenty percent, so that a sentence on a boundary shows up in both neighbouring chunks.
+
+Last thing, always store metadata with each chunk, source file, page number, section title. You will need it for citations later.
